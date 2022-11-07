@@ -1,0 +1,28 @@
+The RUN DELTA Code aborts any other sweep running, resets the instrument, then sets up a DELTA sweep. When you see something like "<DELTAHIGH>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. The var <DELTACURRRANGE> is the current range and it can be replaced with a numeric string like " .002" (2 mA range) or with a string like ":auto on" which turns auto range on. All other variables will have a space before them. The :syst:comm:serial:send command allows communication to the Model 2182 over RS-232. When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands). When you see ENTER256 this indicates you need to read data from the box. The number is the recommended number of bytes to read.
+
+:sour:swe:abort
+:sour:wave:abor
+*rst
+<SETUPSTRING>
+WAIT500
+:form:elem READ,TST,RNUM,AVOL
+:sour:delt:high <DELTAHIGH>
+:sour:delt:low <DELTALOW>
+:sour:delt:count <DELTANUMCYCLE>
+:sour:delt:delay <DELTADELAY>
+:sour:curr:filt:stat <DELTADAMPING>
+:sour:curr:comp <DELTACOMP>
+:sour:curr:rang <DELTACURRRANGE>
+:SYST:COMM:SERIal:SEND "*rst"
+WAIT400
+:SYST:COMM:SERIal:SEND ":sens:volt:nplc <DELTANPLC>"
+WAIT1500
+:SYST:COMM:SERIal:SEND ":sens:volt:rang <DELTAVOLTRANGE>"
+:sens:aver:wind 0
+:sens:aver:stat <DELTAFILTERSTATE>
+:sens:aver:coun <DELTAFILTERCOUNT>
+:sens:aver:tcon <DELTAFILTERTYPE>
+:sour:delt:arm
+WAIT1000
+:init:imm
+

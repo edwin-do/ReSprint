@@ -1,0 +1,143 @@
+The set DC source code sets a source value and enables the output . When you see something like "<SOURCE>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. SOURCE is in amps, COMPLIANCE is in volts, and OUTPUT should be replaced with a 1 to turn on or a 0 to turn off.
+
+:sour:curr:rang <SOURCE>
+:sour:curr:lev <SOURCE>
+:sour:curr:comp <COMPLIANCE>
+:outp:stat <OUTPUT>
+
+The DC SWEEP code sets up the 622X to do a current sweep and starts the sweep. When you see something like "<POINTS>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. POINTS is the number of points in a sweep, SPACING is replaced with either LIN or LOG for a linear or logrithmic sweep, STARTLEVEL and STOPLEVEL are in amps, COMPLIANCE is in volts, and DELAY is in seconds. After SPACING another command is inserted that sets the source to AUTO range during a LOG sweep or stay on a FIXED range during a LINEAR sweep (The command is :sour:swe:rang <AUTO/FIX>). When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands)
+
+:sour:swe:abort
+*rst
+WAIT2000
+<SETUPSTRING>
+WAIT1000
+:sour:swe:spac <SPACING>
+:sour:swe:poin <POINTS>
+:sour:swe:coun 1
+:sour:swe:cab off
+:sour:curr:start <STARTLEVEL>
+:sour:curr:stop <STOPLEVEL>
+:sour:curr:comp <COMPLIANCE>
+:sour:del <DELAY>
+WAIT1000
+:sour:swe:arm
+WAIT3000
+:init:imm
+
+The DC SWEEP MEAS code sets up the 622X to do a current sweep, trigger measurements on a 2182, and starts the sweep. When you see something like "<POINTS>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. POINTS is the number of points in a sweep, SPACING is replaced with either LIN or LOG for a linear or logrithmic sweep, STARTLEVEL and STOPLEVEL are in amps, COMPLIANCE is in volts, DELAY is in seconds, VOLTRANGE is the voltage measure range in volts, and NPLC is the integration time for the 2182 in units of Number of Power Line Cycles. After SPACING another command is inserted that sets the source to AUTO range during a LOG sweep or stay on a FIXED range during a LINEAR sweep (The command is :sour:swe:rang <AUTO/FIX>). When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands)
+
+:sour:swe:abort
+*rst
+WAIT2000
+:SYST:COMM:SERIal:SEND "*rst"
+<SETUPSTRING>
+WAIT1000
+:sour:swe:spac <SPACING>
+:sour:swe:poin <POINTS>
+:sour:swe:coun 1
+:sour:swe:cab off
+:sour:curr:start <STARTLEVEL>
+:sour:curr:stop <STOPLEVEL>
+:sour:curr:comp <COMPLIANCE>
+:sour:del <DELAY>
+:trig:sour tlink
+:trig:dir sour
+:trig:olin 2
+:trig:ilin 1
+:trig:outp del
+:SYST:COMM:SERIal:SEND ":sens:volt:rang <VOLTRANGE>"
+WAIT400
+:SYST:COMM:SERIal:SEND ":sens:volt:nplc <NPLC>"
+WAIT400
+:SYST:COMM:SERIal:SEND ":trac:cle"
+WAIT200
+:SYST:COMM:SERIal:SEND ":trac:feed sens"
+WAIT200
+:SYST:COMM:SERIal:SEND ":trac:poin <POINTS>"
+WAIT200
+:SYST:COMM:SERIal:SEND ":trig:sour ext"
+WAIT200
+:SYST:COMM:SERIal:SEND ":trig:coun <POINTS>"
+WAIT200
+:SYST:COMM:SERIal:SEND ":trac:feed:control next"
+WAIT500
+:sour:swe:arm
+WAIT2000
+:init:imm
+:SYST:COMM:SERIal:SEND "init"
+
+The MEAS DATA code are commands sent to request data from the 2182 through the 622X. When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands). When you see ENTER256 this indicates you need to read data from the box. The number is the recommended number of bytes to read. 
+
+:SYST:COMM:SERIal:SEND ":trac:data?"
+WAIT200
+:SYST:COMM:SERIal:enter?
+ENTER255
+
+The BASIC SINE WAVE code sets up and starts a SINE wave output on the 6221. When you see something like "<SINEOFFSET>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. ACCOMPLIANCE is in volts, SINEAMPLITUDE and SINEOFFSET are in amps, and FREQUENCY is in Hz. When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands). When you see ENTER256 this indicates you need to read data from the box. The number is the recommended number of bytes to read. <SETUPSTRING> is replaced by a series of commands based on how you setup the instrument in the setup wizard. You can view the commands that correspond to your current instrument setup by going to GENERATE SCPI on the Basic Operations Tab and checking INSTRUMENT SETUP STRING, then viewing the result.
+
+:sour:wave:abor
+WAIT300
+:outp:stat off
+*rst
+WAIT2000
+<SETUPSTRING>
+WAIT500
+:sour:curr:comp <ACCOMPLIANCE>
+:sour:wave:func sin
+:sour:wave:offset <SINEOFFSET>
+:sour:wave:ampl <SINEAMPLITUDE>
+:sour:wave:freq <FREQUENCY>
+:sour:wave:rang best
+:sour:wave:dur:time inf
+:sour:wave:arm
+WAIT3000
+:sour:wave:init
+
+The BASIC RAMP code sets up and starts a SQUARE wave output on the 6221. When you see something like "<RAMPOFFSET>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. ACCOMPLIANCE is in volts, RAMPAMPLITUDE and RAMPOFFSET are in amps, RAMPDUTYCYCLE is in percent, and FREQUENCY is in Hz. When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands). When you see ENTER256 this indicates you need to read data from the box. The number is the recommended number of bytes to read. <SETUPSTRING> is replaced by a series of commands based on how you setup the instrument in the setup wizard. You can view the commands that correspond to your current instrument setup by going to GENERATE SCPI on the Basic Operations Tab and checking INSTRUMENT SETUP STRING, then viewing the result.
+
+:sour:wave:abor
+WAIT300
+:outp:stat off
+*rst
+WAIT2000
+<SETUPSTRING>
+:sour:curr:comp <ACCOMPLIANCE>
+:sour:wave:func ramp
+:sour:wave:rang best
+:sour:wave:dcycle <RAMPDUTYCYCLE>
+:sour:wave:offset <RAMPOFFSET>
+:sour:wave:ampl <RAMPAMPLITUDE>
+:sour:wave:freq <FREQUENCY>
+:sour:wave:dur:time inf
+:sour:wave:arm
+WAIT3000
+:sour:wave:init
+
+The BASIC SQUARE WAVE code sets up and starts a SQUARE wave output on the 6221. When you see something like "<SQUAREOFFSET>" this is a variable. These are replaced with values before being sent to the instrument. Many are self explanatory. ACCOMPLIANCE is in volts, SQUAREAMPLITUDE and SQUAREOFFSET are in amps, SQUAREDUTYCYCLE is in percent, and FREQUENCY is in Hz. When you see WAIT1500 that indicates a delay in ms. (i.e. a 1500 ms delay between these commands). When you see ENTER256 this indicates you need to read data from the box. The number is the recommended number of bytes to read. <SETUPSTRING> is replaced by a series of commands based on how you setup the instrument in the setup wizard. You can view the commands that correspond to your current instrument setup by going to GENERATE SCPI on the Basic Operations Tab and checking INSTRUMENT SETUP STRING, then viewing the result.
+
+:sour:wave:abor
+WAIT300
+:outp:stat off
+*rst
+WAIT2000
+<SETUPSTRING>
+WAIT500
+:sour:curr:comp <ACCOMPLIANCE>
+:sour:wave:func square
+:sour:wave:dcycle <SQUAREDUTYCYCLE>
+:sour:wave:offset <SQUAREOFFSET>
+:sour:wave:ampl <SQUAREAMPLITUDE>
+:sour:wave:freq <FREQUENCY>
+:sour:wave:rang best
+:sour:wave:dur:time inf
+:sour:wave:arm
+WAIT3000
+:sour:wave:init
+
+The Instrument Setup String is used in many command sets to configure the 622X as the user selects in the setup wizard. This usually sets the TRIAX configuration to guarding or normal, grounding to earth low connection or not, and may set a special command to reduce capacitance in the 2182A. See the Manual for more details.
+
+:SYST:COMM:SERIal:SEND "SYST:FFIL ON"
+:OUTP:ISH OLOW
+:outp:lte OFF
+
