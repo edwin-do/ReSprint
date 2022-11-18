@@ -9,15 +9,14 @@ namespace ReSprint
 {
     class ReadData
     {
-        public ReadData(string fileName)
+        public ReadData()
         {
-            f = fileName;
             current = new List<string>();
             voltage = new List<string>();
         }
-        public void GetData()
+        public void GetData(string fileName)
         {
-            var lines = File.ReadAllLines(f);
+            var lines = File.ReadAllLines(fileName);
             
             for (int i = 0; i < lines.Length; i++)
             {
@@ -27,15 +26,12 @@ namespace ReSprint
             }
 
         }
-
         public List<string> GetCurrent() { return current; }
-
         public List<string> GetVoltage() { return voltage; }
 
         // Private variables
-        List<string> current;
-        List<string> voltage;
-        string f;
+        private List<string> current;
+        private List<string> voltage;
 
     }
     
