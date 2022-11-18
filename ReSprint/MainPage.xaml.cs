@@ -25,6 +25,11 @@ namespace ReSprint
         public MainPage()
         {
             this.InitializeComponent();
+
+            // Create new instance of ReadData class + read text info
+            var reader = new ReadData();
+            string[] data = reader.GetData("DATA.txt");
+
         }
 
         private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
