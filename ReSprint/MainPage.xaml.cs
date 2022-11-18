@@ -26,9 +26,13 @@ namespace ReSprint
         {
             this.InitializeComponent();
 
-            // Create new instance of ReadData class + read text info
-            var reader = new ReadData();
-            string[] data = reader.GetData("DATA.txt");
+            // Create new instance of ReadData class
+            var reader = new ReadData("DATA.csv");
+            // Read + process data
+            reader.GetData(); 
+            // Assign data to new string lists
+            List<string> voltage = reader.GetVoltage();
+            List<string> current = reader.GetCurrent();
 
         }
 
