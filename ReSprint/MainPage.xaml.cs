@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -25,20 +28,27 @@ namespace ReSprint
         public MainPage()
         {
             this.InitializeComponent();
-
-            // Create new instance of ReadData class
-            var reader = new ReadData();
-            // Pass in file to be read
-            reader.GetData("DATA.csv"); 
-            // Assign data to new string lists
-            List<string> voltage = reader.GetVoltage();
-            List<string> current = reader.GetCurrent();
-
         }
 
-        private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        private async void FileInputBtn_Click(object sender, RoutedEventArgs e)
         {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
+            picker.FileTypeFilter.Add(".csv");
+            picker.FileTypeFilter.Add(".txt");
 
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                // Application now has read/write access to the picked file
+                this.FileInputTxtBox.Text = file.Path;
+                this.SelectedFileTxt.Text = file.Name;
+            }
+            else
+            {
+                this.SelectedFileTxt.Text = "No File Selected";
+            }
         }
     }
 }

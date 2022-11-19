@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="976" Width="1216">
 
-    <Grid>
-        <Button Content="Button" Margin="1174,196,0,0" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="54,55,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="98" Width="188" SelectionChanged="TextBlock_SelectionChanged"/>
+    <Grid Margin="0,0,10,10" BorderThickness="2,0,0,0">
+        <Button x:Name="FileInputBtn" Content="Browse File..." Margin="349,251,0,0" VerticalAlignment="Top" Click="FileInputBtn_Click"/>
+        <TextBox x:Name="FileInputTxtBox" HorizontalAlignment="Left" Margin="56,251,0,0" TextWrapping="Wrap" Text="..." VerticalAlignment="Top" Height="33" Width="273"/>
+        <TextBlock x:Name="FileInputLabel" HorizontalAlignment="Left" Margin="54,224,0,0" TextWrapping="Wrap" Text="File Input" VerticalAlignment="Top"/>
+        <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="34" Margin="56,304,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="291" BorderBrush="{x:Null}" BorderThickness="0,0,0,0"/>
 
     </Grid>
 </Page>
