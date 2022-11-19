@@ -16,7 +16,7 @@
         <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="34" Margin="56,304,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="291" BorderBrush="{x:Null}" BorderThickness="0,0,0,0"/>
         <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="568,224,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
         <ListView Margin="571,268,91,133" RequestedTheme="Default" IsSynchronizedWithCurrentItem="False"/>
-        <qc:SerialChart DataSource="{Binding Data}" CategoryValueMemberPath="XAxisData" Margin="56,365,643,44">
+        <qc:SerialChart DataSource="{Binding Data}" CategoryValueMemberPath="XAxisData" Margin="56,359,649,50">
             <qc:SerialChart.Graphs>
                 <qc:AreaGraph Title="Sample data 1" ValueMemberPath="SampleData1" />
                 <qc:LineGraph Title="Sample data 2" ValueMemberPath="SampleData2" />
