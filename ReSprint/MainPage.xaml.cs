@@ -30,6 +30,7 @@ namespace ReSprint
         private double voltage;
         private double resistance;
         private double resistivity;
+        private string time;
         public MainPage()
         {
             this.InitializeComponent();
@@ -64,12 +65,8 @@ namespace ReSprint
             voltage = r.Next(1, 10);
             resistance = cal.calcResistence(voltage, current);
             resistivity = cal.calcResistivity(resistance, 10, 5);
-            TimeSeconds.Text = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}\n{TimeSeconds.Text}";
-            Temperture.Text = $"{25+r.Next(1)}\n{Temperture.Text}";
-            Resistance.Text = $"{resistance}\n{Resistance.Text}";
-            Resitivity.Text = $"{resistivity}\n{Resitivity.Text}";
-            Voltage.Text = $"{voltage}\n{Voltage.Text}";
-            Current.Text = $"{current}\n{Current.Text}";
+            time = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";
+            OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, (25 + r.Next(2)), resistivity, resistance, voltage, current));
         }
     }
 }

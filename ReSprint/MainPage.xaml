@@ -16,18 +16,7 @@
         <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="34" Margin="56,304,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="291" BorderBrush="{x:Null}" BorderThickness="0,0,0,0"/>
         <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="568,224,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
         <Button x:Name="Start" Content="Start" Margin="700,215,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Start_Output"/>
-        <TextBlock HorizontalAlignment="Left" Margin="550,300,0,0" TextWrapping="Wrap" Text="t(s)" VerticalAlignment="Top"/>
-        <TextBox x:Name="TimeSeconds" Height="550" Width="100" HorizontalAlignment="Left" Margin="550,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="650,300,0,0" TextWrapping="Wrap" Text="T(C)" VerticalAlignment="Top"/>
-        <TextBox x:Name="Temperture" Height="550" Width="100" HorizontalAlignment="Left" Margin="650,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="750,300,0,0" TextWrapping="Wrap" Text="Rho (Ohm.m)" VerticalAlignment="Top"/>
-        <TextBox x:Name="Resitivity" Height="550" Width="100" HorizontalAlignment="Left" Margin="750,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="850,300,0,0" TextWrapping="Wrap" Text="R (Ohm)" VerticalAlignment="Top"/>
-        <TextBox x:Name="Resistance" Height="550" Width="100" HorizontalAlignment="Left" Margin="850,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="950,300,0,0" TextWrapping="Wrap" Text="V (Volts)" VerticalAlignment="Top"/>
-        <TextBox x:Name="Voltage" Height="550" Width="100" HorizontalAlignment="Left" Margin="950,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1050,300,0,0" TextWrapping="Wrap" Text="I (A)" VerticalAlignment="Top"/>
-        <TextBox x:Name="Current" Height="550" Width="100" HorizontalAlignment="Left" Margin="1050,325,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True"/>
+        <ListView x:Name="OutputData" Margin="550,300,0,0" Header="   t(s)                   T(C)       Rho (Ohm.m)  R (Ohm)           V (Volts)          I (A)"/>
         <qc:SerialChart DataSource="{Binding Data}" CategoryValueMemberPath="XAxisData" Margin="56,359,649,50">
             <qc:SerialChart.Graphs>
                 <qc:AreaGraph Title="Sample data 1" ValueMemberPath="SampleData1" />
