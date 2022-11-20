@@ -26,6 +26,10 @@ namespace ReSprint
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private double current;
+        private double voltage;
+        private double resistance;
+        private double resistivity;
         public MainPage()
         {
             this.InitializeComponent();
@@ -50,6 +54,22 @@ namespace ReSprint
             {
                 this.SelectedFileTxt.Text = "No File Selected";
             }
+        }
+
+        private void Start_Output(object sender, RoutedEventArgs e)
+        {
+            Random r = new Random();
+            calculation cal= new calculation();
+            current = r.Next(1, 10);
+            voltage = r.Next(1, 10);
+            resistance = cal.calcResistence(voltage, current);
+            resistivity = cal.calcResistivity(resistance, 10, 5);
+            TimeSeconds.Text = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}\n{TimeSeconds.Text}";
+            Temperture.Text = $"{25+r.Next(1)}\n{Temperture.Text}";
+            Resistance.Text = $"{resistance}\n{Resistance.Text}";
+            Resitivity.Text = $"{resistivity}\n{Resitivity.Text}";
+            Voltage.Text = $"{voltage}\n{Voltage.Text}";
+            Current.Text = $"{current}\n{Current.Text}";
         }
     }
 }

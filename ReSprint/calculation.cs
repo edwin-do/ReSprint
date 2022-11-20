@@ -12,12 +12,12 @@ namespace ReSprint
 
         public double calcResistence(double voltage, double current)
         {
-            return voltage/current;
+            return Math.Round(voltage/current, 3);
         }
 
         public double calcResistivity(double resisitance, double area, double length)
         {
-            return (resisitance*area)/length;
+            return Math.Round((resisitance*area)/length,3);
         }
     }
 }
