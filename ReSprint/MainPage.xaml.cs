@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using Ailon.QuickCharts;
+using System.Threading;
+using Windows.Media.Devices;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,11 +28,13 @@ namespace ReSprint
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private string time;
+        private double temperature;
         private double current;
         private double voltage;
         private double resistance;
         private double resistivity;
-        private string time;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -59,14 +63,39 @@ namespace ReSprint
 
         private void Start_Output(object sender, RoutedEventArgs e)
         {
-            Random r = new Random();
-            calculation cal= new calculation();
+/*            Random r = new Random();
+            calculation cal = new calculation();
             current = r.Next(1, 10);
             voltage = r.Next(1, 10);
             resistance = cal.calcResistence(voltage, current);
             resistivity = cal.calcResistivity(resistance, 10, 5);
-            time = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";
-            OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, (25 + r.Next(2)), resistivity, resistance, voltage, current));
+            time = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";*/
+
+            calculation cal = new calculation();
+
+            ReadData reader = new ReadData();
+            reader.GetData(this.FileInputTxtBox.Text);
+            var count = reader.GetTimeCount();
+
+            while (true)
+            {
+                if (count < reader.GetTimeCount())
+                {
+                    count = reader.GetTimeCount();
+
+                    time = reader.GetTime();
+                    temperature = reader.GetTemp();
+                    current = reader.GetCurrent();
+                    voltage = reader.GetVoltage();
+                    resistance = cal.calcResistence(voltage, current);
+                    resistivity = cal.calcResistivity(resistance, 10, 5);
+
+                    OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, temperature, resistivity, resistance, voltage, current));
+                }
+
+            }
+
+            
         }
     }
 }

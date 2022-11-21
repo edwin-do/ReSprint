@@ -17,13 +17,16 @@ namespace ReSprint
             {
                 Random rnd = new Random();
 
+                string time = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";
+                int temperature = rnd.Next(1,11);
                 int currentValue = rnd.Next(1,11);
                 int voltageValue = rnd.Next(1,11);
+
                 while (true)
                 {
                     if (!File.Exists(fileName))
                     {
-                        string line = currentValue + "," + voltageValue;
+                        string line = time + "," + temperature + "," + currentValue + "," + voltageValue;
 
                         File.WriteAllText(fileName, line);
                     }
