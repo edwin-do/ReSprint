@@ -80,7 +80,7 @@ namespace ReSprint
                 resistivity = cal.calcResistivity(resistance, 10, 5);
 
                 OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, temperature, resistivity, resistance, voltage, current));
-            //
+                //Thread.Sleep(rate);
         }
 
     }
