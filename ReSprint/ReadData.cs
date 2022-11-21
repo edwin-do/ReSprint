@@ -22,27 +22,12 @@ namespace ReSprint
         }
         public void GetData(string fileName)
         {
-
-            using (var file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var reader = new StreamReader(fileName, Encoding.Unicode))
-            {
-                string line;
-                while((line = reader.ReadLine()) != null)
-                {
-                    if (!next)
-                    {
-                        break;
-                    }
-                    var values = line.Split(',');
-                    time.Insert(0, values[0]);
-                    temp.Insert(0, Convert.ToDouble(values[1]));
-                    current.Insert(0, Convert.ToDouble(values[2]));
-                    voltage.Insert(0, Convert.ToDouble(values[3]));
-                   
-                    Thread.Sleep(rate);
-                }
-            }
-
+            string line = File.ReadLines(fileName).Last(); //read the latest (last) line of data
+            var values = line.Split(',');
+            time.Insert(0, values[0]);
+            temp.Insert(0, Convert.ToDouble(values[1]));
+            current.Insert(0, Convert.ToDouble(values[2]));
+            voltage.Insert(0, Convert.ToDouble(values[3]));
         }
         public string GetTime() { return time[0]; }
         public int GetTimeCount() { return time.Count; }

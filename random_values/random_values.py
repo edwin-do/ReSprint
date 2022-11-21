@@ -9,7 +9,7 @@ from datetime import datetime
 def Main():
 	print("Hello world!\n")
 
-	filePath = "..\\DATA.csv"
+	filePath = "..\\ReSprint\\bin\\x64\\Debug\\AppX\\DATA.csv"
 
 	while True:
 		now = datetime.now()
@@ -20,7 +20,7 @@ def Main():
 		random.uniform(10.0,50.0),
 		random.uniform(10.0,50.0)]
 
-		with open(filePath, 'a', encoding='UTF8', newline='') as f:
+		with open(filePath, 'a', newline='') as f:
 			writer = csv.writer(f)
 			writer.writerow(data)
 			print("Wrote new row of data\n")
