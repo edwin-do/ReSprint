@@ -10,19 +10,50 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Height="976" Width="1216">
 
     <Grid x:Name="OutputDataListView" Margin="0,0,10,10" BorderThickness="2,0,0,0">
-        <Button x:Name="FileInputBtn" Content="Browse File..." Margin="349,251,0,0" VerticalAlignment="Top" Click="FileInputBtn_Click"/>
-        <TextBox x:Name="FileInputTxtBox" HorizontalAlignment="Left" Margin="56,251,0,0" TextWrapping="Wrap" Text="..." VerticalAlignment="Top" Height="33" Width="273"/>
-        <TextBlock x:Name="FileInputLabel" HorizontalAlignment="Left" Margin="54,224,0,0" TextWrapping="Wrap" Text="File Input" VerticalAlignment="Top"/>
-        <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="34" Margin="56,304,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="291" BorderBrush="{x:Null}" BorderThickness="0,0,0,0"/>
-        <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="568,224,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
-        <Button x:Name="Start" Content="Start" Margin="700,215,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Start_Output"/>
-        <ListView x:Name="OutputData" Margin="550,300,0,0" Header="   t(s)                   T(C)       Rho (Ohm.m)  R (Ohm)           V (Volts)          I (A)"/>
-        <qc:SerialChart DataSource="{Binding Data}" CategoryValueMemberPath="XAxisData" Margin="56,359,649,50">
-            <qc:SerialChart.Graphs>
-                <qc:AreaGraph Title="Sample data 1" ValueMemberPath="SampleData1" />
-                <qc:LineGraph Title="Sample data 2" ValueMemberPath="SampleData2" />
-                <qc:ColumnGraph Title="Sample data 3" ValueMemberPath="SampleData3" />
-            </qc:SerialChart.Graphs>
-        </qc:SerialChart>
+        <FlyoutBase.AttachedFlyout>
+            <Flyout>
+                <Grid/>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+        <Button x:Name="FileInputBtn" Content="Browse File..." Margin="347,298,0,0" VerticalAlignment="Top" Click="FileInputBtn_Click" RenderTransformOrigin="0.475,0.545" FontSize="12"/>
+        <TextBox x:Name="FileInputTxtBox" HorizontalAlignment="Left" Margin="159,298,0,0" TextWrapping="Wrap" Text="..." VerticalAlignment="Top" Height="33" Width="185"/>
+        <TextBlock x:Name="FileInputLabel" HorizontalAlignment="Left" Margin="75,305,0,0" TextWrapping="Wrap" Text="File Input:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="25" Margin="162,341,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="292" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" FontSize="12"/>
+        <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="548,369,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
+        <Button x:Name="Start" Content="Start" Margin="680,360,0,0" VerticalAlignment="Top" Click="Start_Output"/>
+        <ListView x:Name="OutputData" Margin="539,407,0,0" Header="   t(s)                   T(C)       Rho (Ohm.m)  R (Ohm)           V (Volts)          I (A)"/>
+        <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,383,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" Text="INPUT" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <TextBox x:Name="SampleNameTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,110,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of sample" FontSize="12"/>
+        <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="47,216,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBox x:Name="SampleLengthTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,158,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter sample's length (mm)" FontSize="12"/>
+        <TextBox x:Name="SampleWidthTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,209,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter sample's width (mm)" FontSize="12"/>
+        <TextBox x:Name="SampleNameTxtBox_Copy" HorizontalAlignment="Left" Height="32" Margin="160,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of operator" FontSize="12"/>
+        <DatePicker x:Name="DateSelector" Margin="162,376,0,0" VerticalAlignment="Top" Width="304"/>
+        <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="550,36,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Center" Margin="0,74,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Center" Margin="0,108,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTimeTitle" HorizontalAlignment="Left" Margin="588,182,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTempTitle" HorizontalAlignment="Center" Margin="0,143,0,0" TextWrapping="Wrap" Text="Temperature (C):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="700,73,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="700,108,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" SelectionChanged="InstrumentCurrentValueLabel_SelectionChanged"/>
+        <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="702,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="701,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <Button x:Name="SettingsBtn" Content="View Settings" Margin="48,442,0,0" VerticalAlignment="Top">
+            <Button.Flyout>
+                <Flyout>
+                    <Grid/>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <ComboBox x:Name="SamplingRateComboBox" Margin="163,255,0,0" Width="180">
+            <ComboBoxItem Content="50"/>
+            <ComboBoxItem Content="100"/>
+            <ComboBoxItem Content="150"/>
+        </ComboBox>
     </Grid>
 </Page>
