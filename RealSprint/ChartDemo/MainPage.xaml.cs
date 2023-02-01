@@ -28,5 +28,26 @@ namespace RealSprint
         }
     }
 
+    //private async void FileInputBtn_Click(object sender, RoutedEventArgs e)
+    //{
+    //    var picker = new Windows.Storage.Pickers.FileOpenPicker();
+    //    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+    //    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
+    //    picker.FileTypeFilter.Add(".csv");
+    //    picker.FileTypeFilter.Add(".txt");
+
+    //    Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+    //    if (file != null)
+    //    {
+    //        // Application now has read/write access to the picked file
+    //        this.FileInputTxtBox.Text = file.Path;
+    //        this.SelectedFileTxt.Text = file.Name;
+    //    }
+    //    else
+    //    {
+    //        this.SelectedFileTxt.Text = "No File Selected";
+    //    }
+    //}
+
 
 }

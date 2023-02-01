@@ -5,7 +5,6 @@
     xmlns:local="using:RealSprint"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:syncfusion="using:Syncfusion.UI.Xaml.Charts"
     xmlns:chart="using:Syncfusion.UI.Xaml.Charts"
     mc:Ignorable="d">
     <!--Setting DataContext for SfChart-->
@@ -13,45 +12,20 @@
         <local:DataGenerator/>
     </Page.DataContext>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RenderTransformOrigin="0.5,0.5" Margin="-13,-25,-2,-10" UseLayoutRounding="False" d:LayoutRounding="Auto">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RenderTransformOrigin="0.5,0.5" Margin="-13,-25,-22,-26" UseLayoutRounding="False" d:LayoutRounding="Auto">
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1019*"/>
+            <ColumnDefinition Width="496*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="628*"/>
+            <RowDefinition Height="407*"/>
+        </Grid.RowDefinitions>
         <Grid.RenderTransform>
             <CompositeTransform Rotation="-0.259"/>
         </Grid.RenderTransform>
-
-        <!--<syncfusion:SfChart Header="Chart" Height="300" Width="500">
-            -->
-        <!--Initialize the horizontal axis for SfChart-->
-        <!--
-            <syncfusion:SfChart.PrimaryAxis>
-                <syncfusion:CategoryAxis Header="Name" FontSize="14"/>
-            </syncfusion:SfChart.PrimaryAxis>
-
-            -->
-        <!--Initialize the vertical axis for SfChart-->
-        <!--
-            <syncfusion:SfChart.SecondaryAxis>
-                <syncfusion:NumericalAxis Header="Height(in cm)" FontSize="14"/>
-            </syncfusion:SfChart.SecondaryAxis>
-
-            -->
-        <!--Adding Legend to the SfChart-->
-        <!--
-            <syncfusion:SfChart.Legend>
-                <syncfusion:ChartLegend/>
-            </syncfusion:SfChart.Legend>
-
-            -->
-        <!--Initialize the series for SfChart-->
-        <!--
-            <syncfusion:ColumnSeries Label="Heights" ItemsSource="{Binding Data}" XBindingPath="Name" YBindingPath="Height" ShowTooltip="True" >
-                <syncfusion:ColumnSeries.AdornmentsInfo>
-                    <syncfusion:ChartAdornmentInfo ShowLabel="True" >
-                    </syncfusion:ChartAdornmentInfo>
-                </syncfusion:ColumnSeries.AdornmentsInfo>
-            </syncfusion:ColumnSeries>
-
-        </syncfusion:SfChart>-->
-        <chart:SfChart x:Name="Chart" Margin="434,253,50,36" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462">
+        <chart:SfChart x:Name="Chart" Margin="0,0,46,22" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462" Grid.RowSpan="2" HorizontalAlignment="Right" Width="626" Grid.ColumnSpan="2" Height="540" VerticalAlignment="Bottom">
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss">
                     <chart:ChartAxis.Header>
@@ -82,6 +56,46 @@
                                         StrokeThickness="1"
                                         ItemsSource="{Binding DynamicData}"/>
         </chart:SfChart>
+
+        <Button x:Name="FileInputBtn" Content="Browse File..." Margin="347,298,0,0" VerticalAlignment="Top"  RenderTransformOrigin="0.475,0.545" FontSize="12"/>
+        <TextBox x:Name="FileInputTxtBox" HorizontalAlignment="Left" Margin="159,298,0,0" TextWrapping="Wrap" Text="..." VerticalAlignment="Top" Height="33" Width="185"/>
+        <TextBlock x:Name="FileInputLabel" HorizontalAlignment="Left" Margin="75,305,0,0" TextWrapping="Wrap" Text="File Input:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="25" Margin="162,341,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="292" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" FontSize="12"/>
+        <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="548,369,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
+        <ListView x:Name="OutputData" Margin="539,407,0,0" Header="   t(s)                   T(C)       Rho (Ohm.m)  R (Ohm)           V (Volts)          I (A)"/>
+        <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,383,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" Text="INPUT" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <TextBox x:Name="SampleNameTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,110,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of sample" FontSize="12"/>
+        <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="47,216,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBox x:Name="SampleLengthTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,158,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter sample's length (mm)" FontSize="12"/>
+        <TextBox x:Name="SampleWidthTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,209,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter sample's width (mm)" FontSize="12"/>
+        <TextBox x:Name="SampleNameTxtBox_Copy" HorizontalAlignment="Left" Height="32" Margin="160,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of operator" FontSize="12"/>
+        <DatePicker x:Name="DateSelector" Margin="162,376,0,0" VerticalAlignment="Top" Width="304"/>
+        <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="550,36,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Center" Margin="0,74,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Center" Margin="0,108,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTimeTitle" HorizontalAlignment="Left" Margin="588,182,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTempTitle" HorizontalAlignment="Center" Margin="0,143,0,0" TextWrapping="Wrap" Text="Temperature (C):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="700,73,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="700,108,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="702,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="701,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <Button x:Name="SettingsBtn" Content="View Settings" Margin="48,442,0,0" VerticalAlignment="Top">
+            <Button.Flyout>
+                <Flyout>
+                    <Grid/>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+        <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <ComboBox x:Name="SamplingRateComboBox" Margin="163,255,0,0" Width="180">
+            <ComboBoxItem Content="50"/>
+            <ComboBoxItem Content="100"/>
+            <ComboBoxItem Content="150"/>
+        </ComboBox>
 
     </Grid>
 </Page>
