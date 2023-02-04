@@ -13,7 +13,7 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RenderTransformOrigin="0.5,0.5" Margin="-13,-25,-22,-26" UseLayoutRounding="False" d:LayoutRounding="Auto">
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1019*"/>
             <ColumnDefinition Width="496*"/>
@@ -25,7 +25,7 @@
         <Grid.RenderTransform>
             <CompositeTransform Rotation="-0.259"/>
         </Grid.RenderTransform>
-        <chart:SfChart x:Name="Chart" Margin="0,0,46,22" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462" Grid.RowSpan="2" HorizontalAlignment="Right" Width="626" Grid.ColumnSpan="2" Height="540" VerticalAlignment="Bottom">
+        <chart:SfChart x:Name="Chart" Margin="0,0,64,22" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462" Grid.RowSpan="2" HorizontalAlignment="Right" Width="608" Grid.ColumnSpan="2" Height="499" VerticalAlignment="Bottom">
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss">
                     <chart:ChartAxis.Header>
@@ -61,8 +61,6 @@
         <TextBox x:Name="FileInputTxtBox" HorizontalAlignment="Left" Margin="159,298,0,0" TextWrapping="Wrap" Text="..." VerticalAlignment="Top" Height="33" Width="185"/>
         <TextBlock x:Name="FileInputLabel" HorizontalAlignment="Left" Margin="75,305,0,0" TextWrapping="Wrap" Text="File Input:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBox x:Name="SelectedFileTxt" HorizontalAlignment="Left" Height="25" Margin="162,341,0,0" TextWrapping="Wrap" Text="No File Selected" VerticalAlignment="Top" Width="292" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" FontSize="12"/>
-        <TextBlock x:Name="OutputDataLabel" HorizontalAlignment="Left" Margin="548,369,0,0" TextWrapping="Wrap" Text="Output Data" VerticalAlignment="Top"/>
-        <ListView x:Name="OutputData" Margin="539,407,0,0" Header="   t(s)                   T(C)       Rho (Ohm.m)  R (Ohm)           V (Volts)          I (A)"/>
         <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,383,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
@@ -83,19 +81,14 @@
         <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="700,108,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="702,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="701,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <Button x:Name="SettingsBtn" Content="View Settings" Margin="48,442,0,0" VerticalAlignment="Top">
-            <Button.Flyout>
-                <Flyout>
-                    <Grid/>
-                </Flyout>
-            </Button.Flyout>
-        </Button>
         <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <ComboBox x:Name="SamplingRateComboBox" Margin="163,255,0,0" Width="180">
             <ComboBoxItem Content="50"/>
             <ComboBoxItem Content="100"/>
             <ComboBoxItem Content="150"/>
         </ComboBox>
+        <Button x:Name="StartCaptureBtn" Content="Start Capture" Height="35" Margin="51,40,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Click="StartCaptureBtn_Click"/>
+        <Button x:Name="StopCaptureBtn" Content="Stop Capture" Height="35" Margin="196,38,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Click="StopCaptureBtn_Click"/>
 
     </Grid>
 </Page>

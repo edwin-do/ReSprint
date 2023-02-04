@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ReSprint
 {
-    class calculation
+    class Calculation
     {
-        public calculation(){}
+        public Calculation(){}
 
         public double calcResistence(double voltage, double current)
         {

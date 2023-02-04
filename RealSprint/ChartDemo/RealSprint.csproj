@@ -92,7 +92,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Calculation.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="CurrentState.cs" />
+    <Compile Include="InputCommunication.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
