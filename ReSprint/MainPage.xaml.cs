@@ -59,14 +59,20 @@ namespace ReSprint
 
         private void Start_Output(object sender, RoutedEventArgs e)
         {
-            Random r = new Random();
+            /*Random r = new Random();
             calculation cal= new calculation();
             current = r.Next(1, 10);
             voltage = r.Next(1, 10);
             resistance = cal.calcResistence(voltage, current);
             resistivity = cal.calcResistivity(resistance, 10, 5);
             time = $"{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}";
-            OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, (25 + r.Next(2)), resistivity, resistance, voltage, current));
+            OutputData.Items.Add(String.Format("{0, -20}{1, -10:N1}{2, -20:N3}{3, -20:N3}{4, -20:N3}{5, -20:N3}", time, (25 + r.Next(2)), resistivity, resistance, voltage, current));*/
+
+
+            ReadData reader = new ReadData();
+            string f = "C:\\Users\\heyjo\\Documents\\School\\Fall_2022\\Capstone\\ReSprint_main\\DATA.csv";
+            reader.GetData(f);
+
         }
     }
 }
