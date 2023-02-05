@@ -63,6 +63,7 @@ namespace RealSprint
         {
             StartCaptureBtn.IsEnabled = false;
             StopCaptureBtn.IsEnabled = true;
+            capture = true;
             _canceller = new CancellationTokenSource();
 
             await Task.Run(() =>
@@ -84,6 +85,7 @@ namespace RealSprint
         private void StopCaptureBtn_Click(object sender, RoutedEventArgs e)
         {
             _canceller.Cancel();
+            capture = false;
         }
 
         private void Capture()
@@ -111,7 +113,10 @@ namespace RealSprint
         private void timer_Tick(object sender, object e)
         {
             //Pass values to DataGenerator
-            DatGen.AddData();
+            if (capture)
+            {
+                DatGen.AddData();
+            }
         }
 
 
