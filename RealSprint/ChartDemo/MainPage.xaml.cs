@@ -64,6 +64,7 @@ namespace RealSprint
             StartCaptureBtn.IsEnabled = false;
             StopCaptureBtn.IsEnabled = true;
             capture = true;
+            date = DateTime.Now;
             _canceller = new CancellationTokenSource();
 
             await Task.Run(() =>
@@ -115,7 +116,8 @@ namespace RealSprint
             //Pass values to DataGenerator
             if (capture)
             {
-                DatGen.AddData();
+                DatGen.AddData(new Data(date, current, voltage, resistivity));
+                date = date.Add(TimeSpan.FromMilliseconds(50));
             }
         }
 
@@ -139,6 +141,8 @@ namespace RealSprint
 
         //Timer
         DispatcherTimer timer;
+
+        DateTime date;
 
         private void InstrumentVoltageValueLabel_SelectionChanged(object sender, RoutedEventArgs e)
         {

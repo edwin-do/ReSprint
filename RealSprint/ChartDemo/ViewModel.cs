@@ -23,8 +23,8 @@ namespace RealSprint
         {
             randomNumber = new Random();
             DynamicData = new ObservableCollection<Data>();
-            data = GenerateData();
-            LoadData();
+            //data = GenerateData();
+            //LoadData();
 
             //timer = new DispatcherTimer();
             //timer.Tick += timer_Tick;
@@ -32,66 +32,66 @@ namespace RealSprint
             //timer.Start();
         }
 
-        public void AddData()
+        public void AddData(Data values)
         {
             for (int i = 0; i < rate; i++)
             {
                 index++;
                 if (index < 100)
                 {
-                    DynamicData.Add(this.data[index]);
+                    DynamicData.Add(values);
                 }
                 else if (index > 100)
                 {
                     DynamicData.RemoveAt(0);//Remove data not visible
-                    DynamicData.Add(this.data[(index % (this.data.Count - 1))]);
+                    DynamicData.Add(values);
                 }
             }
         }
 
-        public void LoadData()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                index++;
-                if (index < data.Count)
-                {
-                    DynamicData.Add(this.data[index]);
-                }
-            }
-        }
+        //public void LoadData()
+        //{
+        //    for (int i = 0; i < 10; i++)
+        //    {
+        //        index++;
+        //        if (index < data.Count)
+        //        {
+        //            DynamicData.Add(this.data[index]);
+        //        }
+        //    }
+        //}
 
-        public ObservableCollection<Data> GenerateData()
-        {
-            ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
+        //public ObservableCollection<Data> GenerateData()
+        //{
+        //    ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
-            DateTime date = new DateTime(2009, 1, 1);
-            double value = 1000;
-            double value1 = 1001;
-            double value2 = 1002;
-            for (int i = 0; i < this.dataCount; i++)
-            {
-                generatedData.Add(new Data(date, value, value1, value2));
-                date = date.Add(TimeSpan.FromSeconds(5));
+        //    DateTime date = new DateTime(2009, 1, 1);
+        //    double value = 1000;
+        //    double value1 = 1001;
+        //    double value2 = 1002;
+        //    for (int i = 0; i < this.dataCount; i++)
+        //    {
+        //        generatedData.Add(new Data(date, value, value1, value2));
+        //        date = date.Add(TimeSpan.FromSeconds(5));
 
-                if ((randomNumber.NextDouble() + value2) < 1004.85)
-                {
-                    double random = randomNumber.NextDouble();
-                    value += random;
-                    value1 += random;
-                    value2 += random;
-                }
-                else
-                {
-                    double random = randomNumber.NextDouble();
-                    value -= random;
-                    value1 -= random;
-                    value2 -= random;
-                }
-            }
+        //        if ((randomNumber.NextDouble() + value2) < 1004.85)
+        //        {
+        //            double random = randomNumber.NextDouble();
+        //            value += random;
+        //            value1 += random;
+        //            value2 += random;
+        //        }
+        //        else
+        //        {
+        //            double random = randomNumber.NextDouble();
+        //            value -= random;
+        //            value1 -= random;
+        //            value2 -= random;
+        //        }
+        //    }
 
-            return generatedData;
-        }
+        //    return generatedData;
+        //}
 
         //private void timer_Tick(object sender, object e)
         //{

@@ -35,8 +35,8 @@
             </chart:SfChart.PrimaryAxis>
 
             <chart:SfChart.SecondaryAxis>
-                <chart:NumericalAxis Minimum="1000" Maximum="1006" 
-                                     Interval="1" >
+                <chart:NumericalAxis Minimum="0" Maximum="0.05" 
+                                     Interval="0.0001" >
                     <chart:ChartAxis.Header>
                         <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
                     </chart:ChartAxis.Header>
