@@ -15,7 +15,7 @@ namespace RealSprint
         public int dataCount = 50000;
         private int rate = 1; // Use this to change rate/speed
         int index = 0;
-        DispatcherTimer timer;
+        //DispatcherTimer timer;
         public ObservableCollection<Data> DynamicData { get; set; }
 
 
@@ -26,15 +26,10 @@ namespace RealSprint
             data = GenerateData();
             LoadData();
 
-            timer = new DispatcherTimer();
-            timer.Tick += timer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            //timer = new DispatcherTimer();
+            //timer.Tick += timer_Tick;
+            //timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             //timer.Start();
-        }
-
-        public void StartOutput()
-        {
-            timer.Start();
         }
 
         public void AddData()
@@ -98,10 +93,10 @@ namespace RealSprint
             return generatedData;
         }
 
-        private void timer_Tick(object sender, object e)
-        {
-            AddData();
-        }
+        //private void timer_Tick(object sender, object e)
+        //{
+        //    AddData();
+        //}
     }
 
     public class Data

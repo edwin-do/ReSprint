@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
@@ -49,6 +51,12 @@ namespace RealSprint
             StartCaptureBtn.IsEnabled = true;
             StopCaptureBtn.IsEnabled = false;
 
+            //Initialise timer for graph update
+            timer = new DispatcherTimer();
+            timer.Tick += timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            timer.Start();
+
         }
 
         private async void StartCaptureBtn_Click(object sender, RoutedEventArgs e)
@@ -78,7 +86,7 @@ namespace RealSprint
             _canceller.Cancel();
         }
 
-        private async void Capture()
+        private void Capture()
         {
             //Get voltage and current values
             voltage = InputComm.GetVoltage();
@@ -90,21 +98,29 @@ namespace RealSprint
 
             //Send values to graph
             //TODO
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
-                DatGen.StartOutput();
-            });
-            
+            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            //{
+            //    DatGen.StartOutput();
+            //});
 
             //Send values to CurrentState output
             //TODO
 
         }
 
+        private void timer_Tick(object sender, object e)
+        {
+            //Pass values to DataGenerator
+            DatGen.AddData();
+        }
 
+
+        //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
         private DataGenerator DatGen;
 
+        //Member variables
         private bool capture;
         private double voltage;
         private double current;
@@ -115,6 +131,9 @@ namespace RealSprint
 
         //For ending continuous capture 
         private CancellationTokenSource _canceller;
+
+        //Timer
+        DispatcherTimer timer;
 
         private void InstrumentVoltageValueLabel_SelectionChanged(object sender, RoutedEventArgs e)
         {
@@ -147,6 +166,8 @@ namespace RealSprint
     //        this.SelectedFileTxt.Text = "No File Selected";
     //    }
     //}
+
+
 
 
 }
