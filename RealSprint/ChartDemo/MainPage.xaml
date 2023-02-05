@@ -25,7 +25,7 @@
         <Grid.RenderTransform>
             <CompositeTransform Rotation="-0.259"/>
         </Grid.RenderTransform>
-        <chart:SfChart x:Name="Chart" Margin="0,0,64,22" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462" Grid.RowSpan="2" HorizontalAlignment="Right" Width="608" Grid.ColumnSpan="2" Height="499" VerticalAlignment="Bottom">
+        <chart:SfChart x:Name="Chart" Margin="0,0,34,22" AreaBorderThickness="0,1,1,1" RenderTransformOrigin="0.491,0.462" Grid.RowSpan="2" HorizontalAlignment="Right" Width="608" Grid.ColumnSpan="2" Height="499" VerticalAlignment="Bottom">
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss">
                     <chart:ChartAxis.Header>
@@ -72,23 +72,43 @@
         <TextBox x:Name="SampleWidthTxtBox" HorizontalAlignment="Left" Height="32" Margin="158,209,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter sample's width (mm)" FontSize="12"/>
         <TextBox x:Name="SampleNameTxtBox_Copy" HorizontalAlignment="Left" Height="32" Margin="160,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of operator" FontSize="12"/>
         <DatePicker x:Name="DateSelector" Margin="162,376,0,0" VerticalAlignment="Top" Width="304"/>
-        <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="550,36,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
-        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Center" Margin="0,74,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Center" Margin="0,108,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentTimeTitle" HorizontalAlignment="Left" Margin="588,182,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentTempTitle" HorizontalAlignment="Center" Margin="0,143,0,0" TextWrapping="Wrap" Text="Temperature (C):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="700,73,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="700,108,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="702,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="701,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="21,38,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18" Grid.Column="1"/>
+        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Left" Margin="867,76,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Left" Margin="867,110,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="InstrumentTimeTitle" HorizontalAlignment="Left" Margin="154,184,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.Column="1"/>
+        <TextBlock x:Name="InstrumentTempTitle" HorizontalAlignment="Left" Margin="841,145,0,0" TextWrapping="Wrap" Text="Temperature (C):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="266,75,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.Column="1"/>
+        <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="266,110,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.Column="1"/>
+        <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="268,145,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.Column="1"/>
+        <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="267,184,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" Grid.Column="1"/>
         <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <ComboBox x:Name="SamplingRateComboBox" Margin="163,255,0,0" Width="180">
             <ComboBoxItem Content="50"/>
             <ComboBoxItem Content="100"/>
             <ComboBoxItem Content="150"/>
         </ComboBox>
-        <Button x:Name="StartCaptureBtn" Content="Start Capture" Height="35" Margin="51,40,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Click="StartCaptureBtn_Click"/>
-        <Button x:Name="StopCaptureBtn" Content="Stop Capture" Height="35" Margin="196,38,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Click="StopCaptureBtn_Click"/>
+        <Button x:Name="StartCaptureBtn" Content="Start Capture" Height="35" Margin="440,68,0,0" Grid.Row="1" VerticalAlignment="Top" Width="101" Click="StartCaptureBtn_Click"/>
+        <Button x:Name="StopCaptureBtn" Content="Stop Capture" Height="35" Margin="550,68,0,0" Grid.Row="1" VerticalAlignment="Top" Width="101" Click="StopCaptureBtn_Click"/>
+        <RadioButton Content="Current Supply" Margin="28,17,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <RadioButton Content="Nano-Voltmeter" Margin="28,68,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+        <Button x:Name="SetBtn" Content="Set" Height="34" Margin="500,16,0,0" Grid.Row="1" VerticalAlignment="Top" Width="40" Click="StartCaptureBtn_Click"/>
+        <ComboBox Margin="0,17,0,0" Grid.Row="1" Width="100" PlaceholderText="Range" SelectionChanged="ComboBox_SelectionChanged" HorizontalAlignment="Center">
+            <ComboBoxItem Content="Auto Range"/>
+            <ComboBoxItem Content="1 mA"/>
+            <ComboBoxItem Content="10 mA"/>
+            <ComboBoxItem Content="100 mA"/>
+        </ComboBox>
+        <ToggleSwitch Header="Current Switch" Margin="552,2,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Toggled="ToggleSwitch_Toggled"/>
+        <TextBox HorizontalAlignment="Left" Margin="267,17,0,0" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="Compliance (V)" VerticalAlignment="Top" Width="118"/>
+        <TextBox HorizontalAlignment="Left" Margin="172,17,0,0" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="Current (A)" VerticalAlignment="Top" Width="88"/>
+        <ToggleButton Content="ToggleButton" Margin="477,132,0,0" Grid.Row="1" VerticalAlignment="Top" Checked="ToggleButton_Checked"/>
+        <ComboBox Margin="172,69,0,0" Grid.Row="1" Width="205" PlaceholderText="Integration Rate (PLC)">
+            <ComboBoxItem Content="0.01 PLC (Fast)"/>
+            <ComboBoxItem Content="0.1 PLC (Recommended)"/>
+            <ComboBoxItem Content="1 PLC"/>
+            <ComboBoxItem Content="10 PLC (Slow)"/>
+        </ComboBox>
+        <Button x:Name="SetBtn_Copy" Content="Set" Height="35" Margin="390,68,0,0" Grid.Row="1" VerticalAlignment="Top" Width="40" Click="StartCaptureBtn_Click"/>
 
     </Grid>
 </Page>

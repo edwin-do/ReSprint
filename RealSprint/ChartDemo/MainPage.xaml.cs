@@ -103,6 +103,21 @@ namespace RealSprint
 
         //For ending continuous capture 
         private CancellationTokenSource _canceller;
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     //private async void FileInputBtn_Click(object sender, RoutedEventArgs e)
