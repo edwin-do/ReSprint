@@ -1,4 +1,5 @@
 ﻿using ReSprint;
+using Syncfusion.UI.Xaml.Charts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,8 +34,9 @@ namespace RealSprint
             //Initialise class objects
             InputComm = new InputCommunication();
             Calc = new Calculation();
+            DatGen = (DataGenerator)this.DataContext;
 
-            //Initialse member variables
+            //Initialise member variables
             capture = false;
             voltage = 0.0;
             current = 0.0;
@@ -75,7 +78,7 @@ namespace RealSprint
             _canceller.Cancel();
         }
 
-        private void Capture()
+        private async void Capture()
         {
             //Get voltage and current values
             voltage = InputComm.GetVoltage();
@@ -87,11 +90,20 @@ namespace RealSprint
 
             //Send values to graph
             //TODO
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                DatGen.StartOutput();
+            });
+            
+
+            //Send values to CurrentState output
+            //TODO
+
         }
 
 
         private InputCommunication InputComm;
         private Calculation Calc;
+        private DataGenerator DatGen;
 
         private bool capture;
         private double voltage;
@@ -103,6 +115,16 @@ namespace RealSprint
 
         //For ending continuous capture 
         private CancellationTokenSource _canceller;
+
+        private void InstrumentVoltageValueLabel_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void InstrumentVoltageTitle_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     //private async void FileInputBtn_Click(object sender, RoutedEventArgs e)

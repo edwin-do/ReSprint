@@ -73,11 +73,11 @@
         <TextBox x:Name="SampleNameTxtBox_Copy" HorizontalAlignment="Left" Height="32" Margin="160,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="183" RenderTransformOrigin="0.499,0.448" PlaceholderText="Enter name of operator" FontSize="12"/>
         <DatePicker x:Name="DateSelector" Margin="162,376,0,0" VerticalAlignment="Top" Width="304"/>
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="550,36,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
-        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Center" Margin="0,74,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Center" Margin="0,74,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" SelectionChanged="InstrumentVoltageTitle_SelectionChanged"/>
         <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Center" Margin="0,108,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTimeTitle" HorizontalAlignment="Left" Margin="588,182,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTempTitle" HorizontalAlignment="Center" Margin="0,143,0,0" TextWrapping="Wrap" Text="Temperature (C):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="700,73,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentVoltageValueLabel" HorizontalAlignment="Left" Margin="700,73,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" SelectionChanged="InstrumentVoltageValueLabel_SelectionChanged"/>
         <TextBlock x:Name="InstrumentCurrentValueLabel" HorizontalAlignment="Left" Margin="700,108,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTempValueLabel" HorizontalAlignment="Left" Margin="702,143,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentTimeValueLabel" HorizontalAlignment="Left" Margin="701,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>

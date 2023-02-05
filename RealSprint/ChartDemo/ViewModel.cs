@@ -8,116 +8,121 @@ using Windows.UI.Xaml;
 
 namespace RealSprint
 {
-        public class DataGenerator
-        {
+    public class DataGenerator
+    {
         private Random randomNumber;
         private ObservableCollection<Data> data = new ObservableCollection<Data>();
         public int dataCount = 50000;
-            private int rate = 1; // Use this to change rate/speed
-            int index = 0;
-            DispatcherTimer timer;
-            public ObservableCollection<Data> DynamicData { get; set; }
+        private int rate = 1; // Use this to change rate/speed
+        int index = 0;
+        DispatcherTimer timer;
+        public ObservableCollection<Data> DynamicData { get; set; }
 
 
-            public DataGenerator()
+        public DataGenerator()
+        {
+            randomNumber = new Random();
+            DynamicData = new ObservableCollection<Data>();
+            data = GenerateData();
+            LoadData();
+
+            timer = new DispatcherTimer();
+            timer.Tick += timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            //timer.Start();
+        }
+
+        public void StartOutput()
+        {
+            timer.Start();
+        }
+
+        public void AddData()
+        {
+            for (int i = 0; i < rate; i++)
             {
-                randomNumber = new Random();
-                DynamicData = new ObservableCollection<Data>();
-                data = GenerateData();
-                LoadData();
-
-                timer = new DispatcherTimer();
-                timer.Tick += timer_Tick;
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
-                timer.Start();
-            }
-
-            public void AddData()
-            {
-                for (int i = 0; i < rate; i++)
+                index++;
+                if (index < 100)
                 {
-                    index++;
-                    if (index < 100)
-                    {
-                        DynamicData.Add(this.data[index]);
-                    }
-                    else if (index > 100)
-                    {
-                        DynamicData.RemoveAt(0);//Remove data not visible
-                        DynamicData.Add(this.data[(index % (this.data.Count - 1))]);
-                    }
+                    DynamicData.Add(this.data[index]);
                 }
-            }
-
-            public void LoadData()
-            {
-                for (int i = 0; i < 10; i++)
+                else if (index > 100)
                 {
-                    index++;
-                    if (index < data.Count)
-                    {
-                        DynamicData.Add(this.data[index]);
-                    }
+                    DynamicData.RemoveAt(0);//Remove data not visible
+                    DynamicData.Add(this.data[(index % (this.data.Count - 1))]);
                 }
-            }
-
-            public ObservableCollection<Data> GenerateData()
-            {
-                ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
-
-                DateTime date = new DateTime(2009, 1, 1);
-                double value = 1000;
-                double value1 = 1001;
-                double value2 = 1002;
-                for (int i = 0; i < this.dataCount; i++)
-                {
-                    generatedData.Add(new Data(date, value, value1, value2));
-                    date = date.Add(TimeSpan.FromSeconds(5));
-
-                    if ((randomNumber.NextDouble() + value2) < 1004.85)
-                    {
-                        double random = randomNumber.NextDouble();
-                        value += random;
-                        value1 += random;
-                        value2 += random;
-                    }
-                    else
-                    {
-                        double random = randomNumber.NextDouble();
-                        value -= random;
-                        value1 -= random;
-                        value2 -= random;
-                    }
-                }
-
-                return generatedData;
-            }
-
-            private void timer_Tick(object sender, object e)
-            {
-                AddData();
             }
         }
 
-        public class Data
+        public void LoadData()
         {
-            public Data(DateTime date, double value, double value1, double value2)
+            for (int i = 0; i < 10; i++)
             {
-                Date = date;
-                Value = value;
-                Value1 = value1;
-                Value2 = value2;
+                index++;
+                if (index < data.Count)
+                {
+                    DynamicData.Add(this.data[index]);
+                }
+            }
+        }
+
+        public ObservableCollection<Data> GenerateData()
+        {
+            ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
+
+            DateTime date = new DateTime(2009, 1, 1);
+            double value = 1000;
+            double value1 = 1001;
+            double value2 = 1002;
+            for (int i = 0; i < this.dataCount; i++)
+            {
+                generatedData.Add(new Data(date, value, value1, value2));
+                date = date.Add(TimeSpan.FromSeconds(5));
+
+                if ((randomNumber.NextDouble() + value2) < 1004.85)
+                {
+                    double random = randomNumber.NextDouble();
+                    value += random;
+                    value1 += random;
+                    value2 += random;
+                }
+                else
+                {
+                    double random = randomNumber.NextDouble();
+                    value -= random;
+                    value1 -= random;
+                    value2 -= random;
+                }
             }
 
-            public DateTime Date { get; set; }
+            return generatedData;
+        }
 
-            public double Value { get; set; }
-
-            public double Value1 { get; set; }
-
-            public double Value2 { get; set; }
+        private void timer_Tick(object sender, object e)
+        {
+            AddData();
         }
     }
+
+    public class Data
+    {
+        public Data(DateTime date, double value, double value1, double value2)
+        {
+            Date = date;
+            Value = value;
+            Value1 = value1;
+            Value2 = value2;
+        }
+
+        public DateTime Date { get; set; }
+
+        public double Value { get; set; }
+
+        public double Value1 { get; set; }
+
+        public double Value2 { get; set; }
+    }
+}
 
 
 //}

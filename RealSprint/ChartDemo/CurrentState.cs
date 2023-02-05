@@ -37,33 +37,33 @@ namespace ReSprint
 			}
 		}
 
-		//public void updateSampleInfo(string newSampleInfo, int id)
-		//{
-  //          switch (id)
-  //          {
-  //              case 0:
-  //                  this.samplingRate = float.parse(newSampleInfo);
-  //                  break;
-  //              case 1:
-  //                  this.sampleName = newSampleInfo;
-  //                  break;
-  //              case 2:
-  //                  this.sampleWidth = float.parse(newSampleInfo);
-  //                  break;
-  //              case 3:
-  //                  this.sampleLength = float.parse(newSampleInfo);
-  //                  break;
+        //public void updateSampleInfo(string newSampleInfo, int id)
+        //{
+        //    switch (id)
+        //    {
+        //        case 0:
+        //            this.samplingRate = float.parse(newSampleInfo);
+        //            break;
+        //        case 1:
+        //            this.sampleName = newSampleInfo;
+        //            break;
+        //        case 2:
+        //            this.sampleWidth = float.parse(newSampleInfo);
+        //            break;
+        //        case 3:
+        //            this.sampleLength = float.parse(newSampleInfo);
+        //            break;
 
-  //              default: break;
-  //          }
-  //      }
+        //        default: break;
+        //    }
+            //      }
 
-        /*		public displayHardwareState()
-                {
+            /*		public displayHardwareState()
+                    {
 
-                }*/
+                    }*/
 
-        string userName;
+            string userName;
         string date;
         string fileName;
         string sampleName;
