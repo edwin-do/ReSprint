@@ -30,10 +30,10 @@
   
   <ItemGroup>
     <Reference Include="NationalInstruments.Common">
-      <HintPath>bin\Debug\NationalInstruments.Common.dll</HintPath>
+      <HintPath>..\..\..\New folder\ReSprint\FinalSprint\bin\Debug\NationalInstruments.Common.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.NI4882">
-      <HintPath>bin\Debug\NationalInstruments.NI4882.dll</HintPath>
+      <HintPath>..\..\..\New folder\ReSprint\FinalSprint\bin\Debug\NationalInstruments.NI4882.dll</HintPath>
     </Reference>
   </ItemGroup>
   

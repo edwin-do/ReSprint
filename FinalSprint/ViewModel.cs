@@ -101,21 +101,21 @@ namespace FinalSprint
 
     public class Data
     {
-        public Data(DateTime date, double value, double value1, double value2)
+        public Data(DateTime date, double voltage)
         {
             Date = date;
-            Value = value;
-            Value1 = value1;
-            Value2 = value2;
+            Voltage = voltage;
+            //Value1 = value1;
+            //Value2 = value2;
         }
 
         public DateTime Date { get; set; }
 
-        public double Value { get; set; }
+        public double Voltage { get; set; }
 
-        public double Value1 { get; set; }
+        //public double Value1 { get; set; }
 
-        public double Value2 { get; set; }
+        //public double Value2 { get; set; }
     }
 }
 

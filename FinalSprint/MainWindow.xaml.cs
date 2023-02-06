@@ -15,6 +15,9 @@ using Syncfusion.SfSkinManager;
 using NationalInstruments.NI4882;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Windows.Threading;
+using System.Diagnostics;
+using Syncfusion.Windows.Shared;
 
 namespace FinalSprint
 {
@@ -31,7 +34,25 @@ namespace FinalSprint
         private string currLevel;
         private string out_put;
 
+        //Class objects
+        private InputCommunication InputComm;
+        private Calculation Calc;
+        private DataGenerator DatGen;
+
+        //Member variables
+        private bool capture;
+        private double Voltage;
+        private double current;
+        private double resistance;
+        private double resistivity;
+        private double area;
+        private double length;
+
         private CancellationTokenSource _canceller;
+
+        //Timer
+        DispatcherTimer timer;
+        DateTime Date;
 
         #region Fields
         private string currentVisualStyle;
@@ -78,7 +99,23 @@ namespace FinalSprint
         public MainWindow()
         {
             InitializeComponent();
+            Calc = new Calculation();
+            DatGen = (DataGenerator)this.DataContext;
             this.Loaded += OnLoaded;
+
+            capture = false;
+            Voltage = 0.0;
+            current = 0.0;
+            resistance = 0.0;
+            resistivity = 0.0;
+            area = 0.000003;
+            length = 0.04;
+
+            //Initialise timer for graph update
+            timer = new DispatcherTimer();
+            timer.Tick += timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 17);
+            timer.Start();
         }
         /// <summary>
         /// Called when [loaded].
@@ -284,15 +321,19 @@ namespace FinalSprint
         {
             //startCapBtn.Enabled = false;
             //stopCapBtn.Enabled = true;
+            capture = true;
+            Date = DateTime.Now;
 
             _canceller = new CancellationTokenSource();
             await Task.Run(() =>
             {
                 do
                 {
-                    device.Write("FETC?");
-                    out_put = device.ReadString();
+                    //device.Write("FETC?");
+                    //out_put = device.ReadString();
                     //voltVals.Add(out_put);
+                    Thread.Sleep(17);
+                    Capture();
                     if (_canceller.Token.IsCancellationRequested)
                         break;
 
@@ -307,6 +348,39 @@ namespace FinalSprint
         private void stopCap(object sender, RoutedEventArgs e)
         {
             _canceller.Cancel();
+            capture = false;
+        }
+
+        private void Capture()
+        {
+            //Get voltage and current values
+            //voltage = InputComm.GetVoltage();
+            device.Write("FETC?");
+            out_put = device.ReadString();
+            Voltage = (-1)*Convert.ToDouble(out_put);
+            //Debug.WriteLine(voltage);
+
+            //current = InputComm.GetCurrent();
+            current = Convert.ToDouble(currLevel);
+
+            //Calculate resistance and resistivity values
+            resistance = Calc.calcResistence(Voltage, current);
+            resistivity = Calc.calcResistivity(resistance, area, length);
+
+        }
+
+        private void timer_Tick(object sender, object e)
+        {
+            //Pass values to DataGenerator
+            if (capture)
+            {
+            
+                Data d = new Data(Date, Voltage); 
+                Debug.WriteLine(d.Date);
+                Debug.WriteLine(d.Voltage);
+                DatGen.AddData(d);
+                Date = Date.Add(TimeSpan.FromMilliseconds(16.67));
+            }
         }
     }
 
