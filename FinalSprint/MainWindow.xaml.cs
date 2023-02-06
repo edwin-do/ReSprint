@@ -18,6 +18,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FinalSprint
 {
@@ -37,11 +38,11 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
-        private DataGenerator DatGen;
+        //private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
-        private double Voltage;
+        private double voltage;
         private double current;
         private double resistance;
         private double resistivity;
@@ -51,8 +52,8 @@ namespace FinalSprint
         private CancellationTokenSource _canceller;
 
         //Timer
-        DispatcherTimer timer;
-        DateTime Date;
+        DispatcherTimer main_timer;
+        //DateTime Date;
 
         #region Fields
         private string currentVisualStyle;
@@ -99,23 +100,28 @@ namespace FinalSprint
         public MainWindow()
         {
             InitializeComponent();
-            Calc = new Calculation();
-            DatGen = (DataGenerator)this.DataContext;
             this.Loaded += OnLoaded;
 
+            //Initialise Class objects
+            Calc = new Calculation();
+            InputComm = new InputCommunication();
+            //DatGen = (DataGenerator)this.DataContext;
+
+            //Initialise variables
             capture = false;
-            Voltage = 0.0;
+            voltage = 0.0;
             current = 0.0;
             resistance = 0.0;
             resistivity = 0.0;
             area = 0.000003;
             length = 0.04;
 
+
             //Initialise timer for graph update
-            timer = new DispatcherTimer();
-            timer.Tick += timer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 17);
-            timer.Start();
+            main_timer = new DispatcherTimer();
+            main_timer.Tick += main_timer_Tick;
+            main_timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            main_timer.Start();
         }
         /// <summary>
         /// Called when [loaded].
@@ -322,9 +328,9 @@ namespace FinalSprint
             //startCapBtn.Enabled = false;
             //stopCapBtn.Enabled = true;
             capture = true;
-            Date = DateTime.Now;
-
+            //Date = DateTime.Now;
             _canceller = new CancellationTokenSource();
+
             await Task.Run(() =>
             {
                 do
@@ -332,11 +338,10 @@ namespace FinalSprint
                     //device.Write("FETC?");
                     //out_put = device.ReadString();
                     //voltVals.Add(out_put);
-                    Thread.Sleep(17);
+                    Thread.Sleep(50);
                     Capture();
                     if (_canceller.Token.IsCancellationRequested)
                         break;
-
                 } while (true);
             });
 
@@ -357,30 +362,40 @@ namespace FinalSprint
             //voltage = InputComm.GetVoltage();
             device.Write("FETC?");
             out_put = device.ReadString();
-            Voltage = (-1)*Convert.ToDouble(out_put);
-            //Debug.WriteLine(voltage);
+            voltage = (-1)*Convert.ToDouble(out_put);
+            Debug.WriteLine(voltage);
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel);
+            current = Convert.ToDouble(currLevel)/1000;
 
             //Calculate resistance and resistivity values
-            resistance = Calc.calcResistence(Voltage, current);
+            resistance = Calc.calcResistence(voltage, current);
             resistivity = Calc.calcResistivity(resistance, area, length);
 
         }
 
-        private void timer_Tick(object sender, object e)
+
+        //private void timer_Tick(object? sender, object e)
+        //{
+        //    //Pass values to DataGenerator
+        //    if (capture)
+        //    {
+        //        DatGen.AddData(new Data(Date, current, voltage, resistivity));
+        //        Date = Date.Add(TimeSpan.FromMilliseconds(50));
+        //    }
+        //}
+
+        private void main_timer_Tick(object sender, object e)
         {
-            //Pass values to DataGenerator
-            if (capture)
-            {
-            
-                Data d = new Data(Date, Voltage); 
-                Debug.WriteLine(d.Date);
-                Debug.WriteLine(d.Voltage);
-                DatGen.AddData(d);
-                Date = Date.Add(TimeSpan.FromMilliseconds(16.67));
-            }
+            voltage_out.Text = voltage.ToString();
+            current_out.Text = currLevel;
+            ohm_out.Text = resistance.ToString();
+            rho_out.Text = resistivity.ToString();
+
+            //if (capture)
+            //{
+            //    DatGen.AddData();
+            //}
         }
     }
 
