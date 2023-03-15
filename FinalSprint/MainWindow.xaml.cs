@@ -369,8 +369,8 @@ namespace FinalSprint
             current = Convert.ToDouble(currLevel)/1000;
 
             //Calculate resistance and resistivity values
-            resistance = Calc.calcResistence(voltage, current);
-            resistivity = Calc.calcResistivity(resistance, area, length);
+            resistance = Calc.CalcResistance(voltage, current);
+            resistivity = Calc.CalcResistivity(resistance, area, length);
 
         }
 
