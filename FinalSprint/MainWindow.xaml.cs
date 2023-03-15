@@ -170,7 +170,7 @@ namespace FinalSprint
             // call SCPI connect to 6220
             if (device != null)
             {
-                device.Dispose();
+                device.Dispose();    // Should it?
             }
 
             int currentSecondaryAddress = 0;
@@ -186,7 +186,7 @@ namespace FinalSprint
             // call SCPI connect to 2182A
             if (device != null)
             {
-                device.Dispose();
+                device.Dispose();    // Should it?
             }
 
             int currentSecondaryAddress = 0;
@@ -396,6 +396,56 @@ namespace FinalSprint
             //{
             //    DatGen.AddData();
             //}
+        }
+
+        private void curr_inst(object sender, RoutedEventArgs e)
+        {
+            if (device != null)
+            {
+                device.Dispose();    // Should it?
+            }
+
+            int currentSecondaryAddress = 0;
+
+            device = new Device(0, 12, (byte)currentSecondaryAddress);
+
+            ///////////// device.Write("*RST");
+            ///////////// device.Write("CLE");
+        }
+
+        private void volt_inst(object sender, RoutedEventArgs e)
+        {
+            if (device != null)
+            {
+                device.Dispose();    // Should it?
+            }
+
+            int currentSecondaryAddress = 0;
+
+            device = new Device(0, 7, (byte)currentSecondaryAddress);
+
+            ///////////// device.Write("*RST");
+            ///////////// device.Write("INIT:CONT ON");
+        }
+
+        private void temp_inst(object sender, RoutedEventArgs e)
+        {
+            if (device != null)
+            {
+                device.Dispose();    // Should it?
+            }
+
+            int currentSecondaryAddress = 0;
+
+            device = new Device(0, 1, (byte)currentSecondaryAddress);   // Multimeter address?
+        }
+
+        private void disconnect_inst(object sender, RoutedEventArgs e)
+        {
+            if (device != null)
+            {
+                device.Dispose();
+            }
         }
     }
 

@@ -11,24 +11,26 @@
 
     <Grid>
 
-        <chart:SfChart x:Name="Chart" Margin="0,0,28,56" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
+        <Border BorderBrush="Black" BorderThickness="1" Margin="12,569,845,12"/>
+
+        <chart:SfChart x:Name="Chart" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="830" Height="550" VerticalAlignment="Bottom" Margin="0,0,10,0">
             <chart:SfChart.DataContext>
                 <local:DataGenerator/>
             </chart:SfChart.DataContext>
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
-                    <chart:ChartAxis.Header>
+                    <chart:DateTimeAxis.Header>
                         <TextBlock Margin="10" Text="Time" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:ChartAxis.Header>
+                    </chart:DateTimeAxis.Header>
                 </chart:DateTimeAxis>
             </chart:SfChart.PrimaryAxis>
 
             <chart:SfChart.SecondaryAxis>
                 <chart:NumericalAxis Minimum="1000" Maximum="1006" 
                                      Interval="1" >
-                    <chart:ChartAxis.Header>
+                    <chart:NumericalAxis.Header>
                         <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:ChartAxis.Header>
+                    </chart:NumericalAxis.Header>
                 </chart:NumericalAxis>
             </chart:SfChart.SecondaryAxis>
 
@@ -79,13 +81,13 @@
         <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,312,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <DatePicker x:Name="DateSelector" Margin="162,305,814,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" Text="INPUT" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <DatePicker x:Name="DateSelector" Margin="162,305,845,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="162,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="162,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="162,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="162,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="162,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" FontSize="14"/>
+        <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18" Text="EXPERIMENT INFORMATION"/>
         <TextBlock x:Name="InstrumentReadingsLabel_Copy" HorizontalAlignment="Left" Margin="565,32,0,0" TextWrapping="Wrap" Text="INSTRUMENT CONTROLS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
         <TextBox x:Name="voltage_out" HorizontalAlignment="Left" Margin="748,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
         <TextBox x:Name="current_out" HorizontalAlignment="Left" Margin="748,299,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
@@ -95,5 +97,16 @@
         <TextBlock x:Name="InstrumentVoltageTitle_Copy1" HorizontalAlignment="Left" Margin="840,84,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy2" HorizontalAlignment="Left" Margin="955,84,0,0" TextWrapping="Wrap" Text="Range:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy3" HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentReadingsLabel_Copy1" HorizontalAlignment="Left" Margin="32,582,0,0" TextWrapping="Wrap" Text="MANUAL CONTROLS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+        <Button Content="Current Source" HorizontalAlignment="Left" Margin="30,622,0,0" VerticalAlignment="Top" Click="curr_inst" FontSize="14" Width="125"/>
+        <Button Content="Nano-Voltmeter" HorizontalAlignment="Left" Margin="160,622,0,0" VerticalAlignment="Top" Click="volt_inst" FontSize="14" Width="125"/>
+        <Button Content="Multimeter" HorizontalAlignment="Left" Margin="290,622,0,0" VerticalAlignment="Top" Click="temp_inst" FontSize="14" Width="125"/>
+        <TextBlock HorizontalAlignment="Left" Margin="30,664,0,0" TextWrapping="Wrap" Text="SCPI Command to Write:" VerticalAlignment="Top" FontSize="14"/>
+        <TextBox HorizontalAlignment="Left" Margin="30,698,0,0" TextWrapping="Wrap" Text="*idn?\n" VerticalAlignment="Top" Width="385" FontSize="14"/>
+        <Button Content="Write" HorizontalAlignment="Left" Margin="30,732,0,0" VerticalAlignment="Top" FontSize="14" Width="75"/>
+        <Button Content="Read" HorizontalAlignment="Left" Margin="110,732,0,0" VerticalAlignment="Top" FontSize="14" Width="75"/>
+        <TextBox HorizontalAlignment="Left" Margin="30,768,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="385" Height="208" IsEnabled="False"/>
+        <Button Content="Disconnect" HorizontalAlignment="Left" Margin="340,732,0,0" VerticalAlignment="Top" FontSize="14" Width="75" Click="disconnect_inst"/>
+        <ScrollBar HorizontalAlignment="Left" Margin="398,768,0,0" VerticalAlignment="Top" Height="208"/>
     </Grid>
 </Window>
