@@ -1,8 +1,9 @@
 ﻿using static ReSprint.FileOutput;
+using System;
   
 namespace ReSprint{
     class ReSprint {
-        static public void Main(String[] args)
+        static public void PrintOutput(String[] args)
         {
     
             Console.WriteLine("Main Method");
@@ -12,7 +13,7 @@ namespace ReSprint{
                 SamplingRate = 60, SampleLength = 4, SampleWidth = 1
             };
             HardwareInput hardwareInput = new HardwareInput{
-                Voltage = 5, Time = $"{DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{
+                Voltage = 5, Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{
                     DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}",
                 Temperature = 50, Current = 1, Resistance = 2, Resistivity = 2
             };

@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using ReSprint;
 
 namespace FinalSprint
 {
@@ -373,6 +374,33 @@ namespace FinalSprint
             resistance = Calc.CalcResistance(voltage, current);
             resistivity = Calc.CalcResistivity(resistance, area, length);
 
+        }
+
+        public void printToCSV(object sender, RoutedEventArgs e)
+        {
+            FileOutput fileOutput = new FileOutput(@"test.csv");
+            UserInput userInput = new UserInput
+            {
+                Name = "Tim",
+                SampleName = "Sample1",
+                Date = DateTime.Now.ToLongDateString(),
+                SamplingRate = 60,
+                SampleLength = 4,
+                SampleWidth = 1
+            };
+            HardwareInput hardwareInput = new HardwareInput
+            {
+                Voltage = 5,
+                Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}",
+                Temperature = 50,
+                Current = 1,
+                Resistance = 2,
+                Resistivity = 2
+            };
+            fileOutput.WriteUserInput(userInput);
+            fileOutput.WriteSampleOutput(hardwareInput);
+            fileOutput.WriteSampleOutput(hardwareInput);
+            fileOutput.WriteSampleOutput(hardwareInput);
         }
 
 
