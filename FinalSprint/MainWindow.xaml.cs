@@ -37,6 +37,7 @@ namespace FinalSprint
     public partial class MainWindow : Window
     {
         private Device device;
+        private ChatHub _chatHub;
 
         private int range;
         private string rate;
@@ -110,6 +111,7 @@ namespace FinalSprint
         public MainWindow()
         {
             InitializeComponent();
+            _chatHub = new ChatHub(this);
 
             this.Loaded += OnLoaded;
 
@@ -143,7 +145,8 @@ namespace FinalSprint
 
 
 
-        private IHost _host;
+        private IHost _host;/*        var chatHub = new ChatHub(this);*/
+
 
         private async void Start_Click(object sender, RoutedEventArgs e)
         {
@@ -154,6 +157,7 @@ namespace FinalSprint
                 webBuilder.UseUrls("http://localhost:5100");
                 webBuilder.ConfigureServices(services =>
                 {
+                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
                     services.AddCors(options =>
                     {
                         options.AddPolicy("CorsPolicy",
@@ -196,12 +200,20 @@ namespace FinalSprint
             base.OnClosing(e);
         }
 
+        /*        public void UpdateLabel(string message)
+                {
+                    Debug.WriteLine(message);
+                    TestLabel.Content = message;
+                }*/
+
+
         public void UpdateLabel(string message)
         {
-            Debug.WriteLine(message);
-            TestLabel.Content = message;
+            Dispatcher.Invoke(() =>
+            {
+                TestLabel.Content = message;
+            });
         }
-
 
 
 

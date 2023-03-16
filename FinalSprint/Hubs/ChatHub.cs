@@ -9,11 +9,17 @@ namespace FinalSprint.Hubs
 {
     public class ChatHub : Hub
     {
+        private readonly MainWindow _mainWindow;
+        public ChatHub(MainWindow mainWindow)
+        {
+            _mainWindow = mainWindow;
+        }
+
         public async Task SendMessage(string message)
         {
             Console.WriteLine(message);
             await Clients.All.SendAsync("ReceiveMessage", message);
-            await Clients.Caller.SendAsync("UpdateLabel", message);
+           _mainWindow.UpdateLabel(message);
         }
     }
 }
