@@ -19,6 +19,10 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+
+using System.ComponentModel;
 
 namespace FinalSprint
 {
@@ -128,7 +132,39 @@ namespace FinalSprint
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        /// 
+
+        private IHost _host;
+
+        private async void Start_Click(object sender, RoutedEventArgs e) {
+            _host?.Dispose();
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
+                    .UseUrls("http://localhost:5100")
+                    .ConfigureServices(services => services.AddSignalR())
+                    .Configure(app => {
+                        app.UseRouting();
+                        app.UseEndpoints(endpoints => endpoints.MapHub<StreamHub>("/streamHub"));
+                    }))
+               .Build();
+
+            await _host.StartAsync();
+        }
+
+
+        private async void Stop_Click(object sender, RoutedEventArgs e) {
+            if (_host != null) {
+                await _host.StopAsync();
+                _host.Dispose();
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e) {
+            _host?.Dispose();
+            base.OnClosing(e);
+        }
+    }
+    private void OnLoaded(object sender, RoutedEventArgs e)
         {
             CurrentVisualStyle = "Windows11Light";
             CurrentSizeMode = "Default";

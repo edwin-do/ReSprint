@@ -29,6 +29,7 @@
   </ItemGroup>
   
   <ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.App"/>
     <Reference Include="NationalInstruments.Common">
       <HintPath>bin\Debug\net7.0-windows\NationalInstruments.Common.dll</HintPath>
     </Reference>
