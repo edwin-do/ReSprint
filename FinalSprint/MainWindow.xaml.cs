@@ -18,9 +18,6 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
 
 using System.ComponentModel;
 
@@ -104,6 +101,7 @@ namespace FinalSprint
         public MainWindow()
         {
             InitializeComponent();
+
             this.Loaded += OnLoaded;
 
             //Initialise Class objects
