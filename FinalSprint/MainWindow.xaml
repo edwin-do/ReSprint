@@ -6,14 +6,14 @@
         Title="MainWindow" Height="1024" Width="1280" Icon="App.ico">
 
     <Window.DataContext>
-        <local:DataGenerator/>
+        <local:GraphViewModel/>
     </Window.DataContext>
 
     <Grid>
 
         <chart:SfChart x:Name="Chart" Margin="0,0,28,56" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
             <chart:SfChart.DataContext>
-                <local:DataGenerator/>
+                <local:GraphViewModel/>
             </chart:SfChart.DataContext>
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
@@ -33,17 +33,13 @@
             </chart:SfChart.SecondaryAxis>
 
             <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="First" 
-                                        XBindingPath="Date" YBindingPath="Value" 
+                                        XBindingPath="Time" YBindingPath="Resistance" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
+                                        ItemsSource="{Binding DataContext.Resistance}"/>
             <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Second" 
-                                        XBindingPath="Date" YBindingPath="Value1" 
+                                        XBindingPath="Date" YBindingPath="Resistivity" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Third" 
-                                        XBindingPath="Date" YBindingPath="Value2" 
-                                        LegendIcon="SeriesType"  StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
+                                        ItemsSource="{Binding DataContext.Resistivity}"/>
 
         </chart:SfChart>
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="565,226,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
@@ -53,7 +49,7 @@
         <TextBlock x:Name="InstrumentResistanceTitle" HorizontalAlignment="Left" Margin="592,330,0,0" TextWrapping="Wrap" Text="Resistance (Ohm):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
         <RadioButton Content="Current Supply" HorizontalAlignment="Left" Margin="564,108,0,0" VerticalAlignment="Top" Checked="currRadio"/>
         <RadioButton Content="Nano-Voltmeter" HorizontalAlignment="Left" Margin="565,169,0,0" VerticalAlignment="Top" Checked="voltRadio"/>
-        <Button x:Name="startCapBtn" Content="Start Capture" HorizontalAlignment="Left" Margin="955,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="98" Click="startCap"/>
+        <Button x:Name="startCapBtn" Content="Start Capture" HorizontalAlignment="Left" Margin="955,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="98" Click="startCap" Command="{Binding GraphInit }"/>
         <Button x:Name="stopCapBtn" Content="Stop Capture" HorizontalAlignment="Left" Margin="1059,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="98" Click="stopCap"/>
         <Button Content="Set" HorizontalAlignment="Left" Margin="1058,102,0,0" VerticalAlignment="Top"  Height="26" FontSize="14" Width="30" Click="setCurr"/>
         <Button Content="Set" HorizontalAlignment="Left" Margin="921,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="30" Click="setVolt"/>

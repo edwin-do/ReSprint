@@ -21,8 +21,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Time", "Value cannot be empty.");
             if (hardwareInput.Resistivity < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
-            hardwareInput.Resistivity;
-            hardwareInput.Time;
             graph.Header = "Time V Resistivity";
         }
 
@@ -32,8 +30,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Time", "Value cannot be empty.");
             if (hardwareInput.Resistance < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
-            hardwareInput.Resistance;
-            hardwareInput.Time;
             graph.Header = "Time V Resistance";
         }
 
@@ -43,8 +39,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Voltage", "Value cannot be negative.");
             if (hardwareInput.Resistance < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
-            hardwareInput.Resistance;
-            hardwareInput.Voltage;
             graph.Header = "Voltage V Resistance";
         }
         public void GraphVoltageVResistivity(HardwareInput hardwareInput)
@@ -53,8 +47,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Voltage", "Value cannot be negative.");
             if (hardwareInput.Resistivity < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
-            hardwareInput.Resistivity;
-            hardwareInput.Voltage;
             graph.Header = "Voltage V Resistivity";
         }
         public void GraphTemperatureVResistance(HardwareInput hardwareInput)
@@ -63,8 +55,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Temperature", "Value cannot be empty.");
             if (hardwareInput.Resistance < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
-            hardwareInput.Resistance;
-            hardwareInput.Temperature;
             graph.Header = "Temperature V Resistance";
         }
         public void GraphTemperatureVResistivity(HardwareInput hardwareInput)
@@ -73,8 +63,6 @@
                 throw new ArgumentOutOfRangeException("hardwareInput.Temperature", "Value cannot be empty.");
             if (hardwareInput.Resistivity < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
-            hardwareInput.Resistivity;
-            hardwareInput.Temperature;
             graph.Header = "Temperature V Resistivity";
         }
     }
