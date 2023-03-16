@@ -20,6 +20,14 @@ using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 
 using System.ComponentModel;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.SignalR.Client;
+using FinalSprint.Hubs;
+using Microsoft.AspNetCore.Cors;
+//using System.Windows.Forms;
 
 namespace FinalSprint
 {
@@ -60,6 +68,7 @@ namespace FinalSprint
         private string currentVisualStyle;
         private string currentSizeMode;
         #endregion
+        private HubConnection _connection;
 
         #region Properties
         /// <summary>
@@ -131,8 +140,73 @@ namespace FinalSprint
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         /// 
-    
-    private void OnLoaded(object sender, RoutedEventArgs e)
+
+
+
+        private IHost _host;
+
+        private async void Start_Click(object sender, RoutedEventArgs e)
+        {
+            _host?.Dispose();
+            _host = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseUrls("http://localhost:5100");
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddCors(options =>
+                    {
+                        options.AddPolicy("CorsPolicy",
+                            builder => builder
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                                .SetIsOriginAllowed((host) => true));
+                    });
+                    services.AddSignalR();
+                });
+                webBuilder.Configure(app =>
+                {
+                    app.UseCors("CorsPolicy");
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
+                    });
+                });
+            })
+            .Build();
+
+
+            await _host.StartAsync();
+        }
+
+        private async void Stop_Click(object sender, RoutedEventArgs e)
+        {
+            if (_host != null)
+            {
+                await _host.StopAsync();
+                _host.Dispose();
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _host?.Dispose();
+            base.OnClosing(e);
+        }
+
+        public void UpdateLabel(string message)
+        {
+            Debug.WriteLine(message);
+            TestLabel.Content = message;
+        }
+
+
+
+
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
             CurrentVisualStyle = "Windows11Light";
             CurrentSizeMode = "Default";
