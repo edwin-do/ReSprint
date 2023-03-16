@@ -95,5 +95,7 @@
         <TextBlock x:Name="InstrumentVoltageTitle_Copy1" HorizontalAlignment="Left" Margin="840,84,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy2" HorizontalAlignment="Left" Margin="955,84,0,0" TextWrapping="Wrap" Text="Range:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy3" HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock x:Name="InstrumentVoltageTitle_Copy4" HorizontalAlignment="Left" Margin="592,396,0,0" TextWrapping="Wrap" Text="Temperature:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
+        <TextBox x:Name="temp_out" HorizontalAlignment="Left" Margin="748,395,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
     </Grid>
 </Window>

@@ -27,14 +27,16 @@ namespace FinalSprint
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Device device1;
-        private Device device2;
+        private Device currentSource;
+        private Device nanoVoltmeter;
+        private Device multimeter;
 
         private int range;
         private string rate;
-        private string compLevel;
+        private string compliance;
         private string currLevel;
-        private string out_put;
+        private string voltage_output;
+        private string temp_output;
 
         //Class objects
         private InputCommunication InputComm;
@@ -49,6 +51,7 @@ namespace FinalSprint
         private double resistivity;
         private double area;
         private double length;
+        private double temperature;
 
         private CancellationTokenSource _canceller;
 
@@ -111,6 +114,7 @@ namespace FinalSprint
             //Initialise variables
             capture = false;
             voltage = 0.0;
+            temperature = 0.0;
             current = 0.0;
             resistance = 0.0;
             resistivity = 0.0;
@@ -176,7 +180,7 @@ namespace FinalSprint
 
             int currentSecondaryAddress = 0;
 
-            device1 = new Device(0, 12, (byte)currentSecondaryAddress);
+            currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
 
 /*            device.Write("*RST");
             device.Write("CLE");*/
@@ -192,22 +196,33 @@ namespace FinalSprint
 
             int currentSecondaryAddress = 0;
 
-            device2 = new Device(0, 7, (byte)currentSecondaryAddress);
+            nanoVoltmeter = new Device(0, 7, (byte)currentSecondaryAddress);
+            multimeter = new Device(0, 1, (byte)currentSecondaryAddress);
 
-            device2.Write("*RST");
-            device2.Write("SENS:func 'volt'");
-            device2.Write("SENS:chan 1");
-            /*device.Write("INIT:CONT ON");*/
+            nanoVoltmeter.Write("*RST");
+            //nanoVoltmeter.Write("SENS:func 'volt'");
+            //nanoVoltmeter.Write("SENS:chan 1");
+            //nanoVoltmeter.Write("INIT:CONT ON");
+
+            nanoVoltmeter.Write("SENS:CHAN 1");
+            nanoVoltmeter.Write("SENS:FUNC 'VOLT'");
+        }
+        private void multiRadio(object sender, RoutedEventArgs e)
+        {
+            int currentSecondaryAddress = 0;
+
+            nanoVoltmeter = new Device(0, 1, (byte)currentSecondaryAddress);
         }
 
-        private void currText(object sender, TextChangedEventArgs e)
+
+            private void currText(object sender, TextChangedEventArgs e)
         {
             currLevel = currTextBox.Text;
         }
 
         private void compText(object sender, TextChangedEventArgs e)
         {
-            compLevel = compTextBox.Text;
+            compliance = compTextBox.Text;
         }
 
         private void RangeDrop(object sender, SelectionChangedEventArgs e)
@@ -240,7 +255,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:AUTO ON
                 try
                 {
-                    device1.Write("CURR:RANG:AUTO ON");
+                    currentSource.Write("CURR:RANG:AUTO ON");
                 }
                 catch (Exception ex)
                 {
@@ -252,7 +267,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:1e-3
                 try
                 {
-                    device1.Write("CURR:RANG:1e-3");
+                    currentSource.Write("CURR:RANG:1e-3");
                 }
                 catch (Exception ex)
                 {
@@ -264,7 +279,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:10e-3
                 try
                 {
-                    device1.Write("CURR:RANG:10e-3");
+                    currentSource.Write("CURR:RANG:10e-3");
                 }
                 catch (Exception ex)
                 {
@@ -276,7 +291,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:100e-3
                 try
                 {
-                    device1.Write("CURR:RANG:100e-3");
+                    currentSource.Write("CURR:RANG:100e-3");
                 }
                 catch (Exception ex)
                 {
@@ -284,18 +299,18 @@ namespace FinalSprint
                 }
             }
 
-            device1.Write("CURR:COMP " + compLevel);
-            device1.Write("CURR " + currLevel + "e-3");
+            currentSource.Write("CURR:COMP " + compliance);
+            currentSource.Write("CURR " + currLevel + "e-3");
         }
 
         private void currTurnON(object sender, RoutedEventArgs e)
         {
-            device1.Write("OUTP ON");
+            currentSource.Write("OUTP ON");
         }
 
         private void currTurnOFF(object sender, RoutedEventArgs e)
         {
-            device1.Write("OUTP OFF");
+            currentSource.Write("OUTP OFF");
         }
 
         private void Integration_Rate_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -323,7 +338,7 @@ namespace FinalSprint
 
         private void setVolt(object sender, RoutedEventArgs e)
         {
-            device2.Write("SENS:VOLT:NPLC " + rate);
+            nanoVoltmeter.Write("SENS:VOLT:NPLC " + rate);
         }
 
         private async void startCap(object sender, RoutedEventArgs e)
@@ -339,9 +354,10 @@ namespace FinalSprint
                 do
                 {
                     //device.Write("FETC?");
-                    //out_put = device.ReadString();
-                    //voltVals.Add(out_put);
-                    Thread.Sleep(50);
+                    //voltage_output = device.ReadString();
+                    //voltVals.Add(voltage_output);
+
+                    //Thread.Sleep(50);  (DISABLING PROVED TO BE THE FASTEST)
                     Capture();
                     if (_canceller.Token.IsCancellationRequested)
                         break;
@@ -363,13 +379,30 @@ namespace FinalSprint
         {
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
-            //device2.Write("SENS:func 'volt'");
-            //device2.Write("SENS:chan 1; :read?");
-            device2.Write(":read?");
-            //device.Write("SENS:CH");
-            out_put = device2.ReadString();
-            voltage = (-1)*Convert.ToDouble(out_put);
+            //nanoVoltmeter.Write("SENS:func 'volt'");
+            //nanoVoltmeter.Write("SENS:chan 1; :read?");
+
+            nanoVoltmeter.Write("read?");
+
+
+            //nanoVoltmeter.Write("SENS:CH");
+            voltage_output = nanoVoltmeter.ReadString();
+            voltage = (-1)*Convert.ToDouble(voltage_output);
             Debug.WriteLine(voltage);
+
+            /*   nanoVoltmeter.Write("SENS:CHAN 2");
+               nanoVoltmeter.Write("SENS:FUNC 'TEMP'");
+               nanoVoltmeter.Write("read?");
+
+               temp_output = nanoVoltmeter.ReadString();
+               temperature = (-1) * Convert.ToDouble(temp_output);
+               Debug.WriteLine(temperature);*/
+
+
+            multimeter.Write("*IDN?");
+            temp_output = multimeter.ReadString();
+            temperature = (-1) * Convert.ToDouble(temp_output);
+            Debug.WriteLine(temperature);
 
             //current = InputComm.GetCurrent();
             current = Convert.ToDouble(currLevel)/1000;
@@ -394,6 +427,7 @@ namespace FinalSprint
         private void main_timer_Tick(object sender, object e)
         {
             voltage_out.Text = voltage.ToString();
+            temp_out.Text = temperature.ToString();
             current_out.Text = currLevel;
             ohm_out.Text = resistance.ToString();
             rho_out.Text = resistivity.ToString();

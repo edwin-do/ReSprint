@@ -19,5 +19,9 @@ namespace FinalSprint
         {
             return (resistance * area) / length;
         }
+        /*public double CalcTemperature(double temperature, double area, double length)
+        {
+            return (resistance * area) / length;
+        }*/
     }
 }
