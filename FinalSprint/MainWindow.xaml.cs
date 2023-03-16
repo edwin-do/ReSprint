@@ -27,7 +27,8 @@ namespace FinalSprint
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Device device;
+        private Device device1;
+        private Device device2;
 
         private int range;
         private string rate;
@@ -168,33 +169,35 @@ namespace FinalSprint
         private void currRadio(object sender, RoutedEventArgs e)
         {
             // call SCPI connect to 6220
-            if (device != null)
+/*            if (device != null)
             {
                 device.Dispose();
-            }
+            }*/
 
             int currentSecondaryAddress = 0;
 
-            device = new Device(0, 12, (byte)currentSecondaryAddress);
+            device1 = new Device(0, 12, (byte)currentSecondaryAddress);
 
-            device.Write("*RST");
-            device.Write("CLE");
+/*            device.Write("*RST");
+            device.Write("CLE");*/
         }
 
         private void voltRadio(object sender, RoutedEventArgs e)
         {
             // call SCPI connect to 2182A
-            if (device != null)
+/*            if (device != null)
             {
                 device.Dispose();
-            }
+            }*/
 
             int currentSecondaryAddress = 0;
 
-            device = new Device(0, 7, (byte)currentSecondaryAddress);
+            device2 = new Device(0, 7, (byte)currentSecondaryAddress);
 
-            device.Write("*RST");
-            device.Write("INIT:CONT ON");
+            device2.Write("*RST");
+            device2.Write("SENS:func 'volt'");
+            device2.Write("SENS:chan 1");
+            /*device.Write("INIT:CONT ON");*/
         }
 
         private void currText(object sender, TextChangedEventArgs e)
@@ -237,7 +240,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:AUTO ON
                 try
                 {
-                    device.Write("CURR:RANG:AUTO ON");
+                    device1.Write("CURR:RANG:AUTO ON");
                 }
                 catch (Exception ex)
                 {
@@ -249,7 +252,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:1e-3
                 try
                 {
-                    device.Write("CURR:RANG:1e-3");
+                    device1.Write("CURR:RANG:1e-3");
                 }
                 catch (Exception ex)
                 {
@@ -261,7 +264,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:10e-3
                 try
                 {
-                    device.Write("CURR:RANG:10e-3");
+                    device1.Write("CURR:RANG:10e-3");
                 }
                 catch (Exception ex)
                 {
@@ -273,7 +276,7 @@ namespace FinalSprint
                 /// SCPI COMMAND CURR:RANG:100e-3
                 try
                 {
-                    device.Write("CURR:RANG:100e-3");
+                    device1.Write("CURR:RANG:100e-3");
                 }
                 catch (Exception ex)
                 {
@@ -281,18 +284,18 @@ namespace FinalSprint
                 }
             }
 
-            device.Write("CURR:COMP " + compLevel);
-            device.Write("CURR " + currLevel + "e-3");
+            device1.Write("CURR:COMP " + compLevel);
+            device1.Write("CURR " + currLevel + "e-3");
         }
 
         private void currTurnON(object sender, RoutedEventArgs e)
         {
-            device.Write("OUTP ON");
+            device1.Write("OUTP ON");
         }
 
         private void currTurnOFF(object sender, RoutedEventArgs e)
         {
-            device.Write("OUTP OFF");
+            device1.Write("OUTP OFF");
         }
 
         private void Integration_Rate_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -320,7 +323,7 @@ namespace FinalSprint
 
         private void setVolt(object sender, RoutedEventArgs e)
         {
-            device.Write("SENS:VOLT:NPLC " + rate);
+            device2.Write("SENS:VOLT:NPLC " + rate);
         }
 
         private async void startCap(object sender, RoutedEventArgs e)
@@ -360,9 +363,11 @@ namespace FinalSprint
         {
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
-            device.Write("FETC?");
+            //device2.Write("SENS:func 'volt'");
+            //device2.Write("SENS:chan 1; :read?");
+            device2.Write(":read?");
             //device.Write("SENS:CH");
-            out_put = device.ReadString();
+            out_put = device2.ReadString();
             voltage = (-1)*Convert.ToDouble(out_put);
             Debug.WriteLine(voltage);
 
