@@ -10,14 +10,14 @@ namespace FinalSprint
     {
         public Calculation() { }
 
-        public double calcResistence(double voltage, double current)
+        public double CalcResistance(double voltage, double current)
         {
             return voltage / current;
         }
 
-        public double calcResistivity(double resisitance, double area, double length)
+        public double CalcResistivity(double resistance, double area, double length)
         {
-            return (resisitance * area) / length;
+            return (resistance * area) / length;
         }
     }
 }

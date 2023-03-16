@@ -361,6 +361,7 @@ namespace FinalSprint
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
             device.Write("FETC?");
+            //device.Write("SENS:CH");
             out_put = device.ReadString();
             voltage = (-1)*Convert.ToDouble(out_put);
             Debug.WriteLine(voltage);
@@ -369,8 +370,8 @@ namespace FinalSprint
             current = Convert.ToDouble(currLevel)/1000;
 
             //Calculate resistance and resistivity values
-            resistance = Calc.calcResistence(voltage, current);
-            resistivity = Calc.calcResistivity(resistance, area, length);
+            resistance = Calc.CalcResistance(voltage, current);
+            resistivity = Calc.CalcResistivity(resistance, area, length);
 
         }
 
