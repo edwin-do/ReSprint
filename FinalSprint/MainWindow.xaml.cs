@@ -155,23 +155,45 @@ namespace FinalSprint
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 /*webBuilder.UseUrls("http://localhost:5100");*/
-                webBuilder.UseUrls("http://localhost:5100");
+                webBuilder.UseUrls("http://*:5100");
                 webBuilder.ConfigureServices(services =>
                 {
                     services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
                     services.AddCors(options =>
                     {
                         options.AddPolicy("CorsPolicy",
-                            builder => builder
-                                .AllowAnyMethod()
-                                .AllowAnyHeader()
-                                .AllowCredentials()
-                                .SetIsOriginAllowed((host) => true));
-                    });
+                            builder =>
+                            {
+                                builder.WithOrigins("https://64140ce12eb84678af72b5e7--calm-cendol-86d405.netlify.app")
+                                       .AllowAnyMethod()
+                                       .AllowAnyHeader()
+                                       .WithExposedHeaders("Content-Disposition")
+                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
+                                       .SetIsOriginAllowed((x) => true)
+                                       .AllowCredentials();
+                            });
+                        });
                     services.AddSignalR();
                 });
                 webBuilder.Configure(app =>
                 {
+                    app.UseWebSockets();
+
+                    app.Use(async (context, next) =>
+                    {
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", "https://64140ce12eb84678af72b5e7--calm-cendol-86d405.netlify.app");
+                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                        /*                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "http://localhost:5100\", \"https://*.ngrok.io\", \"null" });
+                                                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Content-Type" });
+                                                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });*/
+                        /*                        if (context.Request.Path == "/Hubs/chatHub")
+                                                {
+                                                    context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "http://localhost:5100", "https://*.ngrok.io", "null" });
+                                                    context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+                                                }*/
+
+                        await next();
+                    });
                     app.UseCors("CorsPolicy");
                     app.UseRouting();
                     app.UseEndpoints(endpoints =>

@@ -16,7 +16,13 @@
 
 <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
 
+<PackageReference Include="Microsoft.AspNetCore.Http.Connections.Common" Version="7.0.4" />
+
 <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
+
+<PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.4" />
+
+<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="7.0.4" />
 
 <PackageReference Include="Syncfusion.Shared.WPF" Version="20.4.0.48" />
 <PackageReference Include="Syncfusion.Tools.WPF" Version="20.4.0.48" />
