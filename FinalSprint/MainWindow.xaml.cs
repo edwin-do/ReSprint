@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Client;
 using FinalSprint.Hubs;
 using Microsoft.AspNetCore.Cors;
+using System.IO;
 //using System.Windows.Forms;
 
 namespace FinalSprint
@@ -164,7 +165,7 @@ namespace FinalSprint
                         options.AddPolicy("CorsPolicy",
                             builder =>
                             {
-                                builder.WithOrigins("https://64140ce12eb84678af72b5e7--calm-cendol-86d405.netlify.app")
+                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
                                        .AllowAnyMethod()
                                        .AllowAnyHeader()
                                        .WithExposedHeaders("Content-Disposition")
@@ -181,7 +182,9 @@ namespace FinalSprint
 
                     app.Use(async (context, next) =>
                     {
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", "https://64140ce12eb84678af72b5e7--calm-cendol-86d405.netlify.app");
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null"});
+/*                        context.Response.Headers.Add("Access-Control-Allow-Origin", "http://192.168.0.119:45455");
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", "null");*/
                         context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
                         /*                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "http://localhost:5100\", \"https://*.ngrok.io\", \"null" });
                                                 context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Content-Type" });
@@ -210,12 +213,63 @@ namespace FinalSprint
 
         private async void Stop_Click(object sender, RoutedEventArgs e)
         {
+            /*            ProcessStartInfo startInfo = new ProcessStartInfo("cmd.exe", "/c mkdir test");
+                        startInfo.CreateNoWindow = true;
+                        startInfo.UseShellExecute = false;
+
+                        Process process = new Process();
+                        process.StartInfo = startInfo;
+                        process.Start();*/
+/*            MemoryStream memoryStream = new MemoryStream();
+            TextWriter textWriter = new StreamWriter(memoryStream);
+            Console.SetOut(textWriter);
+           
+            string output = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());*/
+
+            StartProcess("C:\\conveyorcli\\conveyorcli.exe", "-p 5000", ".\\test.txt");
             if (_host != null)
             {
                 await _host.StopAsync();
                 _host.Dispose();
             }
         }
+        private static StringBuilder output = new StringBuilder();
+        private void StartProcess(string command, string args, string outputFilePath)
+        {
+            /*            ProcessStartInfo processStartInfo = new ProcessStartInfo("C:\\conveyorcli\\conveyorcli.exe");
+                        processStartInfo.ArgumentList.Add("-p");
+                        Process process = new Process();
+                        process.Start(processStartInfo);*/
+/*
+            Process process = new Process();*/
+            Process p = Process.Start("C:\\conveyorcli\\conveyorcli.exe", "-p 5100i");
+            
+/*            Debug.WriteLine(p.BeginOutputReadLine());*/
+            /*            {
+                            FileName = command,
+                            Arguments = args,
+                            WorkingDirectory="C:\\conveyorcli\\conveyorcli.exe",
+                            UserName ="e.window@outlook.com",
+                            PasswordInClearText = "Dragon_boy789",
+                            UseShellExecute = true,
+                            CreateNoWindow = true,
+                            Verb = "RunAs" // Run as administrator
+                        };*/
+            /*            Process process = new Process();
+                        process.StartInfo = processStartInfo;
+                        process.Start();
+                        process.BeginOutputReadLine();
+                        process.WaitForExit();
+
+                        Debug.WriteLine(output);
+
+                        process.WaitForExit();
+                        process.Close();
+
+                        Debug.WriteLine("\n\nPress any key to exit.");*/
+        }
+
+
 
         protected override void OnClosing(CancelEventArgs e)
         {
@@ -229,7 +283,7 @@ namespace FinalSprint
                     TestLabel.Content = message;
                 }*/
 
-
+        //Hub Methods 
         public void UpdateLabel(string message)
         {
             Dispatcher.Invoke(() =>
@@ -237,6 +291,7 @@ namespace FinalSprint
                 TestLabel.Content = message;
             });
         }
+
 
 
 

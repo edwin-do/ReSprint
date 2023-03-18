@@ -21,5 +21,12 @@ namespace FinalSprint.Hubs
             await Clients.All.SendAsync("ReceiveMessage", message);
            _mainWindow.UpdateLabel(message);
         }
+
+        public async Task StopCapture(string message)
+        {
+            Console.WriteLine(message);
+            await Clients.All.SendAsync("ReceiveMessage", message);
+            _mainWindow.UpdateLabel(message);
+        }
     }
 }
