@@ -148,7 +148,6 @@ namespace FinalSprint
 
         private IHost _host;/*        var chatHub = new ChatHub(this);*/
 
-
         private async void Start_Click(object sender, RoutedEventArgs e)
         {
             _host?.Dispose();
@@ -183,18 +182,7 @@ namespace FinalSprint
                     app.Use(async (context, next) =>
                     {
                         context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null"});
-/*                        context.Response.Headers.Add("Access-Control-Allow-Origin", "http://192.168.0.119:45455");
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", "null");*/
                         context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                        /*                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "http://localhost:5100\", \"https://*.ngrok.io\", \"null" });
-                                                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Content-Type" });
-                                                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });*/
-                        /*                        if (context.Request.Path == "/Hubs/chatHub")
-                                                {
-                                                    context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "http://localhost:5100", "https://*.ngrok.io", "null" });
-                                                    context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
-                                                }*/
-
                         await next();
                     });
                     app.UseCors("CorsPolicy");
