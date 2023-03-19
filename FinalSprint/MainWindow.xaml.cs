@@ -19,7 +19,6 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using ReSprint;
 
 namespace FinalSprint
 {
@@ -39,6 +38,7 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
+        private FileOutputClass f;
         //private DataGenerator DatGen;
 
         //Member variables
@@ -106,6 +106,7 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
+            f = new FileOutputClass();
             //DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
@@ -116,6 +117,8 @@ namespace FinalSprint
             resistivity = 0.0;
             area = 0.000003;
             length = 0.04;
+
+            printToCSV();
 
 
             //Initialise timer for graph update
@@ -376,9 +379,9 @@ namespace FinalSprint
 
         }
 
-        public void printToCSV(object sender, RoutedEventArgs e)
+        public void printToCSV()
         {
-            FileOutput fileOutput = new FileOutput(@"test.csv");
+            /*FileOutput fileOutput = new FileOutput(@"test.csv");
             UserInput userInput = new UserInput
             {
                 Name = "Tim",
@@ -400,7 +403,10 @@ namespace FinalSprint
             fileOutput.WriteUserInput(userInput);
             fileOutput.WriteSampleOutput(hardwareInput);
             fileOutput.WriteSampleOutput(hardwareInput);
-            fileOutput.WriteSampleOutput(hardwareInput);
+            fileOutput.WriteSampleOutput(hardwareInput);*/
+            f.PrintOutput();
+
+
         }
 
 

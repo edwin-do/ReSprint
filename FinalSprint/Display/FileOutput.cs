@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.IO;
 
-namespace ReSprint
+namespace FinalSprint
 {
     public class FileOutput
     {
