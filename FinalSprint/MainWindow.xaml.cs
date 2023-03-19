@@ -37,7 +37,7 @@ namespace FinalSprint
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Device device;
+        public Device device;
         private ChatHub _chatHub;
 
         private int range;
@@ -115,6 +115,7 @@ namespace FinalSprint
             _chatHub = new ChatHub(this);
 
             this.Loaded += OnLoaded;
+            Start_Server();
 
             //Initialise Class objects
             Calc = new Calculation();
@@ -148,13 +149,64 @@ namespace FinalSprint
 
         private IHost _host;/*        var chatHub = new ChatHub(this);*/
 
-        private async void Start_Click(object sender, RoutedEventArgs e)
+        private async void Start_Server()
         {
             _host?.Dispose();
             _host = Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 /*webBuilder.UseUrls("http://localhost:5100");*/
+                webBuilder.UseUrls("http://*:5100");
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
+                    services.AddCors(options =>
+                    {
+                        options.AddPolicy("CorsPolicy",
+                            builder =>
+                            {
+                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
+                                       .AllowAnyMethod()
+                                       .AllowAnyHeader()
+                                       .WithExposedHeaders("Content-Disposition")
+                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
+                                       .SetIsOriginAllowed((x) => true)
+                                       .AllowCredentials();
+                            });
+                    });
+                    services.AddSignalR();
+                });
+                webBuilder.Configure(app =>
+                {
+                    app.UseWebSockets();
+
+                    app.Use(async (context, next) =>
+                    {
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null" });
+                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                        await next();
+                    });
+                    app.UseCors("CorsPolicy");
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
+                    });
+                });
+            })
+            .Build();
+
+
+            await _host.StartAsync();
+        }
+
+/*        private async void Start_Click(object sender, RoutedEventArgs e)
+        {
+            _host?.Dispose();
+            _host = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                *//*webBuilder.UseUrls("http://localhost:5100");*//*
                 webBuilder.UseUrls("http://*:5100");
                 webBuilder.ConfigureServices(services =>
                 {
@@ -193,7 +245,7 @@ namespace FinalSprint
                     });
                 });
             })
-            .Build();
+            .Build();*/
 
 
             await _host.StartAsync();
@@ -214,7 +266,7 @@ namespace FinalSprint
            
             string output = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());*/
 
-            StartProcess("C:\\conveyorcli\\conveyorcli.exe", "-p 5000", ".\\test.txt");
+           /* StartProcess("C:\\conveyorcli\\conveyorcli.exe", "-p 5000", ".\\test.txt");*/
             if (_host != null)
             {
                 await _host.StopAsync();
@@ -230,7 +282,7 @@ namespace FinalSprint
                         process.Start(processStartInfo);*/
 /*
             Process process = new Process();*/
-            Process p = Process.Start("C:\\conveyorcli\\conveyorcli.exe", "-p 5100i");
+            /*Process p = Process.Start("C:\\conveyorcli\\conveyorcli.exe", "-p 5100i");*/
             
 /*            Debug.WriteLine(p.BeginOutputReadLine());*/
             /*            {
@@ -277,6 +329,42 @@ namespace FinalSprint
             Dispatcher.Invoke(() =>
             {
                 TestLabel.Content = message;
+            });
+        }
+
+        public void TurnCurrentOn()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // call SCPI connect to 6220
+                if (device != null)
+                {
+                    device.Dispose();
+                }
+
+                int currentSecondaryAddress = 0;
+
+                device = new Device(0, 12, (byte)currentSecondaryAddress);
+
+                device.Write("OUTP ON");
+            });
+        }
+
+        public void TurnCurrentOff()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // call SCPI connect to 6220
+                if (device != null)
+                {
+                    device.Dispose();
+                }
+
+                int currentSecondaryAddress = 0;
+
+                device = new Device(0, 12, (byte)currentSecondaryAddress);
+
+                device.Write("OUTP OFF");
             });
         }
 

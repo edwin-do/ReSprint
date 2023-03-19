@@ -22,11 +22,25 @@ namespace FinalSprint.Hubs
            _mainWindow.UpdateLabel(message);
         }
 
+        public async Task TurnCurrentOn()
+        {
+            await Clients.All.SendAsync("ReceiveMessage", "");
+            _mainWindow.TurnCurrentOn();
+        }
+
+        public async Task TurnCurrentOff()
+        {
+            await Clients.All.SendAsync("ReceiveMessage", "");
+            _mainWindow.TurnCurrentOff();
+        }
+
         public async Task StopCapture(string message)
         {
             Console.WriteLine(message);
             await Clients.All.SendAsync("ReceiveMessage", message);
             _mainWindow.UpdateLabel(message);
         }
+
+
     }
 }
