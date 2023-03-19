@@ -245,11 +245,11 @@ namespace FinalSprint
                     });
                 });
             })
-            .Build();*/
+            .Build();
 
 
             await _host.StartAsync();
-        }
+        }*/
 
         private async void Stop_Click(object sender, RoutedEventArgs e)
         {
