@@ -95,7 +95,6 @@
         <TextBlock x:Name="InstrumentVoltageTitle_Copy1" HorizontalAlignment="Left" Margin="840,84,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy2" HorizontalAlignment="Left" Margin="955,84,0,0" TextWrapping="Wrap" Text="Range:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="InstrumentVoltageTitle_Copy3" HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <Button x:Name="RemoteAccessBtn" Content="Start" HorizontalAlignment="Left" Margin="156,559,0,0" VerticalAlignment="Top" Height="38" Width="115" Click="Start_Click"/>
         <Button x:Name="RemoteAccessBtn2" Content="Stop Hosting" HorizontalAlignment="Left" Margin="158,610,0,0" VerticalAlignment="Top" Height="40" Width="115" Click="Stop_Click"/>
         <Label x:Name="TestLabel" Content="Test" HorizontalAlignment="Left" Margin="200,697,0,0" VerticalAlignment="Top"/>
     </Grid>
