@@ -373,6 +373,7 @@ namespace FinalSprint
             resistance = Calc.CalcResistance(voltage, current);
             resistivity = Calc.CalcResistivity(resistance, area, length);
 
+            DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, temp, voltage);
         }
 
 

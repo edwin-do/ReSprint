@@ -63,26 +63,13 @@ namespace FinalSprint
             }
         }
 
-        public ObservableCollection<Data> GenerateData()
+        public ObservableCollection<Data> GenerateData(DateTime date, double resistance, double resistivity, double temp, double voltage)
         {
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
-
-            DateTime date = new DateTime(2009, 1, 1);
-            double resistance = 1000;
-            double resistivity = 1001;
-            double temp = 1002;
-            double voltage = 1003;
 
             for (int i = 0; i < this.dataCount; i++)
             {
                 generatedData.Add(new Data(date, resistance, resistivity, temp, voltage));
-                date = date.Add(TimeSpan.FromSeconds(5));
-
-                resistance = resistance;
-                resistivity = resistivity;
-                temp = temp;
-                voltage = voltage;
-
             }
 
             return generatedData;
