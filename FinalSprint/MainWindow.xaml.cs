@@ -44,7 +44,8 @@ namespace FinalSprint
         //private DataGenerator DatGen;
 
         //Member variables
-        private bool capture;
+        private bool capture_volt;
+        private bool capture_temp;
         private double voltage;
         private double current;
         private double resistance;
@@ -53,7 +54,8 @@ namespace FinalSprint
         private double length;
         private double temperature;
 
-        private CancellationTokenSource _canceller;
+        private CancellationTokenSource _canceller_volt;
+        private CancellationTokenSource _canceller_temp;
 
         //Timer
         DispatcherTimer main_timer;
@@ -112,7 +114,8 @@ namespace FinalSprint
             //DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
-            capture = false;
+            capture_volt = false;
+            capture_temp = false;
             voltage = 0.0;
             temperature = 0.0;
             current = 0.0;
@@ -341,13 +344,21 @@ namespace FinalSprint
             nanoVoltmeter.Write("SENS:VOLT:NPLC " + rate);
         }
 
-        private async void startCap(object sender, RoutedEventArgs e)
+
+        private void startCap(object sender, RoutedEventArgs e)
+        {
+            startCap_volt();
+            startCap_temp();
+        }
+
+
+        private async void startCap_volt()
         {
             //startCapBtn.Enabled = false;
             //stopCapBtn.Enabled = true;
-            capture = true;
+            capture_volt = true;
             //Date = DateTime.Now;
-            _canceller = new CancellationTokenSource();
+            _canceller_volt = new CancellationTokenSource();
 
             await Task.Run(() =>
             {
@@ -359,20 +370,50 @@ namespace FinalSprint
 
                     //Thread.Sleep(50);  (DISABLING PROVED TO BE THE FASTEST)
                     Capture();
-                    if (_canceller.Token.IsCancellationRequested)
+                    if (_canceller_volt.Token.IsCancellationRequested)
                         break;
                 } while (true);
             });
 
-            _canceller.Dispose();
+            _canceller_volt.Dispose();
+            //startCapBtn.Enabled = true;
+            //stopCapBtn.Enabled = false;
+        }
+
+        private async void startCap_temp()
+        {
+            //startCapBtn.Enabled = false;
+            //stopCapBtn.Enabled = true;
+            capture_temp = true;
+            //Date = DateTime.Now;
+            _canceller_temp = new CancellationTokenSource();
+
+            await Task.Run(() =>
+            {
+                do
+                {
+                    //device.Write("FETC?");
+                    //voltage_output = device.ReadString();
+                    //voltVals.Add(voltage_output);
+
+                    //Thread.Sleep(50);  (DISABLING PROVED TO BE THE FASTEST)
+                    CaptureTemp();
+                    if (_canceller_temp.Token.IsCancellationRequested)
+                        break;
+                } while (true);
+            });
+
+            _canceller_temp.Dispose();
             //startCapBtn.Enabled = true;
             //stopCapBtn.Enabled = false;
         }
 
         private void stopCap(object sender, RoutedEventArgs e)
         {
-            _canceller.Cancel();
-            capture = false;
+            _canceller_volt.Cancel();
+            capture_volt = false;
+            _canceller_temp.Cancel();
+            capture_temp = false;
         }
 
         private void Capture()
@@ -388,7 +429,45 @@ namespace FinalSprint
             //nanoVoltmeter.Write("SENS:CH");
             voltage_output = nanoVoltmeter.ReadString();
             voltage = (-1)*Convert.ToDouble(voltage_output);
-            Debug.WriteLine(voltage);
+            //Debug.WriteLine(voltage);
+
+            /*   nanoVoltmeter.Write("SENS:CHAN 2");
+               nanoVoltmeter.Write("SENS:FUNC 'TEMP'");
+               nanoVoltmeter.Write("read?");
+
+               temp_output = nanoVoltmeter.ReadString();
+               temperature = (-1) * Convert.ToDouble(temp_output);
+               Debug.WriteLine(temperature);*/
+
+
+        /*    multimeter.Write("*IDN?");
+            temp_output = multimeter.ReadString();
+            temperature = (-1) * Convert.ToDouble(temp_output);
+            Debug.WriteLine(temperature);
+
+            //current = InputComm.GetCurrent();
+            current = Convert.ToDouble(currLevel)/1000;
+
+            //Calculate resistance and resistivity values
+            resistance = Calc.CalcResistance(voltage, current);
+            resistivity = Calc.CalcResistivity(resistance, area, length);*/
+
+        }
+
+        private void CaptureTemp()
+        {
+            //Get voltage and current values
+            //voltage = InputComm.GetVoltage();
+            //nanoVoltmeter.Write("SENS:func 'volt'");
+            //nanoVoltmeter.Write("SENS:chan 1; :read?");
+
+         /*   nanoVoltmeter.Write("read?");
+
+
+            //nanoVoltmeter.Write("SENS:CH");
+            voltage_output = nanoVoltmeter.ReadString();
+            voltage = (-1) * Convert.ToDouble(voltage_output);
+            Debug.WriteLine(voltage);*/
 
             /*   nanoVoltmeter.Write("SENS:CHAN 2");
                nanoVoltmeter.Write("SENS:FUNC 'TEMP'");
@@ -402,10 +481,10 @@ namespace FinalSprint
             multimeter.Write("*IDN?");
             temp_output = multimeter.ReadString();
             temperature = (-1) * Convert.ToDouble(temp_output);
-            Debug.WriteLine(temperature);
+            //Debug.WriteLine(temperature);
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel)/1000;
+            current = Convert.ToDouble(currLevel) / 1000;
 
             //Calculate resistance and resistivity values
             resistance = Calc.CalcResistance(voltage, current);
