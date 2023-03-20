@@ -38,7 +38,7 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
-        //private DataGenerator DatGen;
+        private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
@@ -105,7 +105,7 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
-            //DatGen = (DataGenerator)this.DataContext;
+            DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
             capture = false;

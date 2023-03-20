@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReSprint;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -67,28 +68,21 @@ namespace FinalSprint
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
             DateTime date = new DateTime(2009, 1, 1);
-            double value = 1000;
-            double value1 = 1001;
-            double value2 = 1002;
+            double resistance = 1000;
+            double resistivity = 1001;
+            double temp = 1002;
+            double voltage = 1003;
+
             for (int i = 0; i < this.dataCount; i++)
             {
-                generatedData.Add(new Data(date, value, value1, value2));
+                generatedData.Add(new Data(date, resistance, resistivity, temp, voltage));
                 date = date.Add(TimeSpan.FromSeconds(5));
 
-                if ((randomNumber.NextDouble() + value2) < 1004.85)
-                {
-                    double random = randomNumber.NextDouble();
-                    value += random;
-                    value1 += random;
-                    value2 += random;
-                }
-                else
-                {
-                    double random = randomNumber.NextDouble();
-                    value -= random;
-                    value1 -= random;
-                    value2 -= random;
-                }
+                resistance = resistance;
+                resistivity = resistivity;
+                temp = temp;
+                voltage = voltage;
+
             }
 
             return generatedData;
@@ -102,21 +96,23 @@ namespace FinalSprint
 
     public class Data
     {
-        public Data(DateTime date, double value, double value1, double value2)
+        public Data(DateTime date, double resistance, double resistivity, double temp, double voltage)
         {
             Date = date;
-            Value = value;
-            Value1 = value1;
-            Value2 = value2;
+            Resistance = resistance;
+            Resistivity = resistivity;
+            Temp = temp;
+            Voltage = voltage;
         }
 
         public DateTime Date { get; set; }
 
-        public double Value { get; set; }
+        public double Resistance { get; set; }
 
-        public double Value1 { get; set; }
+        public double Resistivity { get; set; }
 
-        public double Value2 { get; set; }
+        public double Temp { get; set; }
+        public double Voltage { get; set; }
     }
 }
 
