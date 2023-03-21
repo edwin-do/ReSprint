@@ -3,18 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:chart="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
         xmlns:local="clr-namespace:FinalSprint"
+        xmlns:local1="clr-namespace:FinalSprint.ViewModel"
         xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="FinalSprint.MainWindow"
         Title="MainWindow" Height="1024" Width="1280" Icon="App.ico">
 
     <Window.DataContext>
-        <local:DataGenerator/>
+        <local1:DataGenerator/>
     </Window.DataContext>
 
     <Grid>
 
         <chart:SfChart x:Name="Chart" Margin="0,0,28,56" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
             <chart:SfChart.DataContext>
-                <local:DataGenerator/>
+                <local1:DataGenerator/>
             </chart:SfChart.DataContext>
             <chart:SfChart.PrimaryAxis>
                 <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
@@ -25,8 +26,8 @@
             </chart:SfChart.PrimaryAxis>
 
             <chart:SfChart.SecondaryAxis>
-                <chart:NumericalAxis Minimum="1000" Maximum="1006" 
-                                     Interval="1" >
+                <chart:NumericalAxis Minimum="0" Maximum="0.00001" 
+                                     Interval="0.000001" >
                     <chart:NumericalAxis.Header>
                         <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
                     </chart:NumericalAxis.Header>
@@ -34,13 +35,13 @@
             </chart:SfChart.SecondaryAxis>
 
             <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="First" 
-                                        XBindingPath="Time" YBindingPath="Resistance" 
+                                        XBindingPath="Time" YBindingPath="Voltage" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
-                                        ItemsSource="{Binding DataContext.Resistance}"/>
+                                        ItemsSource="{Binding DataContext.DynamicData}"/>
             <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Second" 
                                         XBindingPath="Date" YBindingPath="Resistivity" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
-                                        ItemsSource="{Binding DataContext.Resistivity}"/>
+                                        ItemsSource="{Binding DataContext.DynamicData}"/>
 
         </chart:SfChart>
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="565,226,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>

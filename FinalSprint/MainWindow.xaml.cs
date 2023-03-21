@@ -66,7 +66,7 @@ namespace FinalSprint
         private DataGenerator DatGen;
 
         //Member variables
-        private bool capture;
+        public static bool capture;
         private double voltage;
         private double current;
         private double resistance;
@@ -433,7 +433,8 @@ namespace FinalSprint
                         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                         {
                             myDataCollection.Add(hardwareInput);
-                            DataGenerator.GenerateData(hardwareInput);
+                            DatGen = new DataGenerator(hardwareInput);
+                            DatGen.GenerateData(hardwareInput);
                             int latestRow = SampleTable.Items.Count - 1;
                             SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);
                         }));

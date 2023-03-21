@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 //using Windows.UI.Xaml;
@@ -12,7 +14,7 @@ namespace FinalSprint.ViewModel
 {
     public class DataGenerator
     {
-        private Random randomNumber;
+        //private Random randomNumber;
         private ObservableCollection<Data> data = new ObservableCollection<Data>();
         public int dataCount = 50000;
         private int rate = 1; // Use this to change rate/speed
@@ -20,13 +22,12 @@ namespace FinalSprint.ViewModel
         DispatcherTimer timer;
         public ObservableCollection<Data> DynamicData { get; set; }
 
-
-        public DataGenerator()
+        public DataGenerator() { }
+        public DataGenerator(HardwareInput hardwareInput)
         {
             DynamicData = new ObservableCollection<Data>();
-            //data = GenerateData();
+            data = GenerateData(hardwareInput);
             LoadData();
-
             timer = new DispatcherTimer();
             timer.Tick += timer_Tick;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
@@ -35,6 +36,7 @@ namespace FinalSprint.ViewModel
 
         public void AddData()
         {
+            
             for (int i = 0; i < rate; i++)
             {
                 index++;
@@ -62,13 +64,13 @@ namespace FinalSprint.ViewModel
             }
         }
 
-        public static ObservableCollection<Data> GenerateData(HardwareInput hardwareInput)
+        public ObservableCollection<Data> GenerateData(HardwareInput hardwareInput)
         {
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < this.dataCount; i++)
             {
-                generatedData.Add(new Data(hardwareInput.Time, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature, hardwareInput.Voltage));
+                generatedData.Add(new Data(DateTime.Now, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature, hardwareInput.Voltage));
             }
 
             return generatedData;
@@ -76,13 +78,14 @@ namespace FinalSprint.ViewModel
 
         private void timer_Tick(object sender, object e)
         {
-            AddData();
+            //if(MainWindow.capture)
+                AddData();
         }
     }
 
     public class Data
     {
-        public Data(string? time, double resistance, double resistivity, double temperature, double voltage)
+        public Data(DateTime time, double resistance, double resistivity, double temperature, double voltage)
         {
             Time = time;
             Resistance = resistance;
@@ -91,7 +94,7 @@ namespace FinalSprint.ViewModel
             Voltage = voltage;
         }
 
-        public string? Time { get; set; }
+        public DateTime Time { get; set; }
 
         public double Resistance { get; set; }
 

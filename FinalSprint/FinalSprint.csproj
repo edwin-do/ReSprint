@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Display\Main.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="App.ico" />
   </ItemGroup>
 
