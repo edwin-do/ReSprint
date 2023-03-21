@@ -19,12 +19,35 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using FinalSprint.Display;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using System.Collections.ObjectModel;
 
 namespace FinalSprint
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    public class UserInput
+    {
+        public string? Name { get; set; }
+        public string? SampleName { get; set; }
+        public string? Date { get; set; }
+        public double SamplingRate { get; set; }
+        public double SampleLength { get; set; }
+        public double SampleWidth { get; set; }
+    }
+
+    public class HardwareInput
+    {
+        public double Voltage { get; set; }
+        public string? Time { get; set; }
+        public double Temperature { get; set; }
+        public double Current { get; set; }
+        public double Resistance { get; set; }
+        public double Resistivity { get; set; }
+    }
     public partial class MainWindow : Window
     {
         private Device device;
@@ -38,8 +61,8 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
-        private FileOutputClass f;
-        private DataGenerator DatGen;
+        private FileOutput File;
+        //private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
@@ -59,6 +82,10 @@ namespace FinalSprint
         #region Fields
         private string currentVisualStyle;
         private string currentSizeMode;
+        private HardwareInput hardwareInput;
+        private UserInput userInput;
+
+        ObservableCollection<HardwareInput> myDataCollection = new ObservableCollection<HardwareInput>();
         #endregion
 
         #region Properties
@@ -106,8 +133,9 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
-            f = new FileOutputClass();
-            DatGen = (DataGenerator)this.DataContext;
+            File = new FileOutput(@"test.csv");
+            SampleTable.ItemsSource = myDataCollection;
+            //DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
             capture = false;
@@ -126,7 +154,59 @@ namespace FinalSprint
             main_timer.Tick += main_timer_Tick;
             main_timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             main_timer.Start();
+
+            hardwareInput = new HardwareInput
+            {
+                Voltage = 5,
+                Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}",
+                Temperature = 50,
+                Current = 1,
+                Resistance = 2,
+                Resistivity = 2
+            };
+
+
+            
+
         }
+
+        private bool check()
+        {
+            if (string.IsNullOrEmpty(OperatorLabel.Text)){
+                MessageBox.Show("Please Operator Name in the textbox.");
+                return false;
+
+            }
+            else if (string.IsNullOrEmpty(SampleNameLabel.Text)){
+                MessageBox.Show("Please Sample Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SampleWidthLabel.Text)){
+                MessageBox.Show("Please SampleWidth Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SampleLengthLabel.Text)){
+                MessageBox.Show("Please SampleLength Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SamplingRateLabel.Text)){
+                MessageBox.Show("Please SamplingRate Name in the textbox.");
+                return false;
+            }
+
+            userInput = new UserInput
+            {
+                Name = OperatorLabel.Text.ToString(),
+                SampleName = SampleNameLabel.Text.ToString(),
+                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                SamplingRate = double.Parse(SampleWidthLabel.Text),
+                SampleLength = double.Parse(SampleLengthLabel.Text),
+                SampleWidth = double.Parse(SampleWidthLabel.Text)
+            };
+
+            return true;
+        }
+
         /// <summary>
         /// Called when [loaded].
         /// </summary>
@@ -329,29 +409,43 @@ namespace FinalSprint
 
         private async void startCap(object sender, RoutedEventArgs e)
         {
-            //startCapBtn.Enabled = false;
-            //stopCapBtn.Enabled = true;
-            capture = true;
-            //Date = DateTime.Now;
-            _canceller = new CancellationTokenSource();
-
-            await Task.Run(() =>
+            if (check())
             {
-                do
-                {
-                    //device.Write("FETC?");
-                    //out_put = device.ReadString();
-                    //voltVals.Add(out_put);
-                    Thread.Sleep(50);
-                    Capture();
-                    if (_canceller.Token.IsCancellationRequested)
-                        break;
-                } while (true);
-            });
 
-            _canceller.Dispose();
-            //startCapBtn.Enabled = true;
-            //stopCapBtn.Enabled = false;
+                File.WriteUserInput(userInput);
+
+                //startCapBtn.Enabled = false;
+                //stopCapBtn.Enabled = true;
+                capture = true;
+                //Date = DateTime.Now;
+                _canceller = new CancellationTokenSource();
+
+                await Task.Run(() =>
+                {
+                    do
+                    {
+                        //device.Write("FETC?");
+                        //out_put = device.ReadString();
+                        //voltVals.Add(out_put);
+                        Thread.Sleep(50);
+                        Capture();
+                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            myDataCollection.Add(hardwareInput);
+                            int latestRow = SampleTable.Items.Count - 1;
+                            SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);
+                        }));
+                        
+                        File.WriteSampleOutput(hardwareInput);
+                        if (_canceller.Token.IsCancellationRequested)
+                            break;
+                    } while (true);
+                });
+
+                _canceller.Dispose();
+                //startCapBtn.Enabled = true;
+                //stopCapBtn.Enabled = false;
+            }
         }
 
         private void stopCap(object sender, RoutedEventArgs e)
@@ -362,20 +456,35 @@ namespace FinalSprint
 
         private void Capture()
         {
+            Random rand = new Random();/*
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
+
+            hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
+            hardwareInput.Current = rand.NextDouble() * 4 + 1;
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength* userInput.SampleWidth, userInput.SampleLength);
+*/
+
+
+
             device.Write("FETC?");
             //device.Write("SENS:CH");
             out_put = device.ReadString();
-            voltage = (-1)*Convert.ToDouble(out_put);
-            Debug.WriteLine(voltage);
+            hardwareInput.Voltage =  Math.Abs(Convert.ToDouble(out_put));
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel)/1000;
+            hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
 
             //Calculate resistance and resistivity values
-            resistance = Calc.CalcResistance(voltage, current);
-            resistivity = Calc.CalcResistivity(resistance, area, length);
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
 
             DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, 0, voltage);
         }
