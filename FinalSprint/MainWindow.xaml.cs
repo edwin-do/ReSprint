@@ -53,6 +53,8 @@ namespace FinalSprint
         private double area;
         private double length;
         private double temperature;
+        private int scpiDevice;
+        private string SCPI_command;
 
         private CancellationTokenSource _canceller_volt;
         private CancellationTokenSource _canceller_temp;
@@ -123,6 +125,7 @@ namespace FinalSprint
             resistivity = 0.0;
             area = 0.000003;
             length = 0.04;
+            scpiDevice = 0;
 
 
             //Initialise timer for graph update
@@ -484,6 +487,58 @@ namespace FinalSprint
             //{
             //    DatGen.AddData();
             //}
+        }
+
+        private void SCPI_current(object sender, RoutedEventArgs e)
+        {
+            scpiDevice = 1;
+        }
+
+        private void SCPI_voltage(object sender, RoutedEventArgs e)
+        {
+            scpiDevice = 2;
+        }
+
+        private void SCPI_temp(object sender, RoutedEventArgs e)
+        {
+            scpiDevice = 3;
+        }
+
+        private void SCPI_write(object sender, RoutedEventArgs e)
+        {
+            if (scpiDevice == 1)
+            {
+                currentSource.Write(SCPI_command);
+            }
+            else if (scpiDevice == 2)
+            {
+                nanoVoltmeter.Write(SCPI_command);
+            }
+            else if (scpiDevice == 3)
+            {
+                multimeter.Write(SCPI_command);
+            }
+        }
+
+        private void SCPI_read(object sender, RoutedEventArgs e)
+        {
+            if (scpiDevice == 1)
+            {
+                SCPI_output.Text = currentSource.ReadString();
+            }
+            else if (scpiDevice == 2)
+            {
+                SCPI_output.Text = nanoVoltmeter.ReadString();
+            }
+            else if (scpiDevice == 3)
+            {
+                SCPI_output.Text = multimeter.ReadString();
+            }
+        }
+
+        private void SCPI_textInput(object sender, TextChangedEventArgs e)
+        {
+            SCPI_command = SCPI_input.Text;
         }
     }
 
