@@ -82,22 +82,22 @@ namespace FinalSprint.ViewModel
 
     public class Data
     {
-        public Data(DateTime date, double resistance, double resistivity, double temp, double voltage)
+        public Data(string? time, double resistance, double resistivity, double temperature, double voltage)
         {
-            Date = date;
+            Time = time;
             Resistance = resistance;
             Resistivity = resistivity;
-            Temp = temp;
+            Temperature = temperature;
             Voltage = voltage;
         }
 
-        public DateTime Date { get; set; }
+        public string? Time { get; set; }
 
         public double Resistance { get; set; }
 
         public double Resistivity { get; set; }
 
-        public double Temp { get; set; }
+        public double Temperature { get; set; }
         public double Voltage { get; set; }
     }
 }

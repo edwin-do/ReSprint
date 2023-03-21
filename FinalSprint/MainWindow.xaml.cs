@@ -20,6 +20,7 @@ using System.Diagnostics;
 using Syncfusion.Windows.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using FinalSprint.Display;
+using FinalSprint.ViewModel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Collections.ObjectModel;
 
