@@ -13,24 +13,25 @@
         <TabControl>
             <TabItem Header="Main">
                 <Grid>
+                    <Rectangle HorizontalAlignment="Left" Height="256" Margin="32,330,0,0" Stroke="Black" VerticalAlignment="Top" Width="320"/>
                     <chart:SfChart x:Name="Chart" Margin="0,0,10,0" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
                         <chart:SfChart.DataContext>
                             <local:DataGenerator/>
                         </chart:SfChart.DataContext>
                         <chart:SfChart.PrimaryAxis>
                             <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
-                                <chart:ChartAxis.Header>
+                                <chart:DateTimeAxis.Header>
                                     <TextBlock Margin="10" Text="Time" FontSize="16" FontFamily="SegoeUI"/>
-                                </chart:ChartAxis.Header>
+                                </chart:DateTimeAxis.Header>
                             </chart:DateTimeAxis>
                         </chart:SfChart.PrimaryAxis>
 
                         <chart:SfChart.SecondaryAxis>
                             <chart:NumericalAxis Minimum="1000" Maximum="1006" 
                                      Interval="1" >
-                                <chart:ChartAxis.Header>
+                                <chart:NumericalAxis.Header>
                                     <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
-                                </chart:ChartAxis.Header>
+                                </chart:NumericalAxis.Header>
                             </chart:NumericalAxis>
                         </chart:SfChart.SecondaryAxis>
 
@@ -55,48 +56,46 @@
                     <TextBlock x:Name="InstrumentResistanceTitle" HorizontalAlignment="Left" Margin="592,330,0,0" TextWrapping="Wrap" Text="Resistance (Ohm):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
                     <Button x:Name="startCapBtn" Content="Start Capture" HorizontalAlignment="Left" Margin="955,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="98" Click="startCap"/>
                     <Button x:Name="stopCapBtn" Content="Stop Capture" HorizontalAlignment="Left" Margin="1059,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="98" Click="stopCap"/>
-                    <Button Content="Set" HorizontalAlignment="Left" Margin="1058,102,0,0" VerticalAlignment="Top"  Height="26" FontSize="14" Width="30" Click="setCurr"/>
+                    <Button Content="Set" HorizontalAlignment="Left" Margin="61,521,0,0" VerticalAlignment="Top"  Height="37" FontSize="14" Width="120" Click="setCurr"/>
                     <Button Content="Set" HorizontalAlignment="Left" Margin="921,165,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="30" Click="setVolt"/>
-                    <ComboBox x:Name="Range" HorizontalAlignment="Left" Margin="955,102,0,0" VerticalAlignment="Top" Width="97" Text="Range" SelectionChanged="RangeDrop" FontSize="14">
+                    <ComboBox x:Name="Range" HorizontalAlignment="Left" Margin="166,462,0,0" VerticalAlignment="Top" Width="97" Text="Range" SelectionChanged="RangeDrop" FontSize="14">
                         <ComboBoxItem Content="Auto Range"/>
                         <ComboBoxItem Content="1 mA"/>
                         <ComboBoxItem Content="10 mA"/>
                         <ComboBoxItem Content="100 mA"/>
                     </ComboBox>
-                    <TextBox x:Name="compTextBox" HorizontalAlignment="Left" Margin="840,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="110" FontSize="14" TextChanged="compText" Text="10"/>
-                    <TextBox x:Name="currTextBox" HorizontalAlignment="Left" Margin="700,104,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="135" FontSize="14" TextChanged="currText"/>
-                    <RadioButton Content="Current ON" HorizontalAlignment="Left" Margin="1118,92,0,0" VerticalAlignment="Top" Checked="currTurnON" />
-                    <RadioButton Content="Current OFF" HorizontalAlignment="Left" Margin="1118,121,0,0" VerticalAlignment="Top" Checked="currTurnOFF" />
+                    <TextBox x:Name="compTextBox" HorizontalAlignment="Left" Margin="166,428,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="164" FontSize="14" TextChanged="compText" Text="10"/>
+                    <TextBox x:Name="currTextBox" HorizontalAlignment="Left" Margin="166,392,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="164" FontSize="14" TextChanged="currText"/>
+                    <RadioButton Content="ON" HorizontalAlignment="Left" Margin="226,358,0,0" VerticalAlignment="Top" Checked="currTurnON" />
+                    <RadioButton Content="OFF" HorizontalAlignment="Left" Margin="280,358,0,0" VerticalAlignment="Top" Checked="currTurnOFF" />
                     <ComboBox x:Name="Integration_Rate" HorizontalAlignment="Left" Margin="701,165,0,0" VerticalAlignment="Top" Width="202" Text="Integration Rate (PLC)"  FontSize="14" SelectionChanged="Integration_Rate_SelectionChanged">
                         <ComboBoxItem Content="0.01 PLC (Fast)"/>
                         <ComboBoxItem Content="0.1 PLC"/>
                         <ComboBoxItem Content="1 PLC (Recommended)"/>
                         <ComboBoxItem Content="5 PLC (Slow)"/>
                     </ComboBox>
-                    <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="47,216,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,312,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <DatePicker x:Name="DateSelector" Margin="162,305,814,0" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" Margin="162,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-                    <TextBox HorizontalAlignment="Left" Margin="162,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-                    <TextBox HorizontalAlignment="Left" Margin="162,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-                    <TextBox HorizontalAlignment="Left" Margin="162,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-                    <TextBox HorizontalAlignment="Left" Margin="162,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
+                    <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="32,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="32,114,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="32,201,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="32,157,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBox HorizontalAlignment="Left" Margin="133,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" FontSize="14"/>
+                    <TextBox HorizontalAlignment="Left" Margin="133,112,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" FontSize="14"/>
+                    <TextBox HorizontalAlignment="Left" Margin="133,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" FontSize="14"/>
+                    <TextBox HorizontalAlignment="Left" Margin="133,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" FontSize="14"/>
                     <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" Text="INPUT" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
-                    <TextBlock x:Name="InstrumentReadingsLabel_Copy" HorizontalAlignment="Left" Margin="565,32,0,0" TextWrapping="Wrap" Text="INSTRUMENT CONTROLS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+                    <TextBlock x:Name="InstrumentReadingsLabel_Copy" HorizontalAlignment="Left" Margin="32,262,0,0" TextWrapping="Wrap" Text="INSTRUMENT CONTROLS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
                     <TextBox x:Name="voltage_out" HorizontalAlignment="Left" Margin="748,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
                     <TextBox x:Name="current_out" HorizontalAlignment="Left" Margin="748,299,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
                     <TextBox x:Name="ohm_out" HorizontalAlignment="Left" Margin="748,330,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
                     <TextBox x:Name="rho_out" HorizontalAlignment="Left" Margin="748,363,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
-                    <TextBlock x:Name="InstrumentVoltageTitle_Copy" HorizontalAlignment="Left" Margin="701,84,0,0" TextWrapping="Wrap" Text="Current Level (mA):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="InstrumentVoltageTitle_Copy1" HorizontalAlignment="Left" Margin="840,84,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="InstrumentVoltageTitle_Copy2" HorizontalAlignment="Left" Margin="955,84,0,0" TextWrapping="Wrap" Text="Range:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="InstrumentVoltageTitle_Copy3" HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-                    <TextBlock x:Name="InstrumentVoltageTitle_Copy4" HorizontalAlignment="Left" Margin="592,396,0,0" TextWrapping="Wrap" Text="Temperature:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="52,394,0,0" TextWrapping="Wrap" Text="Current Level (mA):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="52,430,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="52,466,0,0" TextWrapping="Wrap" Text="Range (Optional):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="592,396,0,0" TextWrapping="Wrap" Text="Temperature:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
                     <TextBox x:Name="temp_out" HorizontalAlignment="Left" Margin="748,395,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
+                    <TextBlock x:Name="InstrumentReadingsLabel_Copy1" HorizontalAlignment="Left" Margin="52,352,0,0" TextWrapping="Wrap" Text="Current Source" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
+                    <Button Content="Reset" HorizontalAlignment="Left" Margin="200,521,0,0" VerticalAlignment="Top"  Height="37" FontSize="14" Width="120" Click="resetCurr"/>
 
                 </Grid>
             </TabItem>

@@ -143,7 +143,7 @@ namespace FinalSprint
             // currentSource.Write("*RST");
             // currentSource.Write("CLE");
 
-            //nanoVoltmeter.Write("*RST");
+            nanoVoltmeter.Write("*RST");
 
             nanoVoltmeter.Write("SENS:CHAN 1");
             nanoVoltmeter.Write("SENS:FUNC 'VOLT'");
@@ -276,6 +276,12 @@ namespace FinalSprint
 
             currentSource.Write("CURR:COMP " + compliance);
             currentSource.Write("CURR " + currLevel + "e-3");
+        }
+
+        private void resetCurr(object sender, RoutedEventArgs e)
+        {
+            currentSource.Write("*RST");
+            currentSource.Write("CLE");
         }
 
         private void currTurnON(object sender, RoutedEventArgs e)
@@ -539,6 +545,11 @@ namespace FinalSprint
         private void SCPI_textInput(object sender, TextChangedEventArgs e)
         {
             SCPI_command = SCPI_input.Text;
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
         }
     }
 
