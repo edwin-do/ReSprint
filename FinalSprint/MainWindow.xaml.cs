@@ -39,7 +39,7 @@ namespace FinalSprint
         private InputCommunication InputComm;
         private Calculation Calc;
         private FileOutputClass f;
-        //private DataGenerator DatGen;
+        private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
@@ -377,7 +377,7 @@ namespace FinalSprint
             resistance = Calc.CalcResistance(voltage, current);
             resistivity = Calc.CalcResistivity(resistance, area, length);
 
-            DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, temp, voltage);
+            DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, 0, voltage);
         }
 
         public void printToCSV()

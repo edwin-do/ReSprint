@@ -21,11 +21,10 @@ namespace FinalSprint
         public ObservableCollection<Data> DynamicData { get; set; }
 
 
-        public DataGenerator()
+        public DataGenerator(DateTime date, double resistance, double resistivity, double temp, double voltage)
         {
-            randomNumber = new Random();
             DynamicData = new ObservableCollection<Data>();
-            data = GenerateData();
+            data = GenerateData(date, resistance, resistivity, temp, voltage);
             LoadData();
 
             timer = new DispatcherTimer();
@@ -63,11 +62,11 @@ namespace FinalSprint
             }
         }
 
-        public ObservableCollection<Data> GenerateData(DateTime date, double resistance, double resistivity, double temp, double voltage)
+        public static ObservableCollection<Data> GenerateData(DateTime date, double resistance, double resistivity, double temp, double voltage)
         {
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
-            for (int i = 0; i < this.dataCount; i++)
+            for (int i = 0; i < 1; i++)
             {
                 generatedData.Add(new Data(date, resistance, resistivity, temp, voltage));
             }
