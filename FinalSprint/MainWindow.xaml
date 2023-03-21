@@ -34,14 +34,14 @@
                 </chart:NumericalAxis>
             </chart:SfChart.SecondaryAxis>
 
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="First" 
+            <chart:FastLineBitmapSeries EnableAntiAliasing="True" Label="First" 
                                         XBindingPath="Time" YBindingPath="Voltage" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
-                                        ItemsSource="{Binding DataContext.DynamicData}"/>
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Second" 
-                                        XBindingPath="Date" YBindingPath="Resistivity" 
+                                        ItemsSource="{Binding DynamicData}"/>
+            <chart:FastLineBitmapSeries EnableAntiAliasing="True" Label="Second" 
+                                        XBindingPath="Time" YBindingPath="Resistivity" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
-                                        ItemsSource="{Binding DataContext.DynamicData}"/>
+                                        ItemsSource="{Binding DynamicData}"/>
 
         </chart:SfChart>
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="565,226,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
