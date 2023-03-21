@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 //using Windows.UI.Xaml;
 
-namespace FinalSprint
+namespace FinalSprint.ViewModel
 {
     public class DataGenerator
     {
@@ -21,10 +21,10 @@ namespace FinalSprint
         public ObservableCollection<Data> DynamicData { get; set; }
 
 
-        public DataGenerator(DateTime date, double resistance, double resistivity, double temp, double voltage)
+        public DataGenerator()
         {
             DynamicData = new ObservableCollection<Data>();
-            data = GenerateData(date, resistance, resistivity, temp, voltage);
+            //data = GenerateData();
             LoadData();
 
             timer = new DispatcherTimer();
@@ -62,13 +62,13 @@ namespace FinalSprint
             }
         }
 
-        public static ObservableCollection<Data> GenerateData(DateTime date, double resistance, double resistivity, double temp, double voltage)
+        public static ObservableCollection<Data> GenerateData(HardwareInput hardwareInput)
         {
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
             for (int i = 0; i < 1; i++)
             {
-                generatedData.Add(new Data(date, resistance, resistivity, temp, voltage));
+                generatedData.Add(new Data(hardwareInput.Time, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature, hardwareInput.Voltage));
             }
 
             return generatedData;

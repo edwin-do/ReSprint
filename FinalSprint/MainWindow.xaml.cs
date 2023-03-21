@@ -62,7 +62,7 @@ namespace FinalSprint
         private InputCommunication InputComm;
         private Calculation Calc;
         private FileOutput File;
-        //private DataGenerator DatGen;
+        private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
@@ -135,7 +135,7 @@ namespace FinalSprint
             InputComm = new InputCommunication();
             File = new FileOutput(@"test.csv");
             SampleTable.ItemsSource = myDataCollection;
-            //DatGen = (DataGenerator)this.DataContext;
+            DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
             capture = false;
@@ -432,6 +432,7 @@ namespace FinalSprint
                         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                         {
                             myDataCollection.Add(hardwareInput);
+                            DataGenerator.GenerateData(hardwareInput);
                             int latestRow = SampleTable.Items.Count - 1;
                             SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);
                         }));
@@ -486,7 +487,6 @@ namespace FinalSprint
 
             hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
 
-            DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, 0, voltage);
         }
 
         public void printToCSV()
@@ -514,7 +514,7 @@ namespace FinalSprint
             fileOutput.WriteSampleOutput(hardwareInput);
             fileOutput.WriteSampleOutput(hardwareInput);
             fileOutput.WriteSampleOutput(hardwareInput);*/
-            f.PrintOutput();
+            //File.PrintOutput();
 
 
         }
