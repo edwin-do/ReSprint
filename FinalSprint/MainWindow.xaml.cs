@@ -454,7 +454,7 @@ namespace FinalSprint
 
         private void Capture()
         {
-            Random rand = new Random();
+            Random rand = new Random();/*
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
 
@@ -464,23 +464,26 @@ namespace FinalSprint
             hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
             hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength* userInput.SampleWidth, userInput.SampleLength);
+*/
 
-            
-            
 
-            /*         device.Write("FETC?");
-                     //device.Write("SENS:CH");
-                     out_put = device.ReadString();
-                     voltage = (-1)*Convert.ToDouble(out_put);
-                     Debug.WriteLine(voltage);
 
-                     //current = InputComm.GetCurrent();
-                     current = Convert.ToDouble(currLevel)/1000;
+            device.Write("FETC?");
+            //device.Write("SENS:CH");
+            out_put = device.ReadString();
+            hardwareInput.Voltage =  Math.Abs(Convert.ToDouble(out_put));
 
-                     //Calculate resistance and resistivity values
-                     resistance = Calc.CalcResistance(voltage, current);
-                     resistivity = Calc.CalcResistivity(resistance, area, length);
-         */
+            //current = InputComm.GetCurrent();
+            hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
+
+            //Calculate resistance and resistivity values
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
+
         }
 
 
