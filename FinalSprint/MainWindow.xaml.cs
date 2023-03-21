@@ -38,7 +38,8 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
-        private DataGenerator DatGen;
+        private FileOutputClass f;
+        //private DataGenerator DatGen;
 
         //Member variables
         private bool capture;
@@ -105,6 +106,7 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
+            f = new FileOutputClass();
             DatGen = (DataGenerator)this.DataContext;
 
             //Initialise variables
@@ -115,6 +117,8 @@ namespace FinalSprint
             resistivity = 0.0;
             area = 0.000003;
             length = 0.04;
+
+            printToCSV();
 
 
             //Initialise timer for graph update
@@ -374,6 +378,36 @@ namespace FinalSprint
             resistivity = Calc.CalcResistivity(resistance, area, length);
 
             DataGenerator.GenerateData(DateTime.Now, resistance, resistivity, temp, voltage);
+        }
+
+        public void printToCSV()
+        {
+            /*FileOutput fileOutput = new FileOutput(@"test.csv");
+            UserInput userInput = new UserInput
+            {
+                Name = "Tim",
+                SampleName = "Sample1",
+                Date = DateTime.Now.ToLongDateString(),
+                SamplingRate = 60,
+                SampleLength = 4,
+                SampleWidth = 1
+            };
+            HardwareInput hardwareInput = new HardwareInput
+            {
+                Voltage = 5,
+                Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}",
+                Temperature = 50,
+                Current = 1,
+                Resistance = 2,
+                Resistivity = 2
+            };
+            fileOutput.WriteUserInput(userInput);
+            fileOutput.WriteSampleOutput(hardwareInput);
+            fileOutput.WriteSampleOutput(hardwareInput);
+            fileOutput.WriteSampleOutput(hardwareInput);*/
+            f.PrintOutput();
+
+
         }
 
 
