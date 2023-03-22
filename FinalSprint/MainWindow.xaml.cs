@@ -462,31 +462,31 @@ namespace FinalSprint
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
             CaptureTime = DateTime.Now;
-            hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
+            /*hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
             hardwareInput.Current = rand.NextDouble() * 4 + 1;
             hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
             hardwareInput.Time = $"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
-            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);*/
 
 
 
 
-            /*            device.Write("FETC?");
-                        //device.Write("SENS:CH");
-                        out_put = device.ReadString();
-                        hardwareInput.Voltage =  Math.Abs(Convert.ToDouble(out_put));
+            device.Write("FETC?");
+            //device.Write("SENS:CH");
+            out_put = device.ReadString();
+            hardwareInput.Voltage = Math.Abs(Convert.ToDouble(out_put));
 
-                        //current = InputComm.GetCurrent();
-                        hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
+            //current = InputComm.GetCurrent();
+            hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
 
-                        //Calculate resistance and resistivity values
-                        hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
-                        hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+            //Calculate resistance and resistivity values
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, area, length);
 
-                        hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
 
-                        hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";*/
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
 
         }
 
