@@ -40,13 +40,16 @@ namespace FinalSprint
     }
 
     public class HardwareInput
-    {
-        public double Voltage { get; set; }
+    { 
         public string? Time { get; set; }
-        public double Temperature { get; set; }
+        public double Voltage { get; set; }
+
         public double Current { get; set; }
+
         public double Resistance { get; set; }
+
         public double Resistivity { get; set; }
+        public double Temperature { get; set; }
     }
     public partial class MainWindow : Window
     {
@@ -62,6 +65,8 @@ namespace FinalSprint
         private InputCommunication InputComm;
         private Calculation Calc;
         private FileOutput File;
+        private DataGenerator Graph;
+
         //private DataGenerator DatGen;
 
         //Member variables
@@ -72,6 +77,7 @@ namespace FinalSprint
         private double resistivity;
         private double area;
         private double length;
+        private DateTime CaptureTime;
 
         private CancellationTokenSource _canceller;
 
@@ -82,10 +88,11 @@ namespace FinalSprint
         #region Fields
         private string currentVisualStyle;
         private string currentSizeMode;
-        private HardwareInput hardwareInput;
+        private HardwareInput hardwareInput = new HardwareInput();
         private UserInput userInput;
 
         ObservableCollection<HardwareInput> myDataCollection = new ObservableCollection<HardwareInput>();
+        ObservableCollection<Data> graphData = new ObservableCollection<Data>();
         #endregion
 
         #region Properties
@@ -128,14 +135,17 @@ namespace FinalSprint
         public MainWindow()
         {
             InitializeComponent();
+            Graph = (DataGenerator)this.DataContext;
+
             this.Loaded += OnLoaded;
 
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
-            File = new FileOutput(@"test.csv");
             SampleTable.ItemsSource = myDataCollection;
-            //DatGen = (DataGenerator)this.DataContext;
+            Chart.Series[0].ItemsSource = graphData;
+            Chart.Series[1].ItemsSource = graphData;
+            Chart.Series[2].ItemsSource = graphData;
 
             //Initialise variables
             capture = false;
@@ -148,25 +158,13 @@ namespace FinalSprint
 
 
             //Initialise timer for graph update
-            main_timer = new DispatcherTimer();
+/*            main_timer = new DispatcherTimer();
             main_timer.Tick += main_timer_Tick;
             main_timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             main_timer.Start();
-
-            hardwareInput = new HardwareInput
-            {
-                Voltage = 5,
-                Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}",
-                Temperature = 50,
-                Current = 1,
-                Resistance = 2,
-                Resistivity = 2
-            };
-
-
-            
-
+*/
         }
+
 
         private bool check()
         {
@@ -201,7 +199,7 @@ namespace FinalSprint
                 SampleLength = double.Parse(SampleLengthLabel.Text),
                 SampleWidth = double.Parse(SampleWidthLabel.Text)
             };
-
+            File = new FileOutput(@$"{userInput.Name}_{userInput.SampleName}_{userInput.Date}.csv");
             return true;
         }
 
@@ -430,8 +428,14 @@ namespace FinalSprint
                         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                         {
                             myDataCollection.Add(hardwareInput);
+                            graphData.Add(new Data(CaptureTime, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance));
                             int latestRow = SampleTable.Items.Count - 1;
                             SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);
+                            if (graphData.Count > 100)
+                            {
+                                graphData.RemoveAt(0);
+                            }
+                            
                         }));
                         
                         File.WriteSampleOutput(hardwareInput);
@@ -454,50 +458,48 @@ namespace FinalSprint
 
         private void Capture()
         {
-            Random rand = new Random();/*
+            Random rand = new Random();
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
-
+            CaptureTime = DateTime.Now;
             hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
             hardwareInput.Current = rand.NextDouble() * 4 + 1;
             hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
-            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
-            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
-            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength* userInput.SampleWidth, userInput.SampleLength);
-*/
-
-
-
-            device.Write("FETC?");
-            //device.Write("SENS:CH");
-            out_put = device.ReadString();
-            hardwareInput.Voltage =  Math.Abs(Convert.ToDouble(out_put));
-
-            //current = InputComm.GetCurrent();
-            hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
-
-            //Calculate resistance and resistivity values
+            hardwareInput.Time = $"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
             hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
 
-            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
 
-            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
+
+
+            /*            device.Write("FETC?");
+                        //device.Write("SENS:CH");
+                        out_put = device.ReadString();
+                        hardwareInput.Voltage =  Math.Abs(Convert.ToDouble(out_put));
+
+                        //current = InputComm.GetCurrent();
+                        hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
+
+                        //Calculate resistance and resistivity values
+                        hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+                        hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+
+                        hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+
+                        hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";*/
 
         }
 
 
-        //private void timer_Tick(object? sender, object e)
-        //{
-        //    //Pass values to DataGenerator
-        //    if (capture)
-        //    {
-        //        DatGen.AddData(new Data(Date, current, voltage, resistivity));
-        //        Date = Date.Add(TimeSpan.FromMilliseconds(50));
-        //    }
-        //}
+   /*     private void main_timer_Tick(object? sender, object e)
+        {
+            if (capture){
+                Data d = new Data(CaptureTime, hardwareInput.Voltage);
+                Graph.AddData(d);
+            }
+        }*/
 
-        private void main_timer_Tick(object sender, object e)
+        /*private void main_timer_Tick(object sender, object e)
         {
             voltage_out.Text = voltage.ToString();
             current_out.Text = currLevel;
@@ -508,7 +510,7 @@ namespace FinalSprint
             //{
             //    DatGen.AddData();
             //}
-        }
+        }*/
     }
 
 }
