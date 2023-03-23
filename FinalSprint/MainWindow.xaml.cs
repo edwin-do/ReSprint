@@ -32,11 +32,17 @@ namespace FinalSprint
         private Device multimeter;
 
         private int range;
-        private string rate;
+        private int scpiDevice;
+        private int th_type;
+        private double rate;
+        private string aperture;
         private string compliance;
         private string currLevel;
         private string voltage_output;
         private string temp_output;
+
+        private string name;
+        private string sample;
 
         //Class objects
         private InputCommunication InputComm;
@@ -51,10 +57,12 @@ namespace FinalSprint
         private double resistance;
         private double resistivity;
         private double area;
+        private double width;
+        private double thickness;
         private double length;
+        private double t_volt;
         private double temperature;
-        private int scpiDevice;
-        private string SCPI_command;
+        private double j_temp;
 
         private CancellationTokenSource _canceller_volt;
         private CancellationTokenSource _canceller_temp;
@@ -119,13 +127,18 @@ namespace FinalSprint
             capture_volt = false;
             capture_temp = false;
             voltage = 0.0;
-            temperature = 0.0;
             current = 0.0;
             resistance = 0.0;
             resistivity = 0.0;
-            area = 0.000003;
-            length = 0.04;
+            area = 0.0;                 // 0.000003
+            width = 0.0;                // 0.01
+            thickness = 0.0;            // 0.0003
+            length = 0.0;               // 0.04
             scpiDevice = 0;
+            t_volt = 0.0;
+            temperature = 0.0;
+            j_temp = 0.0;
+            th_type = 1;
 
 
             //Initialise timer for graph update
@@ -136,18 +149,67 @@ namespace FinalSprint
 
             int currentSecondaryAddress = 0;
 
-            currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
-            nanoVoltmeter = new Device(0, 7, (byte)currentSecondaryAddress);
-            multimeter = new Device(0, 1, (byte)currentSecondaryAddress);
+            try
+            {
+                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
 
-            // currentSource.Write("*RST");
-            // currentSource.Write("CLE");
+            try
+            {
+                nanoVoltmeter = new Device(0, 7, (byte)currentSecondaryAddress);
+                nanoVoltmeter.Write("*RST");
+                nanoVoltmeter.Write("SENS:CHAN 1");
+                nanoVoltmeter.Write("SENS:FUNC 'VOLT'");
 
-            nanoVoltmeter.Write("*RST");
+                nanoVoltmeter.Write("SENS:VOLT:APER?");
+                double y = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
+                liveRate.Text = y.ToString("5");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
 
-            nanoVoltmeter.Write("SENS:CHAN 1");
-            nanoVoltmeter.Write("SENS:FUNC 'VOLT'");
+            try
+            {
+                multimeter = new Device(0, 1, (byte)currentSecondaryAddress);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
         }
+
+
+        /// <summary>
+        /// Windows Application Related Methods:
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnExit(System.Windows.ExitEventArgs e)
+        {
+            try
+            {
+                currentSource.Write("OUTP OFF");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+
+            try
+            {
+                nanoVoltmeter.Write("*RST");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                 //   YES
+
         /// <summary>
         /// Called when [loaded].
         /// </summary>
@@ -157,7 +219,8 @@ namespace FinalSprint
         {
             CurrentVisualStyle = "Windows11Light";
             CurrentSizeMode = "Default";
-        }
+        }                                   //   N/A
+
         /// <summary>
         /// On Visual Style Changed.
         /// </summary>
@@ -172,7 +235,7 @@ namespace FinalSprint
                 SfSkinManager.SetVisualStyle(this, visualStyle);
                 SfSkinManager.ApplyStylesOnApplication = false;
             }
-        }
+        }                                                       //   N/A
 
         /// <summary>
         /// On Size Mode Changed event.
@@ -188,19 +251,19 @@ namespace FinalSprint
                 SfSkinManager.SetSizeMode(this, sizeMode);
                 SfSkinManager.ApplyStylesOnApplication = false;
             }
-        }
+        }                                                          //   N/A
 
-        private void currText(object sender, TextChangedEventArgs e)
-        {
-            currLevel = currTextBox.Text;
-        }
 
-        private void compText(object sender, TextChangedEventArgs e)
-        {
-            compliance = compTextBox.Text;
-        }
 
-        private void RangeDrop(object sender, SelectionChangedEventArgs e)  // CHANGE METHOD
+
+
+        /// <summary>
+        /// Interface Element Related Methods:
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void RangeDrop(object sender, SelectionChangedEventArgs e)
         {
             if (Range.SelectedIndex == 0)
             {
@@ -221,11 +284,11 @@ namespace FinalSprint
             {
                 range = 3;
             }
-        }
+        }                        //   N/A
 
-        private void setCurr(object sender, RoutedEventArgs e)
+        private void setCurrent(object sender, RoutedEventArgs e)
         {
-            if (range == 0)                                                 // RANGE CHANGE METHOD
+            if (range == 0)
             {
                 /// SCPI COMMAND CURR:RANG:AUTO ON
                 try
@@ -274,61 +337,156 @@ namespace FinalSprint
                 }
             }
 
-            currentSource.Write("CURR:COMP " + compliance);
-            currentSource.Write("CURR " + currLevel + "e-3");
-        }
+            double n1;
+            if (Double.TryParse(currTextBox.Text, out n1)) { currLevel = currTextBox.Text; }
+            else { MessageBox.Show("Invalid current, please enter a valid decimal number in mA.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
 
-        private void resetCurr(object sender, RoutedEventArgs e)
+            double n2;
+            if (Double.TryParse(compTextBox.Text, out n2)) { compliance = compTextBox.Text; }
+            else { MessageBox.Show("Invalid compliance voltage, please enter a valid decimal number in Volts.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+
+            try
+            {
+                currentSource.Write("CURR:COMP " + compliance);
+                currentSource.Write("CURR " + currLevel + "e-3");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                     //   YES
+
+        private void resetCurrent(object sender, RoutedEventArgs e)
         {
-            currentSource.Write("*RST");
-            currentSource.Write("CLE");
-        }
+            try
+            {
+                currentSource.Write("*RST");
+                currentSource.Write("CLE");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                   //   YES
 
         private void currTurnON(object sender, RoutedEventArgs e)
         {
-            currentSource.Write("OUTP ON");
-        }
+            try
+            {
+                //currentSource.Write("OUTP ON");
+                if ((off_btn.IsEnabled = false) && (on_btn.IsEnabled = true))
+                {
+                    off_btn.IsEnabled = true;
+                    on_btn.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                     //   YES
 
         private void currTurnOFF(object sender, RoutedEventArgs e)
         {
-            currentSource.Write("OUTP OFF");
-        }
-
-        private void Integration_Rate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Integration_Rate.SelectedIndex == 0)   
+            try
             {
-                rate = "0.01";
+                //currentSource.Write("OUTP OFF");
+                if ((off_btn.IsEnabled = true) && (on_btn.IsEnabled = false))
+                {
+                    on_btn.IsEnabled = true;
+                    off_btn.IsEnabled = false;
+                }
             }
-
-            if (Integration_Rate.SelectedIndex == 1)                        // CHANGE THIS
+            catch (Exception ex)
             {
-                rate = "0.1";
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
             }
+        }                    //   YES
 
-            if (Integration_Rate.SelectedIndex == 2)
-            {
-                rate = "1";
-            }
+        /*
+                private void Integration_Rate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+                {
+                    if (Integration_Rate.SelectedIndex == 0)   
+                    {
+                        rate = "0.01";
+                    }
 
-            if (Integration_Rate.SelectedIndex == 3)
-            {
-                rate = "5";
-            }
-        }
+                    if (Integration_Rate.SelectedIndex == 1)                        // CHANGE THIS
+                    {
+                        rate = "0.1";
+                    }
+
+                    if (Integration_Rate.SelectedIndex == 2)
+                    {
+                        rate = "1";
+                    }
+
+                    if (Integration_Rate.SelectedIndex == 3)
+                    {
+                        rate = "5";
+                    }
+                }
+        */
 
         private void setVolt(object sender, RoutedEventArgs e)
         {
-            nanoVoltmeter.Write("SENS:VOLT:NPLC " + rate);                  // CHANGE THIS
-        }
+            double r;
+            if (Double.TryParse(rateTextBox.Text, out r)) { rate = r; }
+            else { MessageBox.Show("Invalid acquisition rate, please enter a valid decimal number in Hz.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
 
+            try
+            {
+                aperture = Calc.CalcAperture(rate);
+                nanoVoltmeter.Write("SENS:VOLT:APER " + aperture);
+
+                nanoVoltmeter.Write("SENS:VOLT:APER?");
+                double x = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
+                liveRate.Text = x.ToString("5");       // F5
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                        //   YES
 
         private void startCap(object sender, RoutedEventArgs e)
         {
-            startCap_volt();
-            startCap_temp();
-        }
+            if (nameTextBox.Text != null) { name = nameTextBox.Text; }
+            else { MessageBox.Show("Please enter your name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
 
+            if (sampleTextBox.Text != null) { sample = sampleTextBox.Text; }
+            else { MessageBox.Show("Please enter the sample name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+
+            double num1;
+            if (Double.TryParse(lengthTextBox.Text, out num1)) { length = num1 / 1000; }
+            else { MessageBox.Show("Invalid length, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+
+            double num2;
+            if (Double.TryParse(widthTextBox.Text, out num2)) { width = num2 / 1000; }
+            else { MessageBox.Show("Invalid width, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+
+            double num3;
+            if (Double.TryParse(thicknessTextBox.Text, out num3)) { thickness = num3 / 1000; }
+            else { MessageBox.Show("Invalid thickness, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+
+            area = width * thickness;
+
+            try
+            {
+                startCap_volt();
+                startCap_temp();
+
+                if ((startCapBtn.IsEnabled = true) && (stopCapBtn.IsEnabled = false))
+                {
+                    startCapBtn.IsEnabled = false;
+                    stopCapBtn.IsEnabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to instrument(s). A device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                       //   YES
 
         private async void startCap_volt()
         {
@@ -356,7 +514,7 @@ namespace FinalSprint
             _canceller_volt.Dispose();
             //startCapBtn.Enabled = true;
             //stopCapBtn.Enabled = false;
-        }
+        }                                                        //   N/A
 
         private async void startCap_temp()
         {
@@ -384,15 +542,28 @@ namespace FinalSprint
             _canceller_temp.Dispose();
             //startCapBtn.Enabled = true;
             //stopCapBtn.Enabled = false;
-        }
+        }                                                        //   N/A
 
         private void stopCap(object sender, RoutedEventArgs e)
         {
-            _canceller_volt.Cancel();
-            capture_volt = false;
-            _canceller_temp.Cancel();
-            capture_temp = false;
-        }
+            try
+            {
+                _canceller_volt.Cancel();
+                capture_volt = false;
+                _canceller_temp.Cancel();
+                capture_temp = false;
+
+                if ((startCapBtn.IsEnabled = false) && (stopCapBtn.IsEnabled = true))
+                {
+                    startCapBtn.IsEnabled = true;
+                    stopCapBtn.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
+            }
+        }                        //   YES
 
         private void Capture()
         {
@@ -401,11 +572,25 @@ namespace FinalSprint
             //nanoVoltmeter.Write("SENS:func 'volt'");
             //nanoVoltmeter.Write("SENS:chan 1; :read?");
 
-            nanoVoltmeter.Write("read?");
+            try
+            {
+                if (nanoVoltmeter != null)
+                {
+                    nanoVoltmeter.Write("read?");
+                    voltage_output = nanoVoltmeter.ReadString();
+                }
+                else
+                {
+                    MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
 
 
             //nanoVoltmeter.Write("SENS:CH");
-            voltage_output = nanoVoltmeter.ReadString();
             voltage = Convert.ToDouble(voltage_output);
             //Debug.WriteLine(voltage);
 
@@ -414,23 +599,23 @@ namespace FinalSprint
                nanoVoltmeter.Write("read?");
 
                temp_output = nanoVoltmeter.ReadString();
-               temperature = (-1) * Convert.ToDouble(temp_output);
-               Debug.WriteLine(temperature);*/
+               t_volt = (-1) * Convert.ToDouble(temp_output);
+               Debug.WriteLine(t_volt);*/
 
 
-        /*    multimeter.Write("*IDN?");
-            temp_output = multimeter.ReadString();
-            temperature = (-1) * Convert.ToDouble(temp_output);
-            Debug.WriteLine(temperature);
+            /*    multimeter.Write("*IDN?");
+                temp_output = multimeter.ReadString();
+                t_volt = (-1) * Convert.ToDouble(temp_output);
+                Debug.WriteLine(t_volt);
 
-            //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel)/1000;
+                //current = InputComm.GetCurrent();
+                current = Convert.ToDouble(currLevel)/1000;
 
-            //Calculate resistance and resistivity values
-            resistance = Calc.CalcResistance(voltage, current);
-            resistivity = Calc.CalcResistivity(resistance, area, length);*/
+                //Calculate resistance and resistivity values
+                resistance = Calc.CalcResistance(voltage, current);
+                resistivity = Calc.CalcResistivity(resistance, area, length);*/
 
-        }
+        }                                                        //   YES
 
         private void CaptureTemp()
         {
@@ -439,37 +624,70 @@ namespace FinalSprint
             //nanoVoltmeter.Write("SENS:func 'volt'");
             //nanoVoltmeter.Write("SENS:chan 1; :read?");
 
-         /*   nanoVoltmeter.Write("read?");
+            /*   nanoVoltmeter.Write("read?");
 
 
-            //nanoVoltmeter.Write("SENS:CH");
-            voltage_output = nanoVoltmeter.ReadString();
-            voltage = (-1) * Convert.ToDouble(voltage_output);
-            Debug.WriteLine(voltage);*/
+               //nanoVoltmeter.Write("SENS:CH");
+               voltage_output = nanoVoltmeter.ReadString();
+               voltage = (-1) * Convert.ToDouble(voltage_output);
+               Debug.WriteLine(voltage);*/
 
             /*   nanoVoltmeter.Write("SENS:CHAN 2");
                nanoVoltmeter.Write("SENS:FUNC 'TEMP'");
                nanoVoltmeter.Write("read?");
 
                temp_output = nanoVoltmeter.ReadString();
-               temperature = (-1) * Convert.ToDouble(temp_output);
-               Debug.WriteLine(temperature);*/
+               t_volt = (-1) * Convert.ToDouble(temp_output);
+               Debug.WriteLine(t_volt);*/
 
+            try
+            {
+                if (multimeter != null)
+                {
+                    multimeter.Write("*IDN?");
+                    temp_output = multimeter.ReadString();
+                }
+                else
+                {
+                    MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
 
-            multimeter.Write("*IDN?");
-            temp_output = multimeter.ReadString();
-            temperature = Convert.ToDouble(temp_output);
-            //Debug.WriteLine(temperature);
+            t_volt = Convert.ToDouble(temp_output);
+            //Debug.WriteLine(t_volt);
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel) / 1000;
+            current = Convert.ToDouble(currTextBox.Text) / 1000;          ///////// CHECK THIS (test?)
 
-            //Calculate resistance and resistivity values
+            //Calculate resistance, resistivity, and temperature values
             resistance = Calc.CalcResistance(voltage, current);
             resistivity = Calc.CalcResistivity(resistance, area, length);
+            temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, temperature);
+        }                                                    //   YES
 
-        }
+        private void ThTypeDrop(object sender, SelectionChangedEventArgs e)
+        {
+            if (Range.SelectedIndex == 0)
+            {
+                th_type = 1;
+            }
 
+            else if (Range.SelectedIndex == 1)
+            {
+                th_type = 2;
+            }
+        }                       //   N/A
+
+        private void set_jTemp(object sender, RoutedEventArgs e)
+        {
+            double m;
+            if (Double.TryParse(jTempTextBox.Text, out m)) { j_temp = m; }
+            else { MessageBox.Show("Invalid temperature, please enter a valid decimal number in °C.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+        }                      //   YES
 
         //private void timer_Tick(object? sender, object e)
         //{
@@ -484,8 +702,8 @@ namespace FinalSprint
         private void main_timer_Tick(object sender, object e)
         {
             voltage_out.Text = voltage.ToString();
-            temp_out.Text = temperature.ToString();
-            current_out.Text = currLevel;
+            temp_out.Text = t_volt.ToString();
+            current_out.Text = currTextBox.Text;
             ohm_out.Text = resistance.ToString();
             rho_out.Text = resistivity.ToString();
 
@@ -493,64 +711,97 @@ namespace FinalSprint
             //{
             //    DatGen.AddData();
             //}
-        }
+        }                                                   //   NO TESTS (?)
 
         private void SCPI_current(object sender, RoutedEventArgs e)
         {
-            scpiDevice = 1;
-        }
+            try
+            {
+                scpiDevice = 1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to device. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                    //   YES
 
         private void SCPI_voltage(object sender, RoutedEventArgs e)
         {
-            scpiDevice = 2;
-        }
+            try
+            {
+                scpiDevice = 2;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to device. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                    //   YES
 
         private void SCPI_temp(object sender, RoutedEventArgs e)
         {
-            scpiDevice = 3;
-        }
+            try
+            {
+                scpiDevice = 3;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to device. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+            }
+        }                       //   YES
 
         private void SCPI_write(object sender, RoutedEventArgs e)
         {
-            if (scpiDevice == 1)
+            try
             {
-                currentSource.Write(SCPI_command);
+                if (SCPI_output.Text != null)
+                {
+                    if (scpiDevice == 1)
+                    {
+                        currentSource.Write(SCPI_input.Text);
+                    }
+                    else if (scpiDevice == 2)
+                    {
+                        nanoVoltmeter.Write(SCPI_input.Text);
+                    }
+                    else if (scpiDevice == 3)
+                    {
+                        multimeter.Write(SCPI_input.Text);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please enter a command.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            else if (scpiDevice == 2)
+            catch (Exception ex)
             {
-                nanoVoltmeter.Write(SCPI_command);
+                MessageBox.Show("Invalid command.\n\n" + ex.Message);
             }
-            else if (scpiDevice == 3)
-            {
-                multimeter.Write(SCPI_command);
-            }
-        }
+        }                      //   YES
 
         private void SCPI_read(object sender, RoutedEventArgs e)
         {
-            if (scpiDevice == 1)
+            try
             {
-                SCPI_output.Text = currentSource.ReadString();
+                if (scpiDevice == 1)
+                {
+                    SCPI_output.Text = SCPI_output.Text + "\n" + currentSource.ReadString();
+                }
+                else if (scpiDevice == 2)
+                {
+                    SCPI_output.Text = SCPI_output.Text + "\n" + nanoVoltmeter.ReadString();
+                }
+                else if (scpiDevice == 3)
+                {
+                    SCPI_output.Text = SCPI_output.Text + "\n" + multimeter.ReadString();
+                }
             }
-            else if (scpiDevice == 2)
+            catch (Exception ex)
             {
-                SCPI_output.Text = nanoVoltmeter.ReadString();
+                MessageBox.Show("Nothing to read. Possibly an invalid command or an instruction command.\n\n" + ex.Message);
             }
-            else if (scpiDevice == 3)
-            {
-                SCPI_output.Text = multimeter.ReadString();
-            }
-        }
+        }                       //   YES
 
-        private void SCPI_textInput(object sender, TextChangedEventArgs e)
-        {
-            SCPI_command = SCPI_input.Text;
-        }
-
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
     }
 
 }
