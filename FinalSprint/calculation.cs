@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,8 +84,11 @@ namespace FinalSprint
 
         public string CalcAperture(double rate)
         {
-            double aper_num = 1000 / rate;
-            return aper_num.ToString("5");   // F5
+            double aper_num = 1 / rate;  // 1000/rate
+            //Debug.WriteLine(aper_num.ToString("F5"));
+
+            Debug.WriteLine(aper_num.ToString("G5"));
+            return aper_num.ToString("G5");   // F5
         }
     }
 }

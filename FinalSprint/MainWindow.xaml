@@ -30,7 +30,7 @@
                     <Rectangle HorizontalAlignment="Left" Height="242" Margin="32,345,0,0" Stroke="Black" VerticalAlignment="Top" Width="320"/>
                     <TextBlock x:Name="InstrumentReadingsLabel_Copy1" HorizontalAlignment="Left" Margin="52,365,0,0" TextWrapping="Wrap" Text="Current Source" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
                     <Button x:Name="on_btn" Content="ON" HorizontalAlignment="Left" Margin="254,365,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold" Click="currTurnON" Width="38" Height="29"/>
-                    <Button x:Name="off_btn" Content="OFF" HorizontalAlignment="Left" Margin="292,365,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold" Click="currTurnOFF" Width="38" Height="29"/>
+                    <Button x:Name="off_btn" Content="OFF" HorizontalAlignment="Left" Margin="292,365,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold" Click="currTurnOFF" Width="38" Height="29" IsEnabled="False"/>
                     <TextBlock HorizontalAlignment="Left" Margin="52,416,0,0" TextWrapping="Wrap" Text="Current Level (mA):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
                     <TextBlock HorizontalAlignment="Left" Margin="52,452,0,0" TextWrapping="Wrap" Text="Compliance (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
                     <TextBlock HorizontalAlignment="Left" Margin="52,488,0,0" TextWrapping="Wrap" Text="Range:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
@@ -49,7 +49,7 @@
                     <TextBlock HorizontalAlignment="Left" Margin="52,606,0,0" TextWrapping="Wrap" Text="Nano-voltmeter" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
                     <TextBlock HorizontalAlignment="Left" Margin="52,650,0,0" TextWrapping="Wrap" Text="Acquisition Rate (Hz):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
                     <TextBox x:Name="rateTextBox" HorizontalAlignment="Left" Margin="176,647,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="52" FontSize="14" Text="100.0" Height="24"/>
-                    <Button Content="Set" HorizontalAlignment="Left" Margin="233,647,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="30" Click="setVolt" FontWeight="SemiBold"/>
+                    <Button ToolTip="input hz" Content="Set" HorizontalAlignment="Left" Margin="233,647,0,0" VerticalAlignment="Top"  Height="24" FontSize="14" Width="30" Click="setVolt" FontWeight="SemiBold"/>
                     <TextBlock x:Name="liveRate" HorizontalAlignment="Left" Margin="276,650,0,0" TextWrapping="Wrap" Text="5.9999" VerticalAlignment="Top"/>
                     <TextBlock x:Name="Hz" HorizontalAlignment="Left" Margin="316,650,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Hz"/>
 

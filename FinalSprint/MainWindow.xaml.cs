@@ -156,6 +156,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
 
             try
@@ -172,6 +173,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
 
             try
@@ -181,6 +183,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }
 
@@ -198,6 +201,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
 
             try
@@ -207,6 +211,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                 //   YES
 
@@ -298,6 +303,7 @@ namespace FinalSprint
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    return;
                 }
             }
             else if (range == 1)
@@ -310,6 +316,7 @@ namespace FinalSprint
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    return;
                 }
             }
             else if (range == 2)
@@ -322,6 +329,7 @@ namespace FinalSprint
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    return;
                 }
             }
             else if (range == 3)
@@ -334,16 +342,24 @@ namespace FinalSprint
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    return;
                 }
             }
 
             double n1;
             if (Double.TryParse(currTextBox.Text, out n1)) { currLevel = currTextBox.Text; }
-            else { MessageBox.Show("Invalid current, please enter a valid decimal number in mA.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else 
+            { 
+                MessageBox.Show("Invalid current, please enter a valid decimal number in mA.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             double n2;
             if (Double.TryParse(compTextBox.Text, out n2)) { compliance = compTextBox.Text; }
-            else { MessageBox.Show("Invalid compliance voltage, please enter a valid decimal number in Volts.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { 
+                MessageBox.Show("Invalid compliance voltage, please enter a valid decimal number in Volts.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             try
             {
@@ -353,6 +369,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                     //   YES
 
@@ -366,6 +383,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                   //   YES
 
@@ -373,7 +391,7 @@ namespace FinalSprint
         {
             try
             {
-                //currentSource.Write("OUTP ON");
+                currentSource.Write("OUTP ON");
                 if ((off_btn.IsEnabled = false) && (on_btn.IsEnabled = true))
                 {
                     off_btn.IsEnabled = true;
@@ -383,6 +401,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                     //   YES
 
@@ -390,7 +409,7 @@ namespace FinalSprint
         {
             try
             {
-                //currentSource.Write("OUTP OFF");
+                currentSource.Write("OUTP OFF");
                 if ((off_btn.IsEnabled = true) && (on_btn.IsEnabled = false))
                 {
                     on_btn.IsEnabled = true;
@@ -400,6 +419,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                    //   YES
 
@@ -432,7 +452,10 @@ namespace FinalSprint
         {
             double r;
             if (Double.TryParse(rateTextBox.Text, out r)) { rate = r; }
-            else { MessageBox.Show("Invalid acquisition rate, please enter a valid decimal number in Hz.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { 
+                MessageBox.Show("Invalid acquisition rate, please enter a valid decimal number in Hz.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             try
             {
@@ -440,34 +463,51 @@ namespace FinalSprint
                 nanoVoltmeter.Write("SENS:VOLT:APER " + aperture);
 
                 nanoVoltmeter.Write("SENS:VOLT:APER?");
-                double x = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
-                liveRate.Text = x.ToString("5");       // F5
+                double x = 1 / (Double.Parse(nanoVoltmeter.ReadString())); // 1000/xx
+                liveRate.Text = x.ToString("G5");       // F5
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                        //   YES
 
         private void startCap(object sender, RoutedEventArgs e)
         {
-            if (nameTextBox.Text != null) { name = nameTextBox.Text; }
-            else { MessageBox.Show("Please enter your name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            if (!string.IsNullOrEmpty(nameTextBox.Text)) 
+            { 
+                name = nameTextBox.Text; 
+            }
+
+            else 
+            { 
+                MessageBox.Show("Please enter your name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             if (sampleTextBox.Text != null) { sample = sampleTextBox.Text; }
-            else { MessageBox.Show("Please enter the sample name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { MessageBox.Show("Please enter the sample name to continue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             double num1;
             if (Double.TryParse(lengthTextBox.Text, out num1)) { length = num1 / 1000; }
-            else { MessageBox.Show("Invalid length, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { MessageBox.Show("Invalid length, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             double num2;
             if (Double.TryParse(widthTextBox.Text, out num2)) { width = num2 / 1000; }
-            else { MessageBox.Show("Invalid width, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { MessageBox.Show("Invalid width, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             double num3;
             if (Double.TryParse(thicknessTextBox.Text, out num3)) { thickness = num3 / 1000; }
-            else { MessageBox.Show("Invalid thickness, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            else { MessageBox.Show("Invalid thickness, please enter a valid decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             area = width * thickness;
 
@@ -485,6 +525,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to instrument(s). A device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
         }                       //   YES
 
@@ -562,6 +603,7 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
+                return;
             }
         }                        //   YES
 
@@ -582,11 +624,13 @@ namespace FinalSprint
                 else
                 {
                     MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.");
+                    return;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
 
 
@@ -650,23 +694,26 @@ namespace FinalSprint
                 else
                 {
                     MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.");
+                    return;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
             }
 
             t_volt = Convert.ToDouble(temp_output);
             //Debug.WriteLine(t_volt);
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currTextBox.Text) / 1000;          ///////// CHECK THIS (test?)
+            current = Convert.ToDouble(currLevel) / 1000;          ///////// CHECK THIS (test?)
 
             //Calculate resistance, resistivity, and temperature values
             resistance = Calc.CalcResistance(voltage, current);
             resistivity = Calc.CalcResistivity(resistance, area, length);
             temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, temperature);
+            Debug.WriteLine(temperature);
         }                                                    //   YES
 
         private void ThTypeDrop(object sender, SelectionChangedEventArgs e)
