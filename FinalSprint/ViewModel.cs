@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,33 +25,48 @@ namespace FinalSprint
         {
             randomNumber = new Random();
             DynamicData = new ObservableCollection<Data>();
-            data = GenerateData();
-            LoadData();
+/*            data = GenerateData();
 
             timer = new DispatcherTimer();
             timer.Tick += timer_Tick;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
-            timer.Start();
+            timer.Start();*/
         }
 
-        public void AddData()
+        public void AddData(Data values)
         {
             for (int i = 0; i < rate; i++)
             {
                 index++;
                 if (index < 100)
                 {
-                    DynamicData.Add(this.data[index]);
+                    DynamicData.Add(values);
+                }
+                else if (index > 100)
+                {
+                    DynamicData.RemoveAt(0);//Remove data not visible
+                    DynamicData.Add(values);
+                }
+            }
+        }
+
+ /*       public void AddData()
+        {
+            Data sample = new Data(DateTime.Now, 1003, 1003, 1003);
+            index++;
+            Debug.WriteLine(sample.Value1);
+                if (index < 100)
+                {
+                    DynamicData.Add(new Data(DateTime.Now, 1003, 1003, 1003));
                 }
                 else if (index > 100)
                 {
                     DynamicData.RemoveAt(0);//Remove data not visible
                     DynamicData.Add(this.data[(index % (this.data.Count - 1))]);
                 }
-            }
-        }
+        }*/
 
-        public void LoadData()
+/*        public void LoadData()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -60,9 +76,9 @@ namespace FinalSprint
                     DynamicData.Add(this.data[index]);
                 }
             }
-        }
+        }*/
 
-        public ObservableCollection<Data> GenerateData()
+/*        public ObservableCollection<Data> GenerateData()
         {
             ObservableCollection<Data> generatedData = new ObservableCollection<Data>();
 
@@ -97,26 +113,29 @@ namespace FinalSprint
         private void timer_Tick(object sender, object e)
         {
             AddData();
-        }
+        }*/
     }
 
     public class Data
     {
-        public Data(DateTime date, double value, double value1, double value2)
+        public Data(DateTime date, double voltage, double current, double resistance, double temperature)
         {
             Date = date;
-            Value = value;
-            Value1 = value1;
-            Value2 = value2;
+            Voltage = voltage;
+            Current = current;
+            Resistance = resistance;
+            Temperature = temperature;
         }
 
         public DateTime Date { get; set; }
 
-        public double Value { get; set; }
+        public double Voltage { get; set; }
 
-        public double Value1 { get; set; }
+        public double Current { get; set; }
 
-        public double Value2 { get; set; }
+        public double Resistance { get; set; }
+
+        public double Temperature { get; set; }
     }
 }
 

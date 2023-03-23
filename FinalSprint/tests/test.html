@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SignalR Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.4/signalr.min.js"></script>
+</head>
+<body>
+    <input type="text" id="message" placeholder="Type a message">
+    <button id="send">Send</button>
+    <ul id="messages"></ul>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            // .withUrl("http://localhost:5100/Hubs/chatHub")
+            .withUrl("http://192.168.0.119:45455/Hubs/chatHub", {
+                skipNegotiation: false,
+                transport: signalR.HttpTransportType.WebSockets,
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.on("receiveMessage", message => {
+            const li = document.createElement("li");
+            li.textContent = message;
+            document.getElementById("messages").appendChild(li);
+        });
+
+        document.getElementById("send").addEventListener("click", () => {
+            const message = document.getElementById("message").value;
+            connection.invoke("sendMessage", message);
+            document.getElementById("message").value = "";
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+</body>
+</html>
