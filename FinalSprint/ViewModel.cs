@@ -118,12 +118,13 @@ namespace FinalSprint
 
     public class Data
     {
-        public Data(DateTime date, double voltage, double current, double resistance, double temperature)
+        public Data(DateTime date, double voltage, double current, double resistance, double resistivity, double temperature)
         {
             Date = date;
             Voltage = voltage;
             Current = current;
             Resistance = resistance;
+            Resistivity = resistivity;
             Temperature = temperature;
         }
 
@@ -134,10 +135,35 @@ namespace FinalSprint
         public double Current { get; set; }
 
         public double Resistance { get; set; }
-
+        public double Resistivity { get; set; }
         public double Temperature { get; set; }
     }
 }
+
+public class TableData
+{
+    public TableData(DateTime time, double voltage, double current, double resistance, double resistivity, double temperature)
+    {
+        Time = time;
+        Voltage = voltage;
+        Current = current;
+        Resistance = resistance;
+        Resistivity = resistivity;
+        Temperature = temperature;
+    }
+
+    public DateTime Time { get; set; }
+    public double Voltage { get; set; }
+
+    public double Current { get; set; }
+
+    public double Resistance { get; set; }
+
+    public double Resistivity { get; set; }
+    public double Temperature { get; set; }
+}
+
+
 
 
 //}

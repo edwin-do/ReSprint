@@ -22,6 +22,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using FinalSprint.Display;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Collections.ObjectModel;
+using Syncfusion.UI.Xaml.ScrollAxis;
 
 namespace FinalSprint
 {
@@ -40,8 +41,8 @@ namespace FinalSprint
     }
 
     public class HardwareInput
-    { 
-        public string? Time { get; set; }
+    {
+        public DateTime Time { get; set; }
         public double Voltage { get; set; }
 
         public double Current { get; set; }
@@ -91,8 +92,8 @@ namespace FinalSprint
         private HardwareInput hardwareInput = new HardwareInput();
         private UserInput userInput;
 
-        ObservableCollection<HardwareInput> myDataCollection = new ObservableCollection<HardwareInput>();
         ObservableCollection<Data> graphData = new ObservableCollection<Data>();
+        ObservableCollection<TableData> tableData = new ObservableCollection<TableData>();
         #endregion
 
         #region Properties
@@ -142,12 +143,14 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
-            SampleTable.ItemsSource = myDataCollection;
+            OutputTable.ItemsSource = tableData;
             Chart.Series[0].ItemsSource = graphData;
             Chart.Series[1].ItemsSource = graphData;
             Chart.Series[2].ItemsSource = graphData;
-            Chart2.Series[0].ItemsSource = graphData;
-            
+            Chart.Series[3].ItemsSource = graphData;
+            Chart.Series[4].ItemsSource = graphData;
+            Chart2.Series[0].ItemsSource = tableData;
+     
 
             //Initialise variables
             capture = false;
@@ -196,13 +199,65 @@ namespace FinalSprint
             {
                 Name = OperatorLabel.Text.ToString(),
                 SampleName = SampleNameLabel.Text.ToString(),
-                Date = DateTime.Now.ToString("yyyy-MM-dd")+"-"+DateTime.Now.ToShortTimeString(),
+                Date = DateTime.Now.ToString("yyyy-MM-dd-hh-mm"),
                 SamplingRate = double.Parse(SampleWidthLabel.Text),
                 SampleLength = double.Parse(SampleLengthLabel.Text),
                 SampleWidth = double.Parse(SampleWidthLabel.Text)
             };
             File = new FileOutput(@$"{userInput.Name}_{userInput.SampleName}_{userInput.Date}.csv");
             return true;
+        }
+
+        public void xR_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Resistance";
+            Chart2.PrimaryAxis.Header = "Resistance";
+        }
+        public void xRy_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Resistivity";
+            Chart2.PrimaryAxis.Header = "Resistivity";
+        }
+        public void xV_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Voltage";
+            Chart2.PrimaryAxis.Header = "Voltage";
+        }
+        public void xC_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Current";
+            Chart2.PrimaryAxis.Header = "Current";
+        }
+        public void xT_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Temperature";
+            Chart2.PrimaryAxis.Header = "Temperature";
+        }
+
+        public void yR_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Resistance";
+            Chart2.SecondaryAxis.Header = "Resistance";
+        }
+        public void yRy_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Resistivity";
+            Chart2.SecondaryAxis.Header = "Resistivity";
+        }
+        public void yV_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Voltage";
+            Chart2.SecondaryAxis.Header = "Voltage";
+        }
+        public void yC_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Current";
+            Chart2.SecondaryAxis.Header = "Current";
+        }
+        public void yT_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Temperature";
+            Chart2.SecondaryAxis.Header = "Temperature";
         }
 
         /// <summary>
@@ -428,13 +483,18 @@ namespace FinalSprint
                         Capture();
                         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            myDataCollection.Add(hardwareInput);
-                            graphData.Add(new Data(CaptureTime, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Temperature));
-                            int latestRow = SampleTable.Items.Count - 1;
-                            SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);                            
+                        tableData.Add(new TableData(hardwareInput.Time, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature));
+                        graphData.Add(new Data(hardwareInput.Time, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature));
+                        OutputTable.ScrollInView(new RowColumnIndex(tableData.Count, 0));
+                        File.WriteSampleOutput(hardwareInput);
+                        if (tableData.Count > 1500)
+                            {
+                                tableData.RemoveAt(0);
+                                graphData.RemoveAt(0);
+                            }     
                         }));
                         
-                        File.WriteSampleOutput(hardwareInput);
+                        
                         if (_canceller.Token.IsCancellationRequested)
                             break;
                     } while (true);
@@ -461,7 +521,7 @@ namespace FinalSprint
             hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
             hardwareInput.Current = rand.NextDouble() * 4 + 1;
             hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
-            hardwareInput.Time = $"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
+            hardwareInput.Time = DateTime.Now; //$"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
             hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
 
@@ -487,13 +547,14 @@ namespace FinalSprint
         }
 
 
-   /*     private void main_timer_Tick(object? sender, object e)
-        {
-            if (capture){
-                Data d = new Data(CaptureTime, hardwareInput.Voltage);
-                Graph.AddData(d);
-            }
-        }*/
+
+        /*     private void main_timer_Tick(object? sender, object e)
+             {
+                 if (capture){
+                     Data d = new Data(CaptureTime, hardwareInput.Voltage);
+                     Graph.AddData(d);
+                 }
+             }*/
 
         /*private void main_timer_Tick(object sender, object e)
         {

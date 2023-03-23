@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,7 @@ namespace FinalSprint.Display
             if (userInput.SampleLength < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
 
+            Debug.WriteLine(_filePath);
             using (StreamWriter writer = new StreamWriter(_filePath))
             {
                 writer.WriteLine(userInputHeader);
@@ -39,8 +41,6 @@ namespace FinalSprint.Display
         public void WriteSampleOutput(HardwareInput hardwareInput)
         {
 
-            if (string.IsNullOrEmpty(hardwareInput.Time))
-                throw new ArgumentOutOfRangeException("hardwareInput.Time", "Value cannot be empty.");
             if (hardwareInput.Voltage < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
             if (hardwareInput.Current < 0)
@@ -52,7 +52,7 @@ namespace FinalSprint.Display
 
             using (StreamWriter writer = new StreamWriter(_filePath, true))
             {
-                writer.WriteLine($"{hardwareInput.Time}, , , ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
+                writer.WriteLine($"{hardwareInput.Time.ToString("HH:mm:ss.fff")}, , , ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
             }
         }
     }
