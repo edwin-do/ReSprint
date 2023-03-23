@@ -3,49 +3,55 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:chart="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
         xmlns:local="clr-namespace:FinalSprint"
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av"
         Title="MainWindow" Height="1024" Width="1280" Icon="App.ico">
 
-    <Window.DataContext>
-        <local:DataGenerator/>
-    </Window.DataContext>
 
     <Grid>
+        <TabControl Height="NaN" Margin="457,391,10,30" Width="NaN">
+            <TabItem Header="Live Graph">
+                <Grid>
+                    <chart:SfChart x:Name="Chart" >
 
-        <chart:SfChart x:Name="Chart" Margin="0,0,28,56" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
-            <chart:SfChart.DataContext>
-                <local:DataGenerator/>
-            </chart:SfChart.DataContext>
-            <chart:SfChart.PrimaryAxis>
-                <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
-                    <chart:ChartAxis.Header>
-                        <TextBlock Margin="10" Text="Time" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:ChartAxis.Header>
-                </chart:DateTimeAxis>
-            </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.Legend>
+                            <chart:ChartLegend CheckBoxVisibility="Visible" ToggleSeriesVisibility="True" />
+                        </chart:SfChart.Legend>
+                        <chart:SfChart.Behaviors>
+                            <chart:ChartZoomPanBehavior EnableMouseWheelZooming="True" ZoomRelativeToCursor="True" EnablePanning="True" ResetOnDoubleTap="True" EnableSelectionZooming="True"/>
+                            <chart:ChartTrackBallBehavior/>
+                        </chart:SfChart.Behaviors>
+                        <chart:SfChart.PrimaryAxis  >
+                            <chart:TimeSpanAxis   EnableScrollBar="True" ShowTrackBallInfo="True" TickLineSize="5" TickLinesPosition="Outside"  Header="Time" LabelFormat="hh\:mm\:ss\:ff" LabelsIntersectAction="Hide" FontSize="14" FontFamily="SegoeUI"/>
+                        </chart:SfChart.PrimaryAxis>
 
-            <chart:SfChart.SecondaryAxis>
-                <chart:NumericalAxis Minimum="1000" Maximum="1006" 
-                                     Interval="1" >
-                    <chart:ChartAxis.Header>
-                        <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:ChartAxis.Header>
-                </chart:NumericalAxis>
-            </chart:SfChart.SecondaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis TickLineSize="5" TickLinesPosition="Outside" RangePadding="Additional" Header="Values" FontSize="14" FontFamily="SegoeUI" >
+                            </chart:NumericalAxis>
+                        </chart:SfChart.SecondaryAxis>
 
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="First" 
-                                        XBindingPath="Date" YBindingPath="Value" 
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Voltage" 
+                                        XBindingPath="Date" YBindingPath="Voltage" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Second" 
-                                        XBindingPath="Date" YBindingPath="Value1" 
+                                        VisibilityOnLegend="Visible"/>
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Current" 
+                                        XBindingPath="Date" YBindingPath="Current" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Third" 
-                                        XBindingPath="Date" YBindingPath="Value2" 
+                                        VisibilityOnLegend="Visible"/>
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistance" 
+                                        XBindingPath="Date" YBindingPath="Resistance" 
                                         LegendIcon="SeriesType"  StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
+                                        VisibilityOnLegend="Visible"/>
 
-        </chart:SfChart>
+                    </chart:SfChart>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TvR">
+                <chart:SfChart x:Name="Chart2">
+                    <chart:LineSeries  XBindingPath="Temperature" YBindingPath="Resistance" Interior="#4A4A4A" IsSortData="True" SortBy="X" SortDirection="Ascending"/>
+                </chart:SfChart>
+            </TabItem>
+        </TabControl>
+        
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="565,226,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
         <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Left" Margin="592,267,0,0" TextWrapping="Wrap" Text="Voltage (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
         <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Left" Margin="592,299,0,0" TextWrapping="Wrap" Text="Current (mA):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
@@ -73,18 +79,18 @@
             <ComboBoxItem Content="1 PLC (Recommended)"/>
             <ComboBoxItem Content="5 PLC (Slow)"/>
         </ComboBox>
-        <TextBlock x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="47,216,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
-        <TextBlock x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="37,74,0,0" TextWrapping="Wrap" Text="Operator Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="45,117,0,0" TextWrapping="Wrap" Text="Sample Name:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="47,216,0,0" TextWrapping="Wrap" Text="Sample Width:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="37,165,0,0" TextWrapping="Wrap" Text="Sample Length:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="43,261,0,0" TextWrapping="Wrap" Text="Sampling Rate:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <TextBlock x:Name="DateLabel" HorizontalAlignment="Left" Margin="104,312,0,0" TextWrapping="Wrap" Text="Date:" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <DatePicker x:Name="DateSelector" Margin="162,305,814,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
-        <TextBox HorizontalAlignment="Left" Margin="162,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14"/>
+        <TextBox x:Name="OperatorLabel" HorizontalAlignment="Left" Margin="162,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14" Text=""/>
+        <TextBox x:Name="SampleNameLabel" HorizontalAlignment="Left" Margin="162,115,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14" Text=""/>
+        <TextBox x:Name="SampleWidthLabel" HorizontalAlignment="Left" Margin="162,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14" Text=""/>
+        <TextBox x:Name="SampleLengthLabel" HorizontalAlignment="Left" Margin="162,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14" Text=""/>
+        <TextBox x:Name="SamplingRateLabel" HorizontalAlignment="Left" Margin="162,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304" FontSize="14" Text=""/>
         <TextBlock x:Name="InputLabel" HorizontalAlignment="Left" Margin="32,32,0,0" TextWrapping="Wrap" Text="INPUT" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
         <TextBlock x:Name="InstrumentReadingsLabel_Copy" HorizontalAlignment="Left" Margin="565,32,0,0" TextWrapping="Wrap" Text="INSTRUMENT CONTROLS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
         <TextBox x:Name="voltage_out" HorizontalAlignment="Left" Margin="748,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="409" FontSize="14"/>
@@ -97,5 +103,6 @@
         <TextBlock x:Name="InstrumentVoltageTitle_Copy3" HorizontalAlignment="Left" Margin="701,144,0,0" TextWrapping="Wrap" Text="Integration Time (PLC):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477"/>
         <Button x:Name="RemoteAccessBtn2" Content="Stop Hosting" HorizontalAlignment="Left" Margin="158,610,0,0" VerticalAlignment="Top" Height="40" Width="115" Click="Stop_Click"/>
         <Label x:Name="TestLabel" Content="Test" HorizontalAlignment="Left" Margin="200,697,0,0" VerticalAlignment="Top"/>
+	<DataGrid x:Name="SampleTable" ScrollViewer.CanContentScroll="False" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="58,439,842,63"/>
     </Grid>
 </Window>

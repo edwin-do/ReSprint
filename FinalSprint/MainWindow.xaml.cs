@@ -18,7 +18,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
 using Syncfusion.Windows.Shared;
-
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.ComponentModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +26,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Client;
 using FinalSprint.Hubs;
+using FinalSprint.Display;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Cors;
 using System.IO;
 //using System.Windows.Forms;
@@ -35,6 +38,29 @@ namespace FinalSprint
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    public class UserInput
+    {
+        public string? Name { get; set; }
+        public string? SampleName { get; set; }
+        public string? Date { get; set; }
+        public double SamplingRate { get; set; }
+        public double SampleLength { get; set; }
+        public double SampleWidth { get; set; }
+    }
+
+    public class HardwareInput
+    { 
+        public string? Time { get; set; }
+        public double Voltage { get; set; }
+
+        public double Current { get; set; }
+
+        public double Resistance { get; set; }
+
+        public double Resistivity { get; set; }
+        public double Temperature { get; set; }
+    }
     public partial class MainWindow : Window
     {
         public Device device;
@@ -49,6 +75,9 @@ namespace FinalSprint
         //Class objects
         private InputCommunication InputComm;
         private Calculation Calc;
+        private FileOutput File;
+        private DataGenerator Graph;
+
         //private DataGenerator DatGen;
 
         //Member variables
@@ -59,6 +88,7 @@ namespace FinalSprint
         private double resistivity;
         private double area;
         private double length;
+        private DateTime CaptureTime;
 
         private CancellationTokenSource _canceller;
 
@@ -69,6 +99,11 @@ namespace FinalSprint
         #region Fields
         private string currentVisualStyle;
         private string currentSizeMode;
+        private HardwareInput hardwareInput = new HardwareInput();
+        private UserInput userInput;
+
+        ObservableCollection<HardwareInput> myDataCollection = new ObservableCollection<HardwareInput>();
+        ObservableCollection<Data> graphData = new ObservableCollection<Data>();
         #endregion
         private HubConnection _connection;
 
@@ -113,6 +148,7 @@ namespace FinalSprint
         {
             InitializeComponent();
             _chatHub = new ChatHub(this);
+			Graph = (DataGenerator)this.DataContext;
 
             this.Loaded += OnLoaded;
             Start_Server();
@@ -120,7 +156,12 @@ namespace FinalSprint
             //Initialise Class objects
             Calc = new Calculation();
             InputComm = new InputCommunication();
-            //DatGen = (DataGenerator)this.DataContext;
+            SampleTable.ItemsSource = myDataCollection;
+            Chart.Series[0].ItemsSource = graphData;
+            Chart.Series[1].ItemsSource = graphData;
+            Chart.Series[2].ItemsSource = graphData;
+            Chart2.Series[0].ItemsSource = graphData;
+            
 
             //Initialise variables
             capture = false;
@@ -133,10 +174,11 @@ namespace FinalSprint
 
 
             //Initialise timer for graph update
-            main_timer = new DispatcherTimer();
+/*            main_timer = new DispatcherTimer();
             main_timer.Tick += main_timer_Tick;
             main_timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             main_timer.Start();
+*/
         }
         /// <summary>
         /// Called when [loaded].
@@ -145,7 +187,42 @@ namespace FinalSprint
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         /// 
 
+		private bool check()
+        {
+            if (string.IsNullOrEmpty(OperatorLabel.Text)){
+                MessageBox.Show("Please Operator Name in the textbox.");
+                return false;
 
+            }
+            else if (string.IsNullOrEmpty(SampleNameLabel.Text)){
+                MessageBox.Show("Please Sample Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SampleWidthLabel.Text)){
+                MessageBox.Show("Please SampleWidth Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SampleLengthLabel.Text)){
+                MessageBox.Show("Please SampleLength Name in the textbox.");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(SamplingRateLabel.Text)){
+                MessageBox.Show("Please SamplingRate Name in the textbox.");
+                return false;
+            }
+
+            userInput = new UserInput
+            {
+                Name = OperatorLabel.Text.ToString(),
+                SampleName = SampleNameLabel.Text.ToString(),
+                Date = DateTime.Now.ToString("yyyy-MM-dd")+"-"+DateTime.Now.ToShortTimeString(),
+                SamplingRate = double.Parse(SampleWidthLabel.Text),
+                SampleLength = double.Parse(SampleLengthLabel.Text),
+                SampleWidth = double.Parse(SampleWidthLabel.Text)
+            };
+            File = new FileOutput(@$"{userInput.Name}_{userInput.SampleName}_{userInput.Date}.csv");
+            return true;
+        }
 
         private IHost _host;/*        var chatHub = new ChatHub(this);*/
 
@@ -569,29 +646,43 @@ namespace FinalSprint
 
         private async void startCap(object sender, RoutedEventArgs e)
         {
-            //startCapBtn.Enabled = false;
-            //stopCapBtn.Enabled = true;
-            capture = true;
-            //Date = DateTime.Now;
-            _canceller = new CancellationTokenSource();
-
-            await Task.Run(() =>
+            if (check())
             {
-                do
-                {
-                    //device.Write("FETC?");
-                    //out_put = device.ReadString();
-                    //voltVals.Add(out_put);
-                    Thread.Sleep(50);
-                    Capture();
-                    if (_canceller.Token.IsCancellationRequested)
-                        break;
-                } while (true);
-            });
 
-            _canceller.Dispose();
-            //startCapBtn.Enabled = true;
-            //stopCapBtn.Enabled = false;
+                File.WriteUserInput(userInput);
+
+                //startCapBtn.Enabled = false;
+                //stopCapBtn.Enabled = true;
+                capture = true;
+                //Date = DateTime.Now;
+                _canceller = new CancellationTokenSource();
+                await Task.Run(() =>
+                {
+                    do
+                    {
+                        //device.Write("FETC?");
+                        //out_put = device.ReadString();
+                        //voltVals.Add(out_put);
+                        Thread.Sleep(50);
+                        Capture();
+                        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            myDataCollection.Add(hardwareInput);
+                            graphData.Add(new Data(CaptureTime, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Temperature));
+                            int latestRow = SampleTable.Items.Count - 1;
+                            SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);                            
+                        }));
+                        
+                        File.WriteSampleOutput(hardwareInput);
+                        if (_canceller.Token.IsCancellationRequested)
+                            break;
+                    } while (true);
+                });
+
+                _canceller.Dispose();
+                //startCapBtn.Enabled = true;
+                //stopCapBtn.Enabled = false;
+            }
         }
 
         private void stopCap(object sender, RoutedEventArgs e)
@@ -602,35 +693,48 @@ namespace FinalSprint
 
         private void Capture()
         {
+            Random rand = new Random();
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
+            CaptureTime = DateTime.Now;
+            hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
+            hardwareInput.Current = rand.NextDouble() * 4 + 1;
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+            hardwareInput.Time = $"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
+
+
+
+/*
             device.Write("FETC?");
             //device.Write("SENS:CH");
             out_put = device.ReadString();
-            voltage = (-1)*Convert.ToDouble(out_put);
-            Debug.WriteLine(voltage);
+            hardwareInput.Voltage = Math.Abs(Convert.ToDouble(out_put));
 
             //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel)/1000;
+            hardwareInput.Current = Convert.ToDouble(currLevel) / 1000;
 
             //Calculate resistance and resistivity values
-            resistance = Calc.CalcResistance(voltage, current);
-            resistivity = Calc.CalcResistivity(resistance, area, length);
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, area, length);
+
+            hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
+
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";*/
 
         }
 
 
-        //private void timer_Tick(object? sender, object e)
-        //{
-        //    //Pass values to DataGenerator
-        //    if (capture)
-        //    {
-        //        DatGen.AddData(new Data(Date, current, voltage, resistivity));
-        //        Date = Date.Add(TimeSpan.FromMilliseconds(50));
-        //    }
-        //}
+   /*     private void main_timer_Tick(object? sender, object e)
+        {
+            if (capture){
+                Data d = new Data(CaptureTime, hardwareInput.Voltage);
+                Graph.AddData(d);
+            }
+        }*/
 
-        private void main_timer_Tick(object sender, object e)
+        /*private void main_timer_Tick(object sender, object e)
         {
             voltage_out.Text = voltage.ToString();
             current_out.Text = currLevel;
@@ -641,7 +745,7 @@ namespace FinalSprint
             //{
             //    DatGen.AddData();
             //}
-        }
+        }*/
     }
 
 }
