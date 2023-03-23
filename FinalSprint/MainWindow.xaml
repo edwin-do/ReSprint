@@ -8,39 +8,50 @@
 
 
     <Grid>
+        <TabControl Height="NaN" Margin="457,391,10,30" Width="NaN">
+            <TabItem Header="Live Graph">
+                <Grid>
+                    <chart:SfChart x:Name="Chart" >
 
-        <chart:SfChart x:Name="Chart" Margin="0,0,28,56" AreaBorderThickness="0,1,1,1" HorizontalAlignment="Right" Width="779" Height="510" VerticalAlignment="Bottom">
+                        <chart:SfChart.Legend>
+                            <chart:ChartLegend CheckBoxVisibility="Visible" ToggleSeriesVisibility="True" />
+                        </chart:SfChart.Legend>
+                        <chart:SfChart.Behaviors>
+                            <chart:ChartZoomPanBehavior EnableMouseWheelZooming="True" ZoomRelativeToCursor="True" EnablePanning="True" ResetOnDoubleTap="True" EnableSelectionZooming="True"/>
+                            <chart:ChartTrackBallBehavior/>
+                        </chart:SfChart.Behaviors>
+                        <chart:SfChart.PrimaryAxis  >
+                            <chart:TimeSpanAxis   EnableScrollBar="True" ShowTrackBallInfo="True" TickLineSize="5" TickLinesPosition="Outside"  Header="Time" LabelFormat="hh\:mm\:ss\:ff" LabelsIntersectAction="Hide" FontSize="14" FontFamily="SegoeUI"/>
+                        </chart:SfChart.PrimaryAxis>
 
-            <chart:SfChart.PrimaryAxis>
-                <chart:DateTimeAxis LabelFormat="hh:mm:ss" Height="63" Width="171">
-                    <chart:DateTimeAxis.Header>
-                        <TextBlock Margin="10" Text="Time" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:DateTimeAxis.Header>
-                </chart:DateTimeAxis>
-            </chart:SfChart.PrimaryAxis>
+                        <chart:SfChart.SecondaryAxis>
+                            <chart:NumericalAxis TickLineSize="5" TickLinesPosition="Outside" RangePadding="Additional" Header="Values" FontSize="14" FontFamily="SegoeUI" >
+                            </chart:NumericalAxis>
+                        </chart:SfChart.SecondaryAxis>
 
-            <chart:SfChart.SecondaryAxis>
-                <chart:NumericalAxis RangePadding="Additional" >
-                    <chart:NumericalAxis.Header>
-                        <TextBlock Margin="10" Text="Value" FontSize="16" FontFamily="SegoeUI"/>
-                    </chart:NumericalAxis.Header>
-                </chart:NumericalAxis>
-            </chart:SfChart.SecondaryAxis>
-
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="First" 
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Voltage" 
                                         XBindingPath="Date" YBindingPath="Voltage" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
-                                        />
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Second" 
+                                        VisibilityOnLegend="Visible"/>
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Current" 
                                         XBindingPath="Date" YBindingPath="Current" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
-            <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Third" 
+                                        VisibilityOnLegend="Visible"/>
+                        <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistance" 
                                         XBindingPath="Date" YBindingPath="Resistance" 
                                         LegendIcon="SeriesType"  StrokeThickness="1"
-                                        ItemsSource="{Binding DynamicData}"/>
+                                        VisibilityOnLegend="Visible"/>
 
-        </chart:SfChart>
+                    </chart:SfChart>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TvR">
+                <chart:SfChart x:Name="Chart2">
+                    <chart:LineSeries  XBindingPath="Temperature" YBindingPath="Resistance" Interior="#4A4A4A" IsSortData="True" SortBy="X" SortDirection="Ascending"/>
+                </chart:SfChart>
+            </TabItem>
+        </TabControl>
+        
         <TextBlock x:Name="InstrumentReadingsLabel" HorizontalAlignment="Left" Margin="565,226,0,0" TextWrapping="Wrap" Text="INSTRUMENT READINGS" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="18"/>
         <TextBlock x:Name="InstrumentVoltageTitle" HorizontalAlignment="Left" Margin="592,267,0,0" TextWrapping="Wrap" Text="Voltage (V):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>
         <TextBlock x:Name="InstrumentCurrentTitle" HorizontalAlignment="Left" Margin="592,299,0,0" TextWrapping="Wrap" Text="Current (mA):" VerticalAlignment="Top" RenderTransformOrigin="0.493,8.477" FontSize="14"/>

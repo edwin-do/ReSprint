@@ -146,6 +146,8 @@ namespace FinalSprint
             Chart.Series[0].ItemsSource = graphData;
             Chart.Series[1].ItemsSource = graphData;
             Chart.Series[2].ItemsSource = graphData;
+            Chart2.Series[0].ItemsSource = graphData;
+            
 
             //Initialise variables
             capture = false;
@@ -194,7 +196,7 @@ namespace FinalSprint
             {
                 Name = OperatorLabel.Text.ToString(),
                 SampleName = SampleNameLabel.Text.ToString(),
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                Date = DateTime.Now.ToString("yyyy-MM-dd")+"-"+DateTime.Now.ToShortTimeString(),
                 SamplingRate = double.Parse(SampleWidthLabel.Text),
                 SampleLength = double.Parse(SampleLengthLabel.Text),
                 SampleWidth = double.Parse(SampleWidthLabel.Text)
@@ -415,7 +417,6 @@ namespace FinalSprint
                 capture = true;
                 //Date = DateTime.Now;
                 _canceller = new CancellationTokenSource();
-
                 await Task.Run(() =>
                 {
                     do
@@ -428,14 +429,9 @@ namespace FinalSprint
                         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                         {
                             myDataCollection.Add(hardwareInput);
-                            graphData.Add(new Data(CaptureTime, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance));
+                            graphData.Add(new Data(CaptureTime, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Temperature));
                             int latestRow = SampleTable.Items.Count - 1;
-                            SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);
-                            if (graphData.Count > 100)
-                            {
-                                graphData.RemoveAt(0);
-                            }
-                            
+                            SampleTable.ScrollIntoView(SampleTable.Items[latestRow]);                            
                         }));
                         
                         File.WriteSampleOutput(hardwareInput);
@@ -462,16 +458,16 @@ namespace FinalSprint
             //Get voltage and current values
             //voltage = InputComm.GetVoltage();
             CaptureTime = DateTime.Now;
-            /*hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
+            hardwareInput.Voltage = rand.NextDouble() * 4 + 1;
             hardwareInput.Current = rand.NextDouble() * 4 + 1;
             hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
             hardwareInput.Time = $"{CaptureTime.Hour:00}:{CaptureTime.Minute:00}:{CaptureTime.Second:00}.{CaptureTime.Millisecond:000}.{CaptureTime.Microsecond:000}";
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
-            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);*/
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.SampleLength * userInput.SampleWidth, userInput.SampleLength);
 
 
 
-
+/*
             device.Write("FETC?");
             //device.Write("SENS:CH");
             out_put = device.ReadString();
@@ -486,7 +482,7 @@ namespace FinalSprint
 
             hardwareInput.Temperature = rand.NextDouble() * 60 - 10;
 
-            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";
+            hardwareInput.Time = $"{System.DateTime.Now.Hour:00}:{DateTime.Now.Minute:00}:{DateTime.Now.Second:00}.{DateTime.Now.Millisecond:000}.{DateTime.Now.Microsecond:000}";*/
 
         }
 
