@@ -368,6 +368,11 @@ namespace FinalSprint
             });
         }
 
+        public bool getExperimentStatus()
+        {
+            return capture;
+        }
+
 
 
 

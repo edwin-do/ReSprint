@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Xps.Serialization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FinalSprint.Hubs
@@ -34,13 +37,18 @@ namespace FinalSprint.Hubs
             _mainWindow.TurnCurrentOff();
         }
 
+        public async Task GetExperimentStatus()
+        {
+            bool status = _mainWindow.getExperimentStatus();
+            await Clients.All.SendAsync("StatusUpdate", status);
+        }
+
         public async Task StopCapture(string message)
         {
             Console.WriteLine(message);
             await Clients.All.SendAsync("ReceiveMessage", message);
             _mainWindow.UpdateLabel(message);
         }
-
 
     }
 }
