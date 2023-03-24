@@ -7,10 +7,15 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <StartupObject></StartupObject>
+    <ApplicationIcon>ReSprint.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="App.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ReSprint.ico" />
   </ItemGroup>
 
   <ItemGroup>

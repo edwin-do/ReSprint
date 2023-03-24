@@ -115,28 +115,6 @@ namespace FinalSprint
             AddData();
         }*/
     }
-
-    public class Data
-    {
-        public Data(DateTime date, double voltage, double current, double resistance, double temperature)
-        {
-            Date = date;
-            Voltage = voltage;
-            Current = current;
-            Resistance = resistance;
-            Temperature = temperature;
-        }
-
-        public DateTime Date { get; set; }
-
-        public double Voltage { get; set; }
-
-        public double Current { get; set; }
-
-        public double Resistance { get; set; }
-
-        public double Temperature { get; set; }
-    }
 }
 
 
