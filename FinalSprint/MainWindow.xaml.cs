@@ -466,7 +466,8 @@ namespace FinalSprint
             {
 
                 File.WriteUserInput(userInput);
-
+                xAxis.AllowDrop = false;
+                yAxis.AllowDrop = false;
                 //startCapBtn.Enabled = false;
                 //stopCapBtn.Enabled = true;
                 capture = true;
@@ -510,6 +511,8 @@ namespace FinalSprint
         {
             _canceller.Cancel();
             capture = false;
+            xAxis.AllowDrop = true;
+            yAxis.AllowDrop = true;
         }
 
         private void Capture()
