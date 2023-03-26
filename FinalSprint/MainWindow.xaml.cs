@@ -70,6 +70,8 @@ namespace FinalSprint
         private double t_volt;
         private double temperature;
         private double j_temp;
+        Semaphore volt;
+        Semaphore temp;
 
         private CancellationTokenSource _canceller_volt;
         private CancellationTokenSource _canceller_temp;
@@ -114,6 +116,9 @@ namespace FinalSprint
             temperature = 0.0;
             j_temp = 0.0;
             th_type = 1;
+
+            volt = new Semaphore(0, 1);
+            temp = new Semaphore(0, 1);
 
 
             int currentSecondaryAddress = 0;
@@ -507,6 +512,7 @@ namespace FinalSprint
             if (check())
             {
                 area = width * thickness;
+                hardwareInput.Current = Convert.ToDouble(CurrentLevel.Text) / 1000;
 
                 File.WriteUserInput(userInput);
                 try
@@ -536,6 +542,8 @@ namespace FinalSprint
                 do
                 {
                     Capture();
+                    /*volt.Release();
+                    temp.WaitOne();*/
                     Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         if (!double.IsInfinity(Math.Abs(hardwareInput.Resistance)) && !double.IsNaN(Math.Abs(hardwareInput.Resistance)) && !double.IsInfinity(Math.Abs(hardwareInput.Resistivity)) && !double.IsNaN(Math.Abs(hardwareInput.Resistivity)))
@@ -569,6 +577,8 @@ namespace FinalSprint
                 do
                 {
                     CaptureTemp();
+                    /*temp.Release();
+                    volt.WaitOne();*/
                     
                    
 
@@ -596,8 +606,8 @@ namespace FinalSprint
                 MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
                 return;
             }
-            Chart.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
-            Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
+            Chart.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
+  /*          Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");*/
         }
 
         private void Capture()
@@ -643,10 +653,6 @@ namespace FinalSprint
             t_volt = Convert.ToDouble(temp_output)*1000;
             Debug.WriteLine(temp_output);
             Debug.WriteLine(t_volt);
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                hardwareInput.Current = Convert.ToDouble(CurrentLevel.Text) / 1000;          ///////// CHECK THIS (test?)
-            }));
             hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
             hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.UserSampleWidth*userInput.UserSampleThickness, userInput.UserSampleLength);
             hardwareInput.Temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, temperature);
