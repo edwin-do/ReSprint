@@ -10,8 +10,8 @@ namespace FinalSprint.Display
     public class FileOutput
     {
         private readonly string _filePath;
-        private readonly string userInputHeader = "Name, SampleName, Date, SamplingRate, SampleLength, SampleWidth\n";
-        private readonly string hardwareInputHeader = "Time, ,Critical Resistence Change, Critical Slope Change, Voltage, Current, Resistance, Resistivity, Temperture\n";
+        private readonly string userInputHeader = "Operator Name, Sample Name, Date, Sample Length, Sample Width, Sample Thickness\n";
+        private readonly string hardwareInputHeader = "Time, ,Voltage, Current, Resistance, Resistivity, Temperature\n";
 
         public FileOutput(string filePath)
         {
@@ -20,12 +20,14 @@ namespace FinalSprint.Display
 
         public void WriteUserInput(UserInput userInput)
         {
-
-            if (userInput.UserSampleWidth < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
-            if (userInput.UserSampleLength < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
-
+/*
+            if (userInput.UserSampleWidth <= 0)
+                throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be zero or negative.");
+            if (userInput.UserSampleLength <= 0)
+                throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be zero or negative.");
+            if (userInput.UserSampleThickness <= 0)
+                throw new ArgumentOutOfRangeException("userInput.SampleThickness", "Value cannot be zero or negative.");
+*/
             using (StreamWriter writer = new StreamWriter(_filePath))
             {
                 writer.WriteLine(userInputHeader);
@@ -36,19 +38,19 @@ namespace FinalSprint.Display
 
         public void WriteSampleOutput(HardwareInput hardwareInput)
         {
-
+/*
             if (hardwareInput.Voltage < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
+                throw new ArgumentOutOfRangeException("userInput.Voltage", "Value cannot be negative.");
             if (hardwareInput.Current < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
+                throw new ArgumentOutOfRangeException("userInput.Current", "Value cannot be negative.");
             if (hardwareInput.Resistance < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
             if (hardwareInput.Resistivity < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
-
+*/
             using (StreamWriter writer = new StreamWriter(_filePath, true))
             {
-                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, , , ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
+                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
             }
         }
     }
