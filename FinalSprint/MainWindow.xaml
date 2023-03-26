@@ -79,8 +79,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" Content="Current Source"  VerticalAlignment="Center" FontSize="18" Margin="15,0,0,0"/>
-                                <Button Grid.Row="0" Grid.Column="1" x:Name="OnButton" Content="ON" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="CurrentPower" Width="38" Height="29" Margin="51,0,0,0"/>
-                                <Button Grid.Row="0" Grid.Column="1" x:Name="OffButton" Content="OFF" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="CurrentPower" Width="38" Height="29" IsEnabled="False" Margin="91,0,0,0"/>
+                                <Button Grid.Row="0" Grid.Column="1" x:Name="OnButton" Content="ON" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="CurrentPowerOn" Width="38" Height="29" IsEnabled="True" Margin="51,0,0,0"/>
+                                <Button Grid.Row="0" Grid.Column="1" x:Name="OffButton" Content="OFF" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Click="CurrentPowerOff" Width="38" Height="29" IsEnabled="False" Margin="91,0,0,0"/>
                                 <Label Grid.Row="1" Grid.Column="0" Content="Current Level (mA):" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="14" Padding="0" />
                                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="CurrentLevel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120" Margin="20, 0,0,0" FontSize="14" />
                                 <Label Grid.Row="2" Grid.Column="0" Content="Compliance (V):" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="14" Padding="0"/>
@@ -114,7 +114,7 @@
                                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Padding="0" Content="Acquisition Rate (Hz):"  HorizontalAlignment="Center" FontSize="14"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="SampleRate" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="24" Text="100.0" FontSize="14" />
                                 <Button Grid.Row="1" Grid.Column="2" ToolTip="Input hz" Content="Set" HorizontalAlignment="Center"  VerticalAlignment="Center"  Height="24" FontSize="14" Width="30" Click="SetVolt" FontWeight="SemiBold"/>
-                                <TextBlock x:Name="LiveRate" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center"  TextWrapping="Wrap" Text="5.9999 Hz" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="LiveRate" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" Text="5.9999 Hz" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                         <Border Grid.Row="3" BorderBrush="Black" BorderThickness="1" Margin="40,0,40,0">
@@ -160,11 +160,11 @@
                         ColumnSizer="Star" AllowSorting="False" AllowFiltering="True" AllowDraggingColumns="True" Margin="20,20,20,10">
                         <Syncfusion:SfDataGrid.Columns>
                             <Syncfusion:GridDateTimeColumn  MappingName="Time" CustomPattern="hh:mm:ss:fff" Pattern="CustomPattern"   AllowSorting="True"/>
-                            <Syncfusion:GridNumericColumn MappingName="Voltage"  />
-                            <Syncfusion:GridNumericColumn MappingName="Current"  />
-                            <Syncfusion:GridNumericColumn MappingName="Resistance"   />
-                            <Syncfusion:GridNumericColumn MappingName="Resistivity"   />
-                            <Syncfusion:GridNumericColumn MappingName="Temperature"  />
+                            <Syncfusion:GridNumericColumn MappingName="Voltage" NumberDecimalDigits="10" />
+                            <Syncfusion:GridNumericColumn MappingName="Current"  NumberDecimalDigits="10"/>
+                            <Syncfusion:GridNumericColumn MappingName="Resistance"  NumberDecimalDigits="10" />
+                            <Syncfusion:GridNumericColumn MappingName="Resistivity"  NumberDecimalDigits="10" />
+                            <Syncfusion:GridNumericColumn MappingName="Temperature"  NumberDecimalDigits="10"/>
                         </Syncfusion:SfDataGrid.Columns>
                     </Syncfusion:SfDataGrid>
                     <Syncfusion:TabControlExt HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" CloseButtonType="Hide" AllowDrop="False" TabListContextMenuOptions="None" Margin="20,10,20,20">
@@ -188,23 +188,23 @@
                                     </chart:SfChart.SecondaryAxis>
 
                                     <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Voltage" 
-                                        XBindingPath="Date" YBindingPath="Voltage" 
+                                        XBindingPath="Time" YBindingPath="Voltage" 
                                         LegendIcon="SeriesType" StrokeThickness="1"
                                         VisibilityOnLegend="Visible"/>
                                     <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Current" 
-                                        XBindingPath="Date" YBindingPath="Current" 
+                                        XBindingPath="Time" YBindingPath="Current" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
                                         VisibilityOnLegend="Visible"/>
                                     <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistance" 
-                                        XBindingPath="Date" YBindingPath="Resistance" 
+                                        XBindingPath="Time" YBindingPath="Resistance" 
                                         LegendIcon="SeriesType"  StrokeThickness="1"
                                         VisibilityOnLegend="Visible"/>
                                     <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistivity" 
-                                        XBindingPath="Date" YBindingPath="Resistivity" 
+                                        XBindingPath="Time" YBindingPath="Resistivity" 
                                         LegendIcon="SeriesType"   StrokeThickness="1"
                                         VisibilityOnLegend="Visible"/>
                                     <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Temperature" 
-                                        XBindingPath="Date" YBindingPath="Temperature" 
+                                        XBindingPath="Time" YBindingPath="Temperature" 
                                         LegendIcon="SeriesType"  StrokeThickness="1"
                                         VisibilityOnLegend="Visible"/>
 

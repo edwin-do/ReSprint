@@ -32,6 +32,7 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Cors;
 using System.IO;
 using Syncfusion.UI.Xaml.ScrollAxis;
+using System.Text.RegularExpressions;
 
 namespace FinalSprint
 {
@@ -85,6 +86,7 @@ namespace FinalSprint
         public MainWindow()
         {
             _chatHub = new ChatHub(this);
+            Start_Server();
 
             InitializeComponent();
 
@@ -135,7 +137,7 @@ namespace FinalSprint
 
                 nanoVoltmeter.Write("SENS:VOLT:APER?");
                 double y = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
-                LiveRate.Text = y.ToString("5");
+                LiveRate.Text = y.ToString("G5");
             }
             catch (Exception ex)
             {
@@ -177,6 +179,109 @@ namespace FinalSprint
             }
         }
 
+        private IHost _host;/*        var chatHub = new ChatHub(this);*/
+
+        private async void Start_Server()
+        {
+            _host?.Dispose();
+            _host = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                /*webBuilder.UseUrls("http://localhost:5100");*/
+                webBuilder.UseUrls("http://*:5100");
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
+                    services.AddCors(options =>
+                    {
+                        options.AddPolicy("CorsPolicy",
+                            builder =>
+                            {
+                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
+                                       .AllowAnyMethod()
+                                       .AllowAnyHeader()
+                                       .WithExposedHeaders("Content-Disposition")
+                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
+                                       .SetIsOriginAllowed((x) => true)
+                                       .AllowCredentials();
+                            });
+                    });
+                    services.AddSignalR();
+                });
+                webBuilder.Configure(app =>
+                {
+                    app.UseWebSockets();
+
+                    app.Use(async (context, next) =>
+                    {
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null" });
+                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                        await next();
+                    });
+                    app.UseCors("CorsPolicy");
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
+                    });
+                });
+            })
+            .Build();
+
+
+            await _host.StartAsync();
+        }
+
+        //Hub Methods 
+/*        public void UpdateLabel(string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                TestLabel.Content = message;
+            });
+        }*/
+
+        public void TurnCurrentOn()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // call SCPI connect to 6220
+                if (currentSource != null)
+                {
+                    currentSource.Dispose();
+                }
+
+                int currentSecondaryAddress = 0;
+
+                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
+
+                currentSource.Write("OUTP ON");
+            });
+        }
+
+        public void TurnCurrentOff()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // call SCPI connect to 6220
+                if (currentSource != null)
+                {
+                    currentSource.Dispose();
+                }
+
+                int currentSecondaryAddress = 0;
+
+                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
+
+                currentSource.Write("OUTP OFF");
+            });
+        }
+
+        public bool getExperimentStatus()
+        {
+            return capture_volt && capture_temp;
+        }
+
         private bool check()
         {
             if (string.IsNullOrEmpty(OperatorName.Text))
@@ -215,44 +320,8 @@ namespace FinalSprint
                 UserSampleThickness = double.Parse(SampleThickness.Text)
             };
             string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
-            File = new FileOutput(@$"{userInput.UserName}_{userInput.UserSampleName}_{SampleDate}.csv");
+            File = new FileOutput(@$"{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
             return true;
-        }
-
-        public void TurnCurrentOn()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // call SCPI connect to 6220
-                if (currentSource != null)
-                {
-                    currentSource.Dispose();
-                }
-
-                int currentSecondaryAddress = 0;
-
-                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
-
-                currentSource.Write("OUTP ON");
-            });
-        }
-
-        public void TurnCurrentOff()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // call SCPI connect to 6220
-                if (currentSource != null)
-                {
-                    currentSource.Dispose();
-                }
-
-                int currentSecondaryAddress = 0;
-
-                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
-
-                currentSource.Write("OUTP OFF");
-            });
         }
 
         private void RangeDrop(object sender, SelectionChangedEventArgs e)
@@ -342,7 +411,7 @@ namespace FinalSprint
             }
 
             double n2;
-            if (Double.TryParse(CurrentLevel.Text, out n2)) { compliance = CurrentLevel.Text; }
+            if (Double.TryParse(CurrentLevel.Text, out n2)) { compliance = Compliance.Text; }
             else
             {
                 MessageBox.Show("Invalid compliance voltage, please enter a valid decimal number in Volts.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -365,6 +434,8 @@ namespace FinalSprint
         {
             try
             {
+                OffButton.IsEnabled = false;
+                OnButton.IsEnabled = true;
                 currentSource.Write("*RST");
                 currentSource.Write("CLE");
             }
@@ -375,16 +446,28 @@ namespace FinalSprint
             }
         }
 
-        private void CurrentPower(object sender, RoutedEventArgs e)
+        private void CurrentPowerOn(object sender, RoutedEventArgs e)
         {
             try
             {
                 OnButton.IsEnabled = !OnButton.IsEnabled;
                 OffButton.IsEnabled = !OffButton.IsEnabled;
-                
-                if (OnButton.IsEnabled) { currentSource.Write("OUTP ON"); }
-                if (OffButton.IsEnabled) { currentSource.Write("OUTP OFF"); }
-                currentSource.Write("OUTP ON");
+                currentSource.Write("OUTP ON");   
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
+            }
+        }
+
+        private void CurrentPowerOff(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OnButton.IsEnabled = !OnButton.IsEnabled;
+                OffButton.IsEnabled = !OffButton.IsEnabled;
+                currentSource.Write("OUTP OFF");
             }
             catch (Exception ex)
             {
@@ -410,7 +493,7 @@ namespace FinalSprint
 
                 nanoVoltmeter.Write("SENS:VOLT:APER?");
                 double x = 1 / (Double.Parse(nanoVoltmeter.ReadString())); // 1000/xx
-                LiveRate.Text = x.ToString("G5");       // F5
+                LiveRate.Text = x.ToString("G5") + " Hz";       // F5
             }
             catch (Exception ex)
             {
@@ -451,7 +534,22 @@ namespace FinalSprint
             {
                 do
                 {
-                    Capture();                 
+                    Capture();
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (!double.IsInfinity(Math.Abs(hardwareInput.Resistance)) && !double.IsNaN(Math.Abs(hardwareInput.Resistance)) && !double.IsInfinity(Math.Abs(hardwareInput.Resistivity)) && !double.IsNaN(Math.Abs(hardwareInput.Resistivity)))
+                        {
+                            //Debug.WriteLine(DateTime.Now);
+                            hardwareInput.Time = DateTime.Now;
+                            HardwareData.Add(new Data(hardwareInput.Time, Math.Abs(hardwareInput.Voltage), Math.Abs(hardwareInput.Current), Math.Abs(hardwareInput.Resistance), Math.Abs(hardwareInput.Resistivity), hardwareInput.Temperature));
+                            OutputTable.ScrollInView(new RowColumnIndex(HardwareData.Count, 0));
+                        }
+                        File.WriteSampleOutput(hardwareInput);
+                        if (HardwareData.Count > 750)
+                        {
+                            HardwareData.RemoveAt(0);
+                        }
+                    }));
                     if (_canceller_volt.Token.IsCancellationRequested)
                         break;
                 } while (true);
@@ -470,16 +568,9 @@ namespace FinalSprint
                 do
                 {
                     CaptureTemp();
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        HardwareData.Add(new Data(hardwareInput.Time, hardwareInput.Voltage, hardwareInput.Current, hardwareInput.Resistance, hardwareInput.Resistivity, hardwareInput.Temperature));
-                        OutputTable.ScrollInView(new RowColumnIndex(HardwareData.Count, 0));
-                        File.WriteSampleOutput(hardwareInput);
-                        if (HardwareData.Count > 750)
-                        {
-                            HardwareData.RemoveAt(0);
-                        }
-                    }));
+                    
+                   
+
                     if (_canceller_temp.Token.IsCancellationRequested)
                         break;
                 } while (true);
@@ -546,12 +637,15 @@ namespace FinalSprint
                 MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
             }
 
-            t_volt = Convert.ToDouble(temp_output);
-
-            hardwareInput.Current = Convert.ToDouble(CurrentLevel.Text) / 1000;          ///////// CHECK THIS (test?)
-
-            hardwareInput.Resistance = Calc.CalcResistance(voltage, current);
-            hardwareInput.Resistivity = Calc.CalcResistivity(resistance, area, length);
+            t_volt = Convert.ToDouble(temp_output)*1000;
+            Debug.WriteLine(temp_output);
+            Debug.WriteLine(t_volt);
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                hardwareInput.Current = Convert.ToDouble(CurrentLevel.Text) / 1000;          ///////// CHECK THIS (test?)
+            }));
+            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.UserSampleWidth*userInput.UserSampleThickness, userInput.UserSampleLength);
             hardwareInput.Temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, temperature);
             hardwareInput.Time = DateTime.Now;
         }
@@ -715,6 +809,26 @@ namespace FinalSprint
         {
             component.YBindingPath = "Temperature";
             Chart_vs.SecondaryAxis.Header = "Temperature";
+        }
+
+        public class Converter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+            {
+                try
+                {
+                    var formattedString = string.Format("{0:E}", value);
+                    return formattedString;
+                }
+                catch (Exception ex)
+                {
+                }
+                return value;
+            }
+            public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 } 

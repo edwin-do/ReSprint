@@ -37,18 +37,18 @@ namespace FinalSprint.Display
         public void WriteSampleOutput(HardwareInput hardwareInput)
         {
 
-            if (hardwareInput.Voltage < 0)
+            if (Math.Abs(hardwareInput.Voltage) < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
-            if (hardwareInput.Current < 0)
+            if (Math.Abs(hardwareInput.Current) < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
-            if (hardwareInput.Resistance < 0)
+            if (Math.Abs(hardwareInput.Resistance) < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
-            if (hardwareInput.Resistivity < 0)
+            if (Math.Abs(hardwareInput.Resistivity) < 0)
                 throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
 
             using (StreamWriter writer = new StreamWriter(_filePath, true))
             {
-                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, , , ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
+                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, , , ,{Math.Abs(hardwareInput.Voltage)}, {Math.Abs(hardwareInput.Current)}, {Math.Abs(hardwareInput.Resistance)}, {Math.Abs(hardwareInput.Resistivity)}, {hardwareInput.Temperature}");
             }
         }
     }
