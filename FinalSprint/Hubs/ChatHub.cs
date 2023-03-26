@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FinalSprint.Hubs
@@ -24,14 +25,18 @@ namespace FinalSprint.Hubs
 */
         public async Task TurnCurrentOn()
         {
-            await Clients.All.SendAsync("ReceiveMessage", "");
+/*            await Clients.All.SendAsync("ReceiveMessage", "");*/
             _mainWindow.TurnCurrentOn();
+            bool status = _mainWindow.getCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
         }
 
         public async Task TurnCurrentOff()
         {
-            await Clients.All.SendAsync("ReceiveMessage", "");
+            //await Clients.All.SendAsync("ReceiveMessage", "");
             _mainWindow.TurnCurrentOff();
+            bool status = _mainWindow.getCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
         }
 
         public async Task GetExperimentStatus()
@@ -40,10 +45,30 @@ namespace FinalSprint.Hubs
             await Clients.All.SendAsync("StatusUpdate", status);
         }
 
+        public async Task StartCapture(string message)
+        {
+            Console.WriteLine(message);
+            await Clients.All.SendAsync("ReceiveMessage", message);
+        }
+
         public async Task StopCapture(string message)
         {
             Console.WriteLine(message);
             await Clients.All.SendAsync("ReceiveMessage", message);
+        }
+
+        public async Task GetCaptureStatus(string message)
+        {
+            bool status = _mainWindow.GetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
+        }
+
+        public async Task GetCurrentStatus()
+        {
+
+            bool status = _mainWindow.getCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
+
         }
 
 

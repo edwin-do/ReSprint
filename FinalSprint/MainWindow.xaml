@@ -265,7 +265,7 @@
                 </Grid>
             </Grid>
         </Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Live Graph">
+        <Syncfusion:TabItemExt Header="Live Graph" Visibility="Collapsed" >
             <Grid>
                 <chart:SfChart x:Name="Chart2" >
 
@@ -308,7 +308,7 @@
                 </chart:SfChart>
             </Grid>
         </Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Live Table">
+        <Syncfusion:TabItemExt Header="Live Table" Visibility="Collapsed">
             <Syncfusion:SfDataGrid x:Name="OutputTable2" HorizontalAlignment="Center"  VerticalAlignment="Top" Grid.Row="0" AutoGenerateColumns="True"
                         ColumnSizer="Star" AllowSorting="False" AllowFiltering="True" AllowDraggingColumns="True" Margin="20,20,20,10">
                 <Syncfusion:SfDataGrid.Columns>
@@ -321,7 +321,7 @@
                 </Syncfusion:SfDataGrid.Columns>
             </Syncfusion:SfDataGrid>
         </Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Graph">
+        <Syncfusion:TabItemExt Header="Graph" Visibility="Collapsed">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -352,7 +352,7 @@
                     </Syncfusion:DropDownButtonAdv>
                 </Grid>
 
-                <chart:SfChart x:Name="Chart_vs2" Grid.Row="1">
+                <chart:SfChart x:Name="Chart_vs2" Grid.Row="1" Visibility="Collapsed">
                     <chart:SfChart.Behaviors>
                         <chart:ChartZoomPanBehavior EnableMouseWheelZooming="True" ZoomRelativeToCursor="True" EnablePanning="True" ResetOnDoubleTap="True" EnableSelectionZooming="True"/>
                         <chart:ChartTrackBallBehavior/>
@@ -368,7 +368,7 @@
                 </chart:SfChart>
             </Grid>
         </Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Table"></Syncfusion:TabItemExt>
+        <Syncfusion:TabItemExt Header="Table" Visibility="Collapsed" ></Syncfusion:TabItemExt>
         <Syncfusion:TabItemExt Header="Advanced">
             <Grid>
                 <Grid.ColumnDefinitions>

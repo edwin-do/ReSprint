@@ -38,7 +38,7 @@ namespace FinalSprint
 {
     public partial class MainWindow : Window
     {
-        private Device currentSource;
+        private Device? currentSource;
         private Device nanoVoltmeter;
         private Device multimeter;
 
@@ -72,6 +72,7 @@ namespace FinalSprint
         private double temperature;
         private double j_temp;
         private double slope;
+        public bool captureStatus = false;
         Semaphore volt;
         Semaphore temp;
 
@@ -86,9 +87,10 @@ namespace FinalSprint
         public MainWindow()
         {
             _chatHub = new ChatHub(this);
-            Start_Server();
+            
 
             InitializeComponent();
+            Start_Server();
 
             Calc = new Calculation();
             OutputTable.ItemsSource = HardwareData;
@@ -148,6 +150,8 @@ namespace FinalSprint
             catch (Exception ex)
             {
                 MessageBox.Show("1 Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                currentSource = null;
+                Debug.WriteLine(currentSource);
             }
 
             try
@@ -244,23 +248,31 @@ namespace FinalSprint
                     });
                 }*/
 
+        public bool GetCaptureStatus()
+        {
+            return captureStatus;
+        }
 
         public void TurnCurrentOn()     // Remote
         {
             Dispatcher.Invoke(() =>
             {
-                OnButton.IsEnabled = !OnButton.IsEnabled;
-                OffButton.IsEnabled = !OffButton.IsEnabled;
-                currentSource.Write("OUTP ON");
+                if (currentSource != null)
+                {
+                    OnButton.IsEnabled = false;
+                    OffButton.IsEnabled = true;
+                    currentSource.Write("OUTP ON");
 
-                if (OffButton.IsEnabled)
-                {
-                    supplyStatus.Foreground = Brushes.Green;
+                    if (OffButton.IsEnabled)
+                    {
+                        supplyStatus.Foreground = Brushes.Green;
+                    }
+                    else
+                    {
+                        supplyStatus.Foreground = Brushes.Red;
+                    }
                 }
-                else
-                {
-                    supplyStatus.Foreground = Brushes.Red;
-                }
+
             });
         }
 
@@ -268,19 +280,32 @@ namespace FinalSprint
         {
             Dispatcher.Invoke(() =>
             {
-                OnButton.IsEnabled = !OnButton.IsEnabled;
-                OffButton.IsEnabled = !OffButton.IsEnabled;
-                currentSource.Write("OUTP OFF");
+                if (currentSource != null)
+                {
+                    OnButton.IsEnabled = true;
+                    OffButton.IsEnabled = false;
+                    currentSource.Write("OUTP OFF");
 
-                if (OffButton.IsEnabled)
-                {
-                    supplyStatus.Foreground = Brushes.Green;
-                }
-                else
-                {
-                    supplyStatus.Foreground = Brushes.Red;
+                    if (OffButton.IsEnabled)
+                    {
+                        supplyStatus.Foreground = Brushes.Green;
+                    }
+                    else
+                    {
+                        supplyStatus.Foreground = Brushes.Red;
+                    }
                 }
             });
+        }
+
+        public int getCurrentStatus()
+        {
+            if (currentSource != null)
+            {
+                currentSource.Write("OUTP?");
+                return int.Parse(currentSource.ReadString());
+            }
+            return 0;
         }
 
         public bool getExperimentStatus()
@@ -442,8 +467,9 @@ namespace FinalSprint
             }
         }
 
-        private void CurrentPowerOn(object sender, RoutedEventArgs e)
+        public void CurrentPowerOn(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 OnButton.IsEnabled = !OnButton.IsEnabled;
@@ -529,6 +555,7 @@ namespace FinalSprint
             {
                 if (check())
                 {
+                    captureStatus = true;
                     area = width * thickness;
 
                     StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
@@ -592,6 +619,7 @@ namespace FinalSprint
 
                 StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
                 StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                captureStatus = false;
             }
             catch (Exception ex)
             {
