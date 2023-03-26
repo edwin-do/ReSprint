@@ -84,7 +84,7 @@
                                 <Label Grid.Row="1" Grid.Column="0" Content="Current Level (mA):" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="14" Padding="0" />
                                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="CurrentLevel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120" Margin="20, 0,0,0" FontSize="14" />
                                 <Label Grid.Row="2" Grid.Column="0" Content="Compliance (V):" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="14" Padding="0"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="Compliance" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120"  FontSize="14" Margin="20, 0,0,0"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="Compliance" HorizontalAlignment="Left" VerticalAlignment="Center" Width="120"  FontSize="14" Margin="20, 0,0,0" Text="10"/>
                                 <Label Grid.Row="3" Grid.Column="0" Content="Range:" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="14" Padding="0"/>
                                 <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Range" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="120" Margin="20, 0,0,0" Text="Range" SelectionChanged="RangeDrop" FontSize="14" SelectedIndex="0" >
                                     <ComboBoxItem Content="Auto Range"/>
@@ -114,7 +114,7 @@
                                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Padding="0" Content="Acquisition Rate (Hz):"  HorizontalAlignment="Center" FontSize="14"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="SampleRate" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Height="24" Text="100.0" FontSize="14" />
                                 <Button Grid.Row="1" Grid.Column="2" ToolTip="Input hz" Content="Set" HorizontalAlignment="Center"  VerticalAlignment="Center"  Height="24" FontSize="14" Width="30" Click="SetVolt" FontWeight="SemiBold"/>
-                                <TextBlock x:Name="LiveRate" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" Text="5.9999 Hz" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="LiveRate" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center"  TextWrapping="Wrap" Text="5.9999 Hz" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                         <Border Grid.Row="3" BorderBrush="Black" BorderThickness="1" Margin="40,0,40,0">
@@ -137,7 +137,7 @@
                                     <ComboBoxItem Content="R-type"/>
                                 </ComboBox>
                                 <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Padding="0" Content="Junction Temp. (C):"  HorizontalAlignment="Center" FontSize="14"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="jTempTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="24" Text="100.0" FontSize="14" />
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="jTempTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="24" Text="0" FontSize="14" />
                                 <Button Grid.Row="2" Grid.Column="1" Content="Set" HorizontalAlignment="Left" Margin="130,0,0,0" VerticalAlignment="Top" FontSize="14" Width="30" Click="Set_jTemp" FontWeight="SemiBold" Height="24"/>
                             </Grid>
                         </Border>
@@ -222,7 +222,7 @@
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="1*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Syncfusion:DropDownButtonAdv x:Name="xAxis" Grid.Column="0"  HorizontalAlignment="Right" Margin="0 0 50 0" Label="X Axis">
+                                    <Syncfusion:DropDownButtonAdv x:Name="xAxis" Grid.Column="0"  HorizontalAlignment="Right" Margin="0 0 50 0" Label="X Axis" SmallIcon="{x:Null}" >
                                         <Syncfusion:DropDownMenuGroup >
                                             <Syncfusion:DropDownMenuItem x:Name="xR" Click="xR_Click" Header="Resistance" ></Syncfusion:DropDownMenuItem>
                                             <Syncfusion:DropDownMenuItem x:Name="xRy" Click="xRy_Click" Header="Resistivity" ></Syncfusion:DropDownMenuItem>
@@ -231,7 +231,7 @@
                                             <Syncfusion:DropDownMenuItem x:Name="xT" Click="xT_Click" Header="Temperature" ></Syncfusion:DropDownMenuItem>
                                         </Syncfusion:DropDownMenuGroup>
                                     </Syncfusion:DropDownButtonAdv>
-                                    <Syncfusion:DropDownButtonAdv x:Name="yAxis" Grid.Column="1" HorizontalAlignment="Left"   Label="Y-Axis">
+                                    <Syncfusion:DropDownButtonAdv x:Name="yAxis" Grid.Column="1" HorizontalAlignment="Left"   Label="Y-Axis" SmallIcon="{x:Null}">
                                         <Syncfusion:DropDownMenuGroup>
                                             <Syncfusion:DropDownMenuItem x:Name="yR" Click="yR_Click" Header="Resistance"  ></Syncfusion:DropDownMenuItem>
                                             <Syncfusion:DropDownMenuItem x:Name="yRy" Click="yRy_Click" Header="Resistivity" ></Syncfusion:DropDownMenuItem>
@@ -262,9 +262,109 @@
                 </Grid>
             </Grid>
         </Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Live Graph"></Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Live Table"></Syncfusion:TabItemExt>
-        <Syncfusion:TabItemExt Header="Graph"></Syncfusion:TabItemExt>
+        <Syncfusion:TabItemExt Header="Live Graph">
+            <Grid>
+                <chart:SfChart x:Name="Chart2" >
+
+                    <chart:SfChart.Legend>
+                        <chart:ChartLegend CheckBoxVisibility="Visible" ToggleSeriesVisibility="True" />
+                    </chart:SfChart.Legend>
+                    <chart:SfChart.Behaviors>
+                        <chart:ChartZoomPanBehavior EnableMouseWheelZooming="True" ZoomRelativeToCursor="True" EnablePanning="True" ResetOnDoubleTap="True" EnableSelectionZooming="True"/>
+                        <chart:ChartTrackBallBehavior/>
+                    </chart:SfChart.Behaviors>
+                    <chart:SfChart.PrimaryAxis  >
+                        <chart:DateTimeAxis  Margin="0,-10,0,0" EnableScrollBar="True" ShowTrackBallInfo="True" TickLineSize="5" TickLinesPosition="Outside"  Header="Time" LabelFormat="hh:mm:ss:ff" LabelsIntersectAction="Hide" FontSize="14" FontFamily="SegoeUI"/>
+                    </chart:SfChart.PrimaryAxis>
+
+                    <chart:SfChart.SecondaryAxis>
+                        <chart:NumericalAxis  Margin="10,0,0,0" TickLineSize="5" TickLinesPosition="Outside" RangePadding="Additional" Header="Values" FontSize="14" FontFamily="SegoeUI" />
+                    </chart:SfChart.SecondaryAxis>
+
+                    <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Voltage" 
+                                        XBindingPath="Date" YBindingPath="Voltage" 
+                                        LegendIcon="SeriesType" StrokeThickness="1"
+                                        VisibilityOnLegend="Visible"/>
+                    <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Current" 
+                                        XBindingPath="Date" YBindingPath="Current" 
+                                        LegendIcon="SeriesType"   StrokeThickness="1"
+                                        VisibilityOnLegend="Visible"/>
+                    <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistance" 
+                                        XBindingPath="Date" YBindingPath="Resistance" 
+                                        LegendIcon="SeriesType"  StrokeThickness="1"
+                                        VisibilityOnLegend="Visible"/>
+                    <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Resistivity" 
+                                        XBindingPath="Date" YBindingPath="Resistivity" 
+                                        LegendIcon="SeriesType"   StrokeThickness="1"
+                                        VisibilityOnLegend="Visible"/>
+                    <chart:FastLineBitmapSeries EnableAntiAliasing="False" Label="Temperature" 
+                                        XBindingPath="Date" YBindingPath="Temperature" 
+                                        LegendIcon="SeriesType"  StrokeThickness="1"
+                                        VisibilityOnLegend="Visible"/>
+
+                </chart:SfChart>
+            </Grid>
+        </Syncfusion:TabItemExt>
+        <Syncfusion:TabItemExt Header="Live Table">
+            <Syncfusion:SfDataGrid x:Name="OutputTable2" HorizontalAlignment="Center"  VerticalAlignment="Top" Grid.Row="0" AutoGenerateColumns="True"
+                        ColumnSizer="Star" AllowSorting="False" AllowFiltering="True" AllowDraggingColumns="True" Margin="20,20,20,10">
+                <Syncfusion:SfDataGrid.Columns>
+                    <Syncfusion:GridDateTimeColumn  MappingName="Time (hh:mm:ss:fff)" CustomPattern="hh:mm:ss:fff" Pattern="CustomPattern"   AllowSorting="True"/>
+                    <Syncfusion:GridNumericColumn MappingName="Voltage" />
+                    <Syncfusion:GridNumericColumn MappingName="Current"  />
+                    <Syncfusion:GridNumericColumn MappingName="Resistance"   />
+                    <Syncfusion:GridNumericColumn MappingName="Resistivity"   />
+                    <Syncfusion:GridNumericColumn MappingName="Temperature"  />
+                </Syncfusion:SfDataGrid.Columns>
+            </Syncfusion:SfDataGrid>
+        </Syncfusion:TabItemExt>
+        <Syncfusion:TabItemExt Header="Graph">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Syncfusion:DropDownButtonAdv x:Name="xAxis2" Grid.Column="0"  HorizontalAlignment="Right" Margin="0 0 50 0" Label="X Axis"  SmallIcon="{x:Null}">
+                        <Syncfusion:DropDownMenuGroup >
+                            <Syncfusion:DropDownMenuItem x:Name="xR2" Click="xR_Click" Header="Resistance" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="xRy2" Click="xRy_Click" Header="Resistivity" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="xV2" Click="xV_Click" Header="Voltage" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="xC2" Click="xC_Click" Header="Current" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="xT2" Click="xT_Click" Header="Temperature" ></Syncfusion:DropDownMenuItem>
+                        </Syncfusion:DropDownMenuGroup>
+                    </Syncfusion:DropDownButtonAdv>
+                    <Syncfusion:DropDownButtonAdv x:Name="yAxis2" Grid.Column="1" HorizontalAlignment="Left"   Label="Y-Axis"  SmallIcon="{x:Null}">
+                        <Syncfusion:DropDownMenuGroup>
+                            <Syncfusion:DropDownMenuItem x:Name="yR2" Click="yR_Click" Header="Resistance"  ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="yRy2" Click="yRy_Click" Header="Resistivity" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="yV2" Click="yV_Click" Header="Voltage" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="yC2" Click="yC_Click" Header="Current" ></Syncfusion:DropDownMenuItem>
+                            <Syncfusion:DropDownMenuItem x:Name="yT2" Click="yT_Click" Header="Temperature"  ></Syncfusion:DropDownMenuItem>
+                        </Syncfusion:DropDownMenuGroup>
+                    </Syncfusion:DropDownButtonAdv>
+                </Grid>
+
+                <chart:SfChart x:Name="Chart_vs2" Grid.Row="1">
+                    <chart:SfChart.Behaviors>
+                        <chart:ChartZoomPanBehavior EnableMouseWheelZooming="True" ZoomRelativeToCursor="True" EnablePanning="True" ResetOnDoubleTap="True" EnableSelectionZooming="True"/>
+                        <chart:ChartTrackBallBehavior/>
+                    </chart:SfChart.Behaviors>
+                    <chart:SfChart.PrimaryAxis  >
+                        <chart:NumericalAxis   EnableScrollBar="True" ShowTrackBallInfo="True"  Header="Temperature"  FontSize="14" FontFamily="SegoeUI" Margin="0,-10,0,0"/>
+                    </chart:SfChart.PrimaryAxis>
+
+                    <chart:SfChart.SecondaryAxis >
+                        <chart:NumericalAxis  RangePadding="Additional" Header="Resistance" FontSize="14" FontFamily="SegoeUI" Margin="10,0,0,0" />
+                    </chart:SfChart.SecondaryAxis>
+                    <chart:LineSeries x:Name="component2" XBindingPath="Temperature" YBindingPath="Resistance" Interior="#4A4A4A" IsSortData="True" SortBy="X" SortDirection="Ascending" ItemsSource="{Binding tableData}"/>
+                </chart:SfChart>
+            </Grid>
+        </Syncfusion:TabItemExt>
         <Syncfusion:TabItemExt Header="Table"></Syncfusion:TabItemExt>
         <Syncfusion:TabItemExt Header="Advanced">
             <Grid>

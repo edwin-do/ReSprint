@@ -508,6 +508,7 @@ namespace FinalSprint
             {
                 area = width * thickness;
 
+                File.WriteUserInput(userInput);
                 try
                 {
                     StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
@@ -595,6 +596,8 @@ namespace FinalSprint
                 MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
                 return;
             }
+            Chart.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
+            Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
         }
 
         private void Capture()
