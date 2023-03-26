@@ -11,7 +11,7 @@ namespace FinalSprint.Display
     {
         private readonly string _filePath;
         private readonly string userInputHeader = "Name, SampleName, Date, SamplingRate, SampleLength, SampleWidth\n";
-        private readonly string hardwareInputHeader = "Time, ,Critical Resistence Change, Critical Slope Change, Voltage, Current, Resistance, Resistivity, Temperture\n";
+        private readonly string hardwareInputHeader = "Time, , Voltage, Current, Resistance, Resistivity, Temperture\n";
 
         public FileOutput(string filePath)
         {
@@ -48,7 +48,7 @@ namespace FinalSprint.Display
 
             using (StreamWriter writer = new StreamWriter(_filePath, true))
             {
-                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, , , ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
+                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
             }
         }
     }

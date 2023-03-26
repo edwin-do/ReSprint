@@ -135,7 +135,7 @@ namespace FinalSprint
 
                 nanoVoltmeter.Write("SENS:VOLT:APER?");
                 double y = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
-                LiveRate.Text = y.ToString("5");
+                LiveRate.Text = y.ToString("G5");
             }
             catch (Exception ex)
             {
@@ -425,6 +425,7 @@ namespace FinalSprint
             {
                 area = width * thickness;
 
+                File.WriteUserInput(userInput);
                 try
                 {
                     StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
@@ -504,6 +505,8 @@ namespace FinalSprint
                 MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
                 return;
             }
+            Chart.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
+            Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time}");
         }
 
         private void Capture()
