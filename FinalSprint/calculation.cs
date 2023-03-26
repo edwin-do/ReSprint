@@ -72,14 +72,21 @@ namespace FinalSprint
             }
         }
 
-        public double CalcChange(double resistivity)
-        {
-            return resistivity;
-        }
-
         public double CalcSlope(double resistivity, double temperature)
         {
             return resistivity / temperature;
+        }
+
+        public bool CalcChange(double temperature, double slope)
+        {
+            double d_Slope1 = slope + 0.1 * slope;
+            double d_Slope2 = slope - 0.1 * slope;
+            double d_Temp1 = temperature + 100;
+            double d_Temp2 = temperature - 100;
+
+            if ((temperature == d_Temp1 && slope == d_Slope1) || (temperature == d_Temp2 && slope == d_Slope2))
+                return true;
+            else return false;
         }
 
         public string CalcAperture(double rate)

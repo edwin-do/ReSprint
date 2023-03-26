@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace FinalSprint.Display
     public class FileOutput
     {
         private readonly string _filePath;
-        private readonly string userInputHeader = "Name, SampleName, Date, SamplingRate, SampleLength, SampleWidth\n";
+        private readonly string userInputHeader = "Operator Name, Sample Name, Date, Sample Length, Sample Width, Sample Thickness\n";
         private readonly string hardwareInputHeader = "Time, , Voltage, Current, Resistance, Resistivity, Temperture\n";
 
         public FileOutput(string filePath)
@@ -20,7 +21,7 @@ namespace FinalSprint.Display
 
         public void WriteUserInput(UserInput userInput)
         {
-
+            Debug.WriteLine("file user in");
             if (userInput.UserSampleWidth < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
             if (userInput.UserSampleLength < 0)
@@ -28,6 +29,7 @@ namespace FinalSprint.Display
 
             using (StreamWriter writer = new StreamWriter(_filePath))
             {
+                Debug.WriteLine("file user write");
                 writer.WriteLine(userInputHeader);
                 writer.WriteLine($"{userInput.UserName}, {userInput.UserSampleName}, {DateTime.Now}, {userInput.UserSampleLength}, {userInput.UserSampleWidth}, {userInput.UserSampleThickness}\n\n");
                 writer.WriteLine(hardwareInputHeader);
