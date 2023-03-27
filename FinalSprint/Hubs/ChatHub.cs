@@ -47,14 +47,16 @@ namespace FinalSprint.Hubs
 
         public async Task StartCapture(string message)
         {
-            Console.WriteLine(message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            _mainWindow.StartCapture();
+            bool status = _mainWindow.GetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
         }
 
         public async Task StopCapture(string message)
         {
-            Console.WriteLine(message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            _mainWindow.StopCapture();
+            bool status = _mainWindow.GetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
         }
 
         public async Task GetCaptureStatus(string message)

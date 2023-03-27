@@ -248,11 +248,6 @@ namespace FinalSprint
                     });
                 }*/
 
-        public bool GetCaptureStatus()
-        {
-            return captureStatus;
-        }
-
         public void TurnCurrentOn()     // Remote
         {
             Dispatcher.Invoke(() =>
@@ -311,6 +306,19 @@ namespace FinalSprint
         public bool getExperimentStatus()
         {
             return capture_volt && capture_temp;
+        }
+
+        public bool GetCaptureStatus()
+        {
+            return captureStatus;
+        }
+
+        public void startCapture(){
+            StartCap();
+        }
+
+        public void StopCapture(){
+            StopCap();
         }
 
         private bool check()
