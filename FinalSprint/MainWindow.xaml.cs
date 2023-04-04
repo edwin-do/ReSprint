@@ -75,6 +75,7 @@ namespace FinalSprint
         public bool captureStatus = false;
         Semaphore volt;
         Semaphore temp;
+        private string directory = Directory.GetCurrentDirectory();
 
         private CancellationTokenSource _canceller;
 
@@ -313,12 +314,53 @@ namespace FinalSprint
             return captureStatus;
         }
 
-        public void startCapture(){
-            StartCap();
+        public void startCapture()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if ((currentSource != null) && (nanoVoltmeter != null) && (multimeter != null))        // Add check if (OUTP? = on)
+                {
+                    if (check())
+                    {
+                        captureStatus = true;
+                        area = width * thickness;
+
+                        StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                        StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+
+                        File.WriteUserInput(userInput);
+
+                        startCap_loop();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Unable to connect to instrument(s). A device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            });
         }
 
-        public void StopCapture(){
-            StopCap();
+        public void StopCapture()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    _canceller.Cancel();
+                    capture_volt = false;
+
+                    StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    captureStatus = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
+                    return;
+                }
+                Chart.Save($@"C:\Users\hatem\Documents\ReSprint\FinalSprint\Result\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
+            });
         }
 
         private bool check()
@@ -373,9 +415,13 @@ namespace FinalSprint
                 UserSampleThickness = double.Parse(SampleThickness.Text) / 1000
             };
             
+            if (!Directory.Exists(@$"{directory}\Data\Table\"))
+            {
+                Directory.CreateDirectory(@$"{directory}\Data\Table\");
+            }
+            
             string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
-
-            File = new FileOutput(@$"{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
+            File = new FileOutput(@$"{directory}\Data\Table\{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
             return true;
         }
 
@@ -634,7 +680,13 @@ namespace FinalSprint
                 MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
                 return;
             }
-            Chart.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
+
+            if (!Directory.Exists(@$"{directory}\Data\Graph\"))
+            {
+                Directory.CreateDirectory(@$"{directory}\Data\Graph\");
+            }
+
+            Chart.Save($@"{directory}\Data\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
   /*          Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");*/
         }
         
