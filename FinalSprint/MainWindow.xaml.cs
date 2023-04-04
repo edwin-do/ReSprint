@@ -1,38 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Syncfusion.SfSkinManager;
 using NationalInstruments.NI4882;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
-using Syncfusion.Windows.Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.ComponentModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Client;
 using FinalSprint.Hubs;
-using FinalSprint.Display;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Collections.ObjectModel;
-using Microsoft.AspNetCore.Cors;
 using System.IO;
 using Syncfusion.UI.Xaml.ScrollAxis;
-using System.Text.RegularExpressions;
+using FinalSprint.src.Classes;
 
 namespace FinalSprint
 {
@@ -48,33 +33,25 @@ namespace FinalSprint
 
         private int range;
         private int scpiDevice;
-        private int th_type;
         private double rate;
         private string aperture;
         private string compliance;
         private string currLevel;
         private string voltage_output;
         private string temp_output;
-        private string name;
-        private string sample;
-        private bool capture_volt;
-        private bool capture_temp;
-        private bool isSupplying;
-        private double voltage;
-        private double current;
-        private double resistance;
-        private double resistivity;
-        private double area;
-        private double width;
-        private double thickness;
-        private double length;
-        private double t_volt;
-        private double temperature;
-        private double j_temp;
-        private double slope;
+        private bool capture_volt = false;
+        private bool capture_temp = false;
+        private double width = 0.0;
+        private double thickness = 0.0;
+        private double length = 0.0;
+        private double t_volt = 0.0;
+        private double j_temp = 25.0;
+        private int th_type = 1;
+        private int currentSecondaryAddress = 0;
+        private int spciDevice = 0;
         public bool captureStatus = false;
-        Semaphore volt;
-        Semaphore temp;
+        private IHost _host;
+
         private string directory = Directory.GetCurrentDirectory();
 
         private CancellationTokenSource _canceller;
@@ -83,15 +60,12 @@ namespace FinalSprint
         private UserInput userInput;
 
         ObservableCollection<Data> HardwareData = new ObservableCollection<Data>();
-
-        private HubConnection _connection;
         public MainWindow()
         {
-            _chatHub = new ChatHub(this);
-            
-
             InitializeComponent();
-            Start_Server();
+            _chatHub = new ChatHub(this);
+            RemoteAccess server = new RemoteAccess(this);
+            server.StartServer(_host);
 
             Calc = new Calculation();
             OutputTable.ItemsSource = HardwareData;
@@ -101,33 +75,15 @@ namespace FinalSprint
             Chart.Series[3].ItemsSource = HardwareData;
             Chart.Series[4].ItemsSource = HardwareData;
             Chart_vs.Series[0].ItemsSource = HardwareData;
-
-            capture_volt = false;
-            capture_temp = false;
-            isSupplying = false;
-            voltage = 0.0;
-            current = 0.0;
-            resistance = 0.0;
-            resistivity = 0.0;
-            area = 0.0;                 // 0.000003
-            width = 0.0;                // 0.01
-            thickness = 0.0;            // 0.0003
-            length = 0.0;               // 0.04
-            scpiDevice = 0;
-            t_volt = 0.0;
-            temperature = 0.0;
-            j_temp = 25.0;
-            th_type = 1;
-            slope = 0.0;
-
-            volt = new Semaphore(0, 1);
-            temp = new Semaphore(0, 1);
-
             hardwareInput.Temperature = 0.0;
 
+            initializeCurrentSource(currentSecondaryAddress);
+            initializeNanoVoltmeter(currentSecondaryAddress);
+            initializeMultimeter(currentSecondaryAddress);
+        }
 
-            int currentSecondaryAddress = 0;
-
+        private void initializeCurrentSource(int currentSecondaryAddress)
+        {
             try
             {
                 currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
@@ -142,7 +98,7 @@ namespace FinalSprint
                     supplyStatus.Foreground = Brushes.Red;
                 }
                 else
-                { 
+                {
                     OnButton.IsEnabled = false;
                     OffButton.IsEnabled = true;
                     supplyStatus.Foreground = Brushes.Green;
@@ -150,11 +106,13 @@ namespace FinalSprint
             }
             catch (Exception ex)
             {
-                MessageBox.Show("1 Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 currentSource = null;
                 Debug.WriteLine(currentSource);
             }
-
+        }
+        private void initializeNanoVoltmeter(int currentSecondaryAddress)
+        {
             try
             {
                 nanoVoltmeter = new Device(0, 7, (byte)currentSecondaryAddress);
@@ -170,7 +128,9 @@ namespace FinalSprint
             {
                 MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
+        }
+        private void initializeMultimeter(int currentSecondaryAddress)
+        {
             try
             {
                 multimeter = new Device(0, 1, (byte)currentSecondaryAddress);
@@ -181,73 +141,27 @@ namespace FinalSprint
             }
         }
 
+
         protected virtual void OnExit(System.Windows.ExitEventArgs e)
         {
             currentSource.Write("OUTP OFF");
             nanoVoltmeter.Write("*RST");
         }
 
-        private IHost _host;/*        var chatHub = new ChatHub(this);*/
-
-        private async void Start_Server()
+        public int getCurrentStatus()
         {
-            _host?.Dispose();
-            _host = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
+            if (currentSource != null)
             {
-                /*webBuilder.UseUrls("http://localhost:5100");*/
-                webBuilder.UseUrls("http://*:5100");
-                webBuilder.ConfigureServices(services =>
-                {
-                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
-                    services.AddCors(options =>
-                    {
-                        options.AddPolicy("CorsPolicy",
-                            builder =>
-                            {
-                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
-                                       .AllowAnyMethod()
-                                       .AllowAnyHeader()
-                                       .WithExposedHeaders("Content-Disposition")
-                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
-                                       .SetIsOriginAllowed((x) => true)
-                                       .AllowCredentials();
-                            });
-                    });
-                    services.AddSignalR();
-                });
-                webBuilder.Configure(app =>
-                {
-                    app.UseWebSockets();
-
-                    app.Use(async (context, next) =>
-                    {
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null" });
-                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                        await next();
-                    });
-                    app.UseCors("CorsPolicy");
-                    app.UseRouting();
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
-                    });
-                });
-            })
-            .Build();
-
-
-            await _host.StartAsync();
+                currentSource.Write("OUTP?");
+                return int.Parse(currentSource.ReadString());
+            }
+            return 0;
         }
 
-        //Hub Methods 
-        /*        public void UpdateLabel(string message)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        TestLabel.Content = message;
-                    });
-                }*/
+        public bool getExperimentStatus()
+        {
+            return capture_volt && capture_temp;
+        }
 
         public void TurnCurrentOn()     // Remote
         {
@@ -294,21 +208,6 @@ namespace FinalSprint
             });
         }
 
-        public int getCurrentStatus()
-        {
-            if (currentSource != null)
-            {
-                currentSource.Write("OUTP?");
-                return int.Parse(currentSource.ReadString());
-            }
-            return 0;
-        }
-
-        public bool getExperimentStatus()
-        {
-            return capture_volt && capture_temp;
-        }
-
         public bool GetCaptureStatus()
         {
             return captureStatus;
@@ -320,18 +219,36 @@ namespace FinalSprint
             {
                 if ((currentSource != null) && (nanoVoltmeter != null) && (multimeter != null))        // Add check if (OUTP? = on)
                 {
-                    if (check())
+
+                    UserInputValidation userValidation = new UserInputValidation();
+                    userValidation.checkInputBox(OperatorName);
+                    userValidation.checkInputBox(SampleName);
+                    userValidation.checkInputBox(SampleLength);
+                    userValidation.checkInputBox(SampleWidth);
+                    userValidation.checkInputBox(SampleThickness);
+                    try
                     {
-                        captureStatus = true;
-                        area = width * thickness;
+                        bool userDataIsValid = userValidation.validateUserData(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+
+                        if (userDataIsValid)
+                        {
+                            userInput = userValidation.checkUserInput(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Missing input Parameters", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    captureStatus = true;
+
 
                         StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
                         StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
 
                         File.WriteUserInput(userInput);
 
-                        startCap_loop();
-                    }
+                        StartCap_loop();
+                    
                 }
                 else
                 {
@@ -362,89 +279,30 @@ namespace FinalSprint
                 Chart.Save($@"C:\Users\hatem\Documents\ReSprint\FinalSprint\Result\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
             });
         }
+        //---------------- REMOTE ENDS -----------//
 
-        private bool check()
+        private void initializeFileOutput()
         {
-            if (string.IsNullOrEmpty(OperatorName.Text))
+            try
             {
-                MessageBox.Show("Please enter Operator Name in the textbox.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if (string.IsNullOrEmpty(SampleName.Text))
-            {
-                MessageBox.Show("Please enter Sample Name in the textbox.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if (string.IsNullOrEmpty(SampleLength.Text))
-            {
-                MessageBox.Show("Please enter Sample Length in the textbox.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if ((!double.TryParse(SampleLength.Text, out double checkLength)) || checkLength <= 0)
-            {
-                MessageBox.Show("Invalid Sample Length, please enter a positive non-zero decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if (string.IsNullOrEmpty(SampleWidth.Text))
-            {
-                MessageBox.Show("Please enter Sample Width in the textbox.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if ((!double.TryParse(SampleWidth.Text, out double checkWidth)) || checkWidth <= 0)
-            {
-                MessageBox.Show("Invalid Sample Width, please enter a positive non-zero decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if (string.IsNullOrEmpty(SampleThickness.Text))
-            {
-                MessageBox.Show("Please enter Sample Thickness in the textbox.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if ((!double.TryParse(SampleThickness.Text, out double checkThickness)) || checkThickness <= 0)
-            {
-                MessageBox.Show("Invalid Sample Thickness, please enter a positive non-zero decimal number in mm.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
+                if (!Directory.Exists(@$"{directory}\Data\Table\"))
+                {
+                    Directory.CreateDirectory(@$"{directory}\Data\Table\");
+                }
 
-            userInput = new UserInput
-            {
-                UserName = OperatorName.Text.ToString(),
-                UserSampleName = SampleName.Text.ToString(),
-                UserSampleLength = double.Parse(SampleLength.Text) / 1000,
-                UserSampleWidth = double.Parse(SampleWidth.Text) / 1000,
-                UserSampleThickness = double.Parse(SampleThickness.Text) / 1000
-            };
-            
-            if (!Directory.Exists(@$"{directory}\Data\Table\"))
-            {
-                Directory.CreateDirectory(@$"{directory}\Data\Table\");
+                string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
+                File = new FileOutput(@$"{directory}\Data\Table\{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
             }
-            
-            string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
-            File = new FileOutput(@$"{directory}\Data\Table\{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
-            return true;
+            catch
+            {
+                MessageBox.Show("File Output could not be initialized");
+            }
         }
-
-        private void RangeDrop(object sender, SelectionChangedEventArgs e)
+        private void initializeGraphOutput()
         {
-            if (Range.SelectedIndex == 0)
+            if (!Directory.Exists(@$"{directory}\Data\Graph\"))
             {
-                range = 0;
-            }
-
-            if (Range.SelectedIndex == 1)
-            {
-                range = 1;
-            }
-
-            if (Range.SelectedIndex == 2)
-            {
-                range = 2;
-            }
-
-            if (Range.SelectedIndex == 3)
-            {
-                range = 3;
+                Directory.CreateDirectory(@$"{directory}\Data\Graph\");
             }
         }
 
@@ -452,11 +310,15 @@ namespace FinalSprint
         {
             if (currentSource != null)
             {
+                range = Range.SelectedIndex;
                 if (range == 0) { currentSource.Write("CURR:RANG:AUTO ON"); }
-                if (range == 1) { currentSource.Write("CURR:RANG:1e-3"); }
-                if (range == 2) { currentSource.Write("CURR:RANG:10e-3"); }
-                if (range == 3) { currentSource.Write("CURR:RANG:100e-3"); }
+                else if (range == 1) { currentSource.Write("CURR:RANG:1e-3"); }
+                else if (range == 2) { currentSource.Write("CURR:RANG:10e-3"); }
+                else if (range == 3) { currentSource.Write("CURR:RANG:100e-3"); }
+                else { MessageBox.Show("No valid range for current selected"); }
 
+
+                //Validation
                 if (double.TryParse(CurrentLevel.Text, out double n1) && (-105 <= n1 && n1 <= 105))
                 {
                     currLevel = CurrentLevel.Text;
@@ -477,6 +339,7 @@ namespace FinalSprint
                     MessageBox.Show("Invalid compliance voltage, please enter a positive decimal number in Volts.\n\nThe voltage compliance range is 0.1 to 105 V.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+                //
 
                 try
                 {
@@ -607,17 +470,33 @@ namespace FinalSprint
         {
             if ((currentSource != null) && (nanoVoltmeter != null) && (multimeter != null))        // Add check if (OUTP? = on)
             {
-                if (check())
+                UserInputValidation userValidation = new UserInputValidation();
+                userValidation.checkInputBox(OperatorName);
+                userValidation.checkInputBox(SampleName);
+                userValidation.checkInputBox(SampleLength);
+                userValidation.checkInputBox(SampleWidth);
+                userValidation.checkInputBox(SampleThickness);
+
+                try
                 {
-                    captureStatus = true;
-                    area = width * thickness;
+                    bool userDataIsValid = userValidation.validateUserData(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                    if (userDataIsValid)
+                    {
+                        userInput = userValidation.checkUserInput(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                        initializeFileOutput();
 
-                    StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
-                    StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                        StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                        StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
 
-                    File.WriteUserInput(userInput);
+                        File.WriteUserInput(userInput);
+                        captureStatus = true;
 
-                    startCap_loop();
+                        StartCap_loop();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Missing input Parameters", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -628,7 +507,7 @@ namespace FinalSprint
         }
 
     
-        private async void startCap_loop()
+        private async void StartCap_loop()
         {
             capture_volt = true;
             _canceller = new CancellationTokenSource();
@@ -637,10 +516,21 @@ namespace FinalSprint
             {
                 do
                 {
-                    Capture();
+                    nanoVoltmeter.Write("read?");
+                    voltage_output = nanoVoltmeter.ReadString();
+                    hardwareInput.Voltage = double.Parse(voltage_output);
 
-                    /*volt.Release();
-                    temp.WaitOne();*/
+                    multimeter.Write("*IDN?");// Try only READ (try writing ONCE then reading continuously, both Volts and Temp)
+                    temp_output = multimeter.ReadString();
+
+                    t_volt = double.Parse(temp_output) * 1000;// mV to uV
+                    th_type = ThType.SelectedIndex;
+
+                    hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+                    hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.UserSampleThickness * userInput.UserSampleWidth, userInput.UserSampleLength);
+                    hardwareInput.Temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, hardwareInput.Temperature);
+                    hardwareInput.Time = DateTime.Now;
+
                     Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         if (!double.IsInfinity(Math.Abs(hardwareInput.Resistance)) && !double.IsNaN(Math.Abs(hardwareInput.Resistance)) && !double.IsInfinity(Math.Abs(hardwareInput.Resistivity)) && !double.IsNaN(Math.Abs(hardwareInput.Resistivity)))
@@ -681,46 +571,8 @@ namespace FinalSprint
                 return;
             }
 
-            if (!Directory.Exists(@$"{directory}\Data\Graph\"))
-            {
-                Directory.CreateDirectory(@$"{directory}\Data\Graph\");
-            }
-
+            initializeGraphOutput();
             Chart.Save($@"{directory}\Data\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
-  /*          Chart_vs.Save($@"{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");*/
-        }
-        
-        private void Capture()
-        {
-            nanoVoltmeter.Write("read?");
-            voltage_output = nanoVoltmeter.ReadString();
-            hardwareInput.Voltage = double.Parse(voltage_output);
-
-            multimeter.Write("*IDN?");                  /////// Try only READ (try writing ONCE then reading continuously, both Volts and Temp)
-            temp_output = multimeter.ReadString();
-
-            t_volt = double.Parse(temp_output) * 1000;      // mV to uV
-
-            hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
-            hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.UserSampleThickness*userInput.UserSampleWidth, userInput.UserSampleLength);
-            hardwareInput.Temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, hardwareInput.Temperature);
-            hardwareInput.Time = DateTime.Now;
-
-          /*  slope = Calc.CalcSlope(resistivity, temperature);
-            bool change = Calc.CalcChange(slope, temperature);*/
-        }
-
-        private void ThTypeDrop(object sender, SelectionChangedEventArgs e)
-        {
-            if (Range.SelectedIndex == 0)
-            {
-                th_type = 1;
-            }
-
-            else if (Range.SelectedIndex == 1)
-            {
-                th_type = 2;
-            }
         }
 
         private void Set_jTemp(object sender, RoutedEventArgs e)
@@ -797,7 +649,7 @@ namespace FinalSprint
                 MessageBox.Show("Invalid command.\n\n" + ex.Message);
                 return;
             }
-        }                     //   YES
+        }
 
         private void SCPI_read(object sender, RoutedEventArgs e)
         {
@@ -890,26 +742,6 @@ namespace FinalSprint
         {
             component.YBindingPath = "Temperature";
             Chart_vs.SecondaryAxis.Header = "Temperature";
-        }
-
-        public class Converter : IValueConverter
-        {
-            public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-            {
-                try
-                {
-                    var formattedString = string.Format("{0:E}", value);
-                    return formattedString;
-                }
-                catch (Exception ex)
-                {
-                }
-                return value;
-            }
-            public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 } 

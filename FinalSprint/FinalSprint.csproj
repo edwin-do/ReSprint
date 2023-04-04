@@ -11,11 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="App.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="ReSprint.ico" />
+    <None Remove="ReSprint.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,7 +51,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Resource Include="App.ico" />
+    <Resource Include="ReSprint.ico" />
   </ItemGroup>
 
 </Project>

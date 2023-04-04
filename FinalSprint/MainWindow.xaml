@@ -87,7 +87,7 @@
                                 <Label Grid.Row="2" Grid.Column="0" Content="Compliance (V):" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Padding="0" Margin="20,0,0,0"/>
                                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="Compliance" Text="10.0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="151"  FontSize="14"/>
                                 <Label Grid.Row="3" Grid.Column="0" Content="Range:" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Padding="0" Margin="20,0,0,0"/>
-                                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Range" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="151" Text="Range" SelectionChanged="RangeDrop" FontSize="14" SelectedIndex="0">
+                                <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Range" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="151" Text="Range" FontSize="14" SelectedIndex="0">
                                     <ComboBoxItem Content="Auto Range"/>
                                     <ComboBoxItem Content="1 mA"/>
                                     <ComboBoxItem Content="10 mA"/>
@@ -135,7 +135,7 @@
 
                                 <Label Grid.Row="0" Grid.ColumnSpan="2" Padding="0" VerticalAlignment="Top" Content="Temperature Sensor"  FontSize="18" Margin="20,20,143,0" Height="24"/>
                                 <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Padding="0" Content="Thermocouple:"  HorizontalAlignment="Left" FontSize="14" Margin="20,0,0,0" Height="18" Width="92"/>
-                                <ComboBox x:Name="ThType" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="165" Text="Thermocouple Type" SelectionChanged="ThTypeDrop" FontSize="14" SelectedIndex="0" Margin="10,0,0,0" >
+                                <ComboBox x:Name="ThType" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="165" Text="Thermocouple Type" FontSize="14" SelectedIndex="0" Margin="10,0,0,0" >
                                     <ComboBoxItem Content="K-type"/>
                                     <ComboBoxItem Content="R-type"/>
                                 </ComboBox>
