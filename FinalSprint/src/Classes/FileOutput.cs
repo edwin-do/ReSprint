@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NationalInstruments.Restricted;
+using Syncfusion.Windows.Shared;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,9 +19,14 @@ namespace FinalSprint.src.Classes
 
         public FileOutput(string filePath)
         {
+            if (filePath.IsEmpty() || filePath.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException("File Path is not given or empty", "filePath");
+            }
             if (!filePath.EndsWith(".csv")) {
                 throw new ArgumentException("File Path does not have a .csv extnesion", "filePath");
             }
+            
             _filePath = filePath;
         }
 
@@ -31,33 +38,39 @@ namespace FinalSprint.src.Classes
         public void WriteUserInput(UserInput userInput)
         {
             
-            if(userInput.UserName == null) {
+            if(userInput.UserName == null ) {
                 throw new ArgumentException("The Username was not found when creating file", "userInput.UserName");
+            }
+            if (userInput.UserSampleName == null)
+            {
+                throw new ArgumentException("The Sample Name was not found when creating file", "userInput.UserSampleName");
+            }
+            if (userInput.UserSampleLength == 0)
+            {
+                throw new ArgumentException("The UserSampleLength was not found when creating file", "userInput.UserSampleLength");
+            }
+            if (userInput.UserSampleWidth == 0)
+            {
+                throw new ArgumentException("The UserSampleWidth was not found when creating file", "userInput.UserSampleWidth");
+            }
+            if (userInput.UserSampleThickness == 0)
+            {
+                throw new ArgumentException("The UserSampleThickness was not found when creating file", "userInput.UserSampleThickness");
             }
 
             using (StreamWriter writer = new StreamWriter(_filePath))
             {
                 writer.WriteLine(userInputHeader);
-                writer.WriteLine($"{userInput.UserName}, {userInput.UserSampleName}, {DateTime.Now}, {userInput.UserSampleLength}, {userInput.UserSampleWidth}, {userInput.UserSampleThickness}\n\n");
+                writer.WriteLine($"{userInput.UserName},{userInput.UserSampleName},{DateTime.Now},{userInput.UserSampleLength},{userInput.UserSampleWidth},{userInput.UserSampleThickness}\n\n");
                 writer.WriteLine(hardwareInputHeader);
             }
         }
 
         public void WriteSampleOutput(HardwareInput hardwareInput)
         {
-
-            if (Math.Abs(hardwareInput.Voltage) < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
-            if (Math.Abs(hardwareInput.Current) < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
-            if (Math.Abs(hardwareInput.Resistance) < 0)
-                throw new ArgumentOutOfRangeException("hardwareInput.Resistance", "Value cannot be negative.");
-            if (Math.Abs(hardwareInput.Resistivity) < 0)
-                throw new ArgumentOutOfRangeException("hardwareInput.Resistivity", "Value cannot be negative.");
-
             using (StreamWriter writer = new StreamWriter(_filePath, true))
             {
-                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, ,{hardwareInput.Voltage}, {hardwareInput.Current}, {hardwareInput.Resistance}, {hardwareInput.Resistivity}, {hardwareInput.Temperature}");
+                writer.WriteLine($"{hardwareInput.Time.ToString("hh:mm:ss:fff")}, ,{hardwareInput.Voltage},{hardwareInput.Current},{hardwareInput.Resistance},{hardwareInput.Resistivity},{hardwareInput.Temperature}");
             }
         }
     }
