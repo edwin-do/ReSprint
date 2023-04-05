@@ -21,6 +21,7 @@ namespace FinalSprint.src.Classes
 
         public void WriteUserInput(UserInput userInput)
         {
+            
             Debug.WriteLine("file user in");
             if (userInput.UserSampleWidth < 0)
                 throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");

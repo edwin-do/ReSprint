@@ -4,21 +4,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FinalSprint.src.Classes
 {
-    class Calculation
+    public class Calculation
     {
         public Calculation() { }
 
-        public double CalcResistance(double voltage, double current)
-        {
-            return voltage / current;
+        public double CalcResistance(double voltage, double current){
+            if (current == 0) return -1;
+            return Math.Abs(voltage / current);    
         }
 
         public double CalcResistivity(double resistance, double area, double length)
         {
-            return resistance * area / length;
+            if (length == 0) return -1;
+            return Math.Abs(resistance * area / length);
         }
 
         public double CalcTemperature(double t_volt, double j_temp, int th_type, double temperature)
@@ -91,11 +93,8 @@ namespace FinalSprint.src.Classes
 
         public string CalcAperture(double rate)
         {
-            double aper_num = 1 / rate;  // 1000/rate
-            //Debug.WriteLine(aper_num.ToString("F5"));
-
-            Debug.WriteLine(aper_num.ToString("G5"));
-            return aper_num.ToString("G5");   // F5
+            double aper_num = 1 / rate; 
+            return aper_num.ToString("G5");   
         }
     }
 }
