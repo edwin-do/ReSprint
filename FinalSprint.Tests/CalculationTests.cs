@@ -10,21 +10,21 @@ namespace FinalSprint.Tests
         [Test]
         public void NormalTest()
         {
-            Assert.IsTrue(Calc.CalcResistance(5, 1) == 5);
+            Assert.That(Calc.CalcResistance(5, 1), Is.EqualTo(5.0));
         }
 
         [Test]
         public void NegativeTest()
         {
-            Assert.IsTrue(Calc.CalcResistance(5, -1) == 5);
-            Assert.IsTrue(Calc.CalcResistance(-5, 1) == 5);
+            Assert.That(Calc.CalcResistance(5, -1), Is.EqualTo(5.0));
+            Assert.That(Calc.CalcResistance(-5, 1), Is.EqualTo(5.0));
         }
 
         [Test]
         public void ZeroTest()
         {
-            Assert.IsTrue(Calc.CalcResistance(5, 0) == -1);
-            Assert.IsTrue(Calc.CalcResistance(0, 5) == 0);
+            Assert.That(Calc.CalcResistance(5, 0), Is.EqualTo(-1));
+            Assert.That(Calc.CalcResistance(0, 1), Is.EqualTo(0));
         }
 
     }
@@ -36,25 +36,25 @@ namespace FinalSprint.Tests
         [Test]
         public void NormalTest()
         {
-            Assert.IsTrue(Calc.CalcResistivity(5, 4 * 1, 4) == 5);
+            Assert.That(Calc.CalcResistivity(5, 4 * 1, 4), Is.EqualTo(5));
         }
 
         [Test]
         public void NegativeTest()
         {
-            Assert.IsTrue(Calc.CalcResistivity(-5, 4 * 1, 4) == 5);
-            Assert.IsTrue(Calc.CalcResistivity(-5, -4 * 1, 4) == 5);
-            Assert.IsTrue(Calc.CalcResistivity(-5, 4 * -1, 4) == 5);
-            Assert.IsTrue(Calc.CalcResistivity(-5, 4 * 1, -4) == 5);
+            Assert.That(Calc.CalcResistivity(-5, 4 * 1, 4), Is.EqualTo(5));
+            Assert.That(Calc.CalcResistivity(5, -4 * 1, 4), Is.EqualTo(5));
+            Assert.That(Calc.CalcResistivity(5, 4 * -1, 4), Is.EqualTo(5));
+            Assert.That(Calc.CalcResistivity(5, 4 * 1, -4), Is.EqualTo(5));
         }
 
         [Test]
         public void ZeroTest()
         {
-            Assert.IsTrue(Calc.CalcResistivity(5, 4 * 1, 0) == -1);
-            Assert.IsTrue(Calc.CalcResistivity(0, 4 * 1, 4) == 0);
-            Assert.IsTrue(Calc.CalcResistivity(5, 0 * 1, 4) == 0);
-            Assert.IsTrue(Calc.CalcResistivity(5, 4 * 0, 4) == 0);
+            Assert.That(Calc.CalcResistivity(5, 4 * 1, 0), Is.EqualTo(-1));
+            Assert.That(Calc.CalcResistivity(5, 4 * 0, 4), Is.EqualTo(0));
+            Assert.That(Calc.CalcResistivity(5, 0 * 1, 4), Is.EqualTo(0));
+            Assert.That(Calc.CalcResistivity(0, 4 * 1, 4), Is.EqualTo(0));
         }
     }
 
@@ -66,14 +66,27 @@ namespace FinalSprint.Tests
         public void KTempRangeNormalTest()
         {
             Assert.That(Calc.CalcTemperature(5, 5, 0, -10), Is.EqualTo(5.125838016822272));
-            Debug.WriteLine(Calc.CalcTemperature(5, 5, 0, -10));
-            Debug.WriteLine(Calc.CalcTemperature(5, 5, 0, 10));
-            Debug.WriteLine(Calc.CalcTemperature(5, 5, 0, 500));
-            Debug.WriteLine(Calc.CalcTemperature(5, 5, 0, 1400));
-            Debug.WriteLine(Calc.CalcTemperature(5, 5, 0, -1400));
+            Assert.That(Calc.CalcTemperature(5, 5, 0, 10), Is.EqualTo(5.1254196837892954));
+            Assert.That(Calc.CalcTemperature(5, 5, 0, 500), Is.EqualTo(-126.56433004394469));
+        }
 
-            Debug.WriteLine(Calc.CalcTemperature(0, 5, 0, 10));
-            Debug.WriteLine(Calc.CalcTemperature(5, 0, 0, 10));
+        [Test]
+        public void KTempOutOfRangeTest() 
+        {
+            Assert.That(Calc.CalcTemperature(5, 5, 0, 1400), Is.EqualTo(99999));
+            Assert.That(Calc.CalcTemperature(5, 5, 0, -1400), Is.EqualTo(99999));
+        }
+
+        [Test]
+        public void KTempZeroTest()
+        {
+            Assert.That(Calc.CalcTemperature(5, 0, 0, -10), Is.EqualTo(0.12583801682227208));
+            Assert.That(Calc.CalcTemperature(5, 0, 0, 10), Is.EqualTo(0.12541968378929455));
+            Assert.That(Calc.CalcTemperature(5, 0, 0, 500), Is.EqualTo(-131.56433004394469));
+
+            Assert.That(Calc.CalcTemperature(0, 5, 0, -10), Is.EqualTo(5.0));
+            Assert.That(Calc.CalcTemperature(0, 5, 0, 10), Is.EqualTo(5.0));
+            Assert.That(Calc.CalcTemperature(0, 5, 0, 500), Is.EqualTo(-126.8058));
         }
     }
 }
