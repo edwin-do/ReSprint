@@ -74,6 +74,14 @@ namespace FinalSprint.src.Classes
             }
         }
 
+        public string CalcAperture(double rate)
+        {
+            if (rate <= 0) return "INVAILDRATE";
+            double aper_num = Math.Round(1 / rate , 5);
+            return aper_num.ToString("G5");
+        }
+
+        // ------- METHODS FOR FUTURE UPDATES --------//
         public double CalcSlope(double resistivity, double temperature)
         {
             return resistivity / temperature;
@@ -89,12 +97,6 @@ namespace FinalSprint.src.Classes
             if (temperature == d_Temp1 && slope == d_Slope1 || temperature == d_Temp2 && slope == d_Slope2)
                 return true;
             else return false;
-        }
-
-        public string CalcAperture(double rate)
-        {
-            double aper_num = 1 / rate; 
-            return aper_num.ToString("G5");   
         }
     }
 }

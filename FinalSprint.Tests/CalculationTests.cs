@@ -88,5 +88,78 @@ namespace FinalSprint.Tests
             Assert.That(Calc.CalcTemperature(0, 5, 0, 10), Is.EqualTo(5.0));
             Assert.That(Calc.CalcTemperature(0, 5, 0, 500), Is.EqualTo(-126.8058));
         }
+
+        [Test]
+        public void RTempRangeNormalTest()
+        {
+            Assert.That(Calc.CalcTemperature(5, 5, 1, -10), Is.EqualTo(5.9445851949746746));
+            Assert.That(Calc.CalcTemperature(5, 5, 1, 250), Is.EqualTo(19.082167840000828));
+            Assert.That(Calc.CalcTemperature(5, 5, 1, 1200), Is.EqualTo(-76.219013085514518));
+            Assert.That(Calc.CalcTemperature(5, 5, 1, 1700), Is.EqualTo(34031.589915645673));
+        }
+
+        [Test]
+        public void RTempOutOfRangeTest()
+        {
+            Assert.That(Calc.CalcTemperature(5, 5, 1, 2000), Is.EqualTo(99999));
+            Assert.That(Calc.CalcTemperature(5, 5, 1, -1400), Is.EqualTo(99999));
+        }
+
+        [Test]
+        public void RTempZeroTest()
+        {
+            Assert.That(Calc.CalcTemperature(5, 0, 1, -10), Is.EqualTo(0.94458519497467563));
+            Assert.That(Calc.CalcTemperature(5, 0, 1, 250), Is.EqualTo(14.082167840000828));
+            Assert.That(Calc.CalcTemperature(5, 0, 1, 1200), Is.EqualTo(-81.219013085514518));
+            Assert.That(Calc.CalcTemperature(5, 0, 1, 1700), Is.EqualTo(34026.589915645673));
+
+            Assert.That(Calc.CalcTemperature(0, 5, 1, -10), Is.EqualTo(5.0));
+            Assert.That(Calc.CalcTemperature(0, 5, 1, 250), Is.EqualTo(18.345845050000001));
+            Assert.That(Calc.CalcTemperature(0, 5, 1, 1200), Is.EqualTo(-76.995994159999995));
+            Assert.That(Calc.CalcTemperature(0, 5, 1, 1700), Is.EqualTo(34066.778359999997));
+        }
+
+        [Test]
+        public void ThTypeOutofRangeTest()
+        {
+            Assert.That(Calc.CalcTemperature(5, 5, -1, 10), Is.EqualTo(99999));
+            Assert.That(Calc.CalcTemperature(5, 5, 3, 10), Is.EqualTo(99999));
+        }
+    }
+
+    public class CalcApertureTests
+    {
+        private Calculation Calc = new Calculation();
+
+        [Test]
+        public void CalcApertureNormalTest() 
+        {
+            Assert.That(Calc.CalcAperture(1), Is.EqualTo("1"));
+            Assert.That(Calc.CalcAperture(100), Is.EqualTo("0.01"));
+            Assert.That(Calc.CalcAperture(600), Is.EqualTo("0.00167"));
+            Assert.That(Calc.CalcAperture(6000), Is.EqualTo("0.00017"));
+        }
+
+        [Test]
+        public void CalcApertureGEMaxTest()
+        {
+            Assert.That(Calc.CalcAperture(6000), Is.EqualTo("0.00017"));
+        }
+
+        [Test]
+        public void CalcApertureLenTest() 
+        {
+            Assert.That(Calc.CalcAperture(1).Length, Is.LessThanOrEqualTo(7));
+            Assert.That(Calc.CalcAperture(100).Length, Is.LessThanOrEqualTo(7));
+            Assert.That(Calc.CalcAperture(600).Length, Is.LessThanOrEqualTo(7));
+            Assert.That(Calc.CalcAperture(6000).Length, Is.LessThanOrEqualTo(7));
+        }
+
+        [Test]
+        public void CalcApertureEdgeRateTest()
+        {
+            Assert.That(Calc.CalcAperture(-1), Is.LessThanOrEqualTo("INVAILDRATE"));
+            Assert.That(Calc.CalcAperture(0), Is.LessThanOrEqualTo("INVAILDRATE"));
+        }
     }
 }
