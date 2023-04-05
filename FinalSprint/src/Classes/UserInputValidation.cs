@@ -12,9 +12,7 @@ namespace FinalSprint.src.Classes
     internal class UserInputValidation
     {
         public UserInputValidation()
-        {
-
-        }
+        {}
 
         public UserInput checkUserInput(string userName, string userSampleName, double userSampleLength, double userSampleWidth, double userSampleThickness)
         {

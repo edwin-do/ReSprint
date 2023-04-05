@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinalSprint
 {
-    class InstruInput
+    class InstrumentInput
     {
         public double CurrentLevel { get; set; }
         public double Compliance { get; set; }

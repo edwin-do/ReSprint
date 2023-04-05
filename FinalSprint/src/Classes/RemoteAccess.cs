@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using FinalSprint.Hubs;
 using Syncfusion.Windows.Tools.Controls;
+using System.Windows.Threading;
+using System;
+using System.Windows;
+using System.Windows.Media;
 
 namespace FinalSprint.src.Classes
 {
