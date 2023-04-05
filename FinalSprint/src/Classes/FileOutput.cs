@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FinalSprint.src.Classes
 {
@@ -16,21 +17,26 @@ namespace FinalSprint.src.Classes
 
         public FileOutput(string filePath)
         {
+            if (!filePath.EndsWith(".csv")) {
+                throw new ArgumentException("File Path does not have a .csv extnesion", "filePath");
+            }
             _filePath = filePath;
+        }
+
+        public string GetFilePath()
+        {
+            return _filePath;
         }
 
         public void WriteUserInput(UserInput userInput)
         {
             
-            Debug.WriteLine("file user in");
-            if (userInput.UserSampleWidth < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleWidth", "Value cannot be negative.");
-            if (userInput.UserSampleLength < 0)
-                throw new ArgumentOutOfRangeException("userInput.SampleLength", "Value cannot be negative.");
+            if(userInput.UserName == null) {
+                throw new ArgumentException("The Username was not found when creating file", "userInput.UserName");
+            }
 
             using (StreamWriter writer = new StreamWriter(_filePath))
             {
-                Debug.WriteLine("file user write");
                 writer.WriteLine(userInputHeader);
                 writer.WriteLine($"{userInput.UserName}, {userInput.UserSampleName}, {DateTime.Now}, {userInput.UserSampleLength}, {userInput.UserSampleWidth}, {userInput.UserSampleThickness}\n\n");
                 writer.WriteLine(hardwareInputHeader);

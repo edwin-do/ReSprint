@@ -140,9 +140,8 @@ namespace FinalSprint
                 string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
                 File = new FileOutput(@$"{directory}\Data\Table\{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
             }
-            catch
-            {
-                MessageBox.Show("File Output could not be initialized");
+            catch(Exception err) {
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void initializeGraphOutput()
@@ -372,7 +371,9 @@ namespace FinalSprint
                     StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
                     StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
 
-                    File.WriteUserInput(userInput);
+                    try { File.WriteUserInput(userInput); } catch(Exception err) {
+                        MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     InitializeContinuousCapture();
                     captureStatus = true;
                     capture_volt = true;

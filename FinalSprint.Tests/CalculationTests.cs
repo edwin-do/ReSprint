@@ -1,5 +1,4 @@
 using FinalSprint.src.Classes;
-using System.Diagnostics;
 
 namespace FinalSprint.Tests
 {
