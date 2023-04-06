@@ -120,7 +120,11 @@ namespace FinalSprint.Tests
                 File.Delete(@$"UnitTestSample.csv");
             }
         }
-
+    }
+    public class WriteHardwareInput
+    {
+        private UserInput userInput = new UserInput();
+        private FileOutput? file;
         [Test]
         public void HardwareInputTest()
         {

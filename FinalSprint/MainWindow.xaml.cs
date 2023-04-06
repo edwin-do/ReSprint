@@ -169,7 +169,12 @@ namespace FinalSprint
         private void SetVolt(object sender, RoutedEventArgs e)
         {
             double.TryParse(SampleRate.Text, out double rate);
-            bool SampleRateIsValid = instrumentValidation.CheckSampleRate(rate);
+            bool SampleRateIsValid;
+            try {SampleRateIsValid = instrumentValidation.CheckSampleRate(rate); }
+            catch (Exception err){
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                SampleRateIsValid = false;
+            }
 
             try
             {
@@ -192,7 +197,14 @@ namespace FinalSprint
         private void SetJuncTemp(object sender, RoutedEventArgs e)
         {
             double.TryParse(jTempTextBox.Text, out double jTemp);
-            if (instrumentValidation.checkJuncTemperature(jTemp)) {
+            bool JuncTemperatureIsValid;
+            try { JuncTemperatureIsValid = instrumentValidation.checkJuncTemperature(jTemp); }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                JuncTemperatureIsValid = false;
+            }
+            if (JuncTemperatureIsValid) {
                 j_temp = jTemp;
             }
             return;
@@ -204,7 +216,7 @@ namespace FinalSprint
 
             if (currentSource == null)
             {
-                MessageBox.Show("3 Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -217,7 +229,23 @@ namespace FinalSprint
 
             try
             {
-                if (instrumentValidation.CheckCurrentLevel(currentLevel) && instrumentValidation.CheckCompliance(compliance))
+                bool CurrentLevelIsValid;
+                try { CurrentLevelIsValid = instrumentValidation.CheckCurrentLevel(currentLevel); }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CurrentLevelIsValid = false;
+                }
+
+                bool CheckComplianceIsValid;
+                try { CheckComplianceIsValid = instrumentValidation.CheckCompliance(compliance); }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CheckComplianceIsValid = false;
+                }
+
+                if (CurrentLevelIsValid && CheckComplianceIsValid)
                 {
                     instrumentInput.Compliance = compliance;
                     instrumentInput.CurrentLevel = currentLevel / 1000;
