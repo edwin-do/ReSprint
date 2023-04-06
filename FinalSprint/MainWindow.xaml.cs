@@ -600,6 +600,7 @@ namespace FinalSprint
                 {
 
                     UserInputValidation userValidation = new UserInputValidation();
+
                     userValidation.checkInputBox(OperatorName);
                     userValidation.checkInputBox(SampleName);
                     userValidation.checkInputBox(SampleLength);

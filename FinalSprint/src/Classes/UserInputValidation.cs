@@ -9,7 +9,7 @@ using System.Windows.Controls;
 
 namespace FinalSprint.src.Classes
 {
-    internal class UserInputValidation
+    public class UserInputValidation
     {
         public UserInputValidation()
         {}
@@ -49,11 +49,11 @@ namespace FinalSprint.src.Classes
 
         public bool validateUserData(string userName, string userSampleName, double userSampleLength, double userSampleWidth, double userSampleThickness)
         {
-            if (userName is not string && userSampleName is not string)
+            if (userName is null || userSampleName is null)
             {
                 return false;
             }
-            if (userSampleLength <= 0 && userSampleWidth <= 0 && userSampleThickness <= 0)
+            if (userSampleLength <= 0 || userSampleWidth <= 0 || userSampleThickness <= 0)
             {
                 return false;
             }
