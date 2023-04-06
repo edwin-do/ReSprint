@@ -1,647 +1,663 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Syncfusion.SfSkinManager;
 using NationalInstruments.NI4882;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
-using Syncfusion.Windows.Shared;
-
-using System.ComponentModel;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.SignalR.Client;
 using FinalSprint.Hubs;
-using Microsoft.AspNetCore.Cors;
+using System.Collections.ObjectModel;
 using System.IO;
-//using System.Windows.Forms;
+using Syncfusion.UI.Xaml.ScrollAxis;
+using FinalSprint.src.Classes;
 
 namespace FinalSprint
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public Device device;
-        private ChatHub _chatHub;
+        // Device Variables
+        private int currentSecondaryAddress = 0;
+        public Device? currentSource;
+        private Device? nanoVoltmeter;
+        private Device? multimeter;
+        private Device? CurrentSPCIDevice;
 
-        private int range;
-        private string rate;
-        private string compLevel;
-        private string currLevel;
-        private string out_put;
+        public bool capture_volt = false;
+        public bool capture_temp = false;
+        public bool captureStatus = false;
+        public CancellationTokenSource? _canceller;
 
-        //Class objects
-        private InputCommunication InputComm;
-        private Calculation Calc;
-        //private DataGenerator DatGen;
+        private double t_volt = 0.0;
+        private double j_temp = 0.0;
+        private int th_type = 0;
 
-        //Member variables
-        private bool capture;
-        private double voltage;
-        private double current;
-        private double resistance;
-        private double resistivity;
-        private double area;
-        private double length;
+        // Classes
+        private Calculation Calc = new Calculation();
+        private HardwareInput hardwareInput = new HardwareInput();
+        private InstrumentInput instrumentInput = new InstrumentInput();
+        private InstrumentInputValidation instrumentValidation = new InstrumentInputValidation();
+        private UserInput userInput = new UserInput();
 
-        private CancellationTokenSource _canceller;
+        //Output + Remote 
+        private string directory = Directory.GetCurrentDirectory();
+        private FileOutput? File;
+        ObservableCollection<Data> HardwareData = new ObservableCollection<Data>();
+        private IHost _host;
 
-        //Timer
-        DispatcherTimer main_timer;
-        //DateTime Date;
-
-        #region Fields
-        private string currentVisualStyle;
-        private string currentSizeMode;
-        #endregion
-        private HubConnection _connection;
-
-        #region Properties
-        /// <summary>
-        /// Gets or sets the current visual style.
-        /// </summary>
-        /// <value></value>
-        /// <remarks></remarks>
-        public string CurrentVisualStyle
-        {
-            get
-            {
-                return currentVisualStyle;
-            }
-            set
-            {
-                currentVisualStyle = value;
-                OnVisualStyleChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the current Size mode.
-        /// </summary>
-        /// <value></value>
-        /// <remarks></remarks>
-        public string CurrentSizeMode
-        {
-            get
-            {
-                return currentSizeMode;
-            }
-            set
-            {
-                currentSizeMode = value;
-                OnSizeModeChanged();
-            }
-        }
-        #endregion
         public MainWindow()
         {
             InitializeComponent();
-            _chatHub = new ChatHub(this);
+            ChatHub _chatHub = new ChatHub(this);
+            RemoteAccess server = new RemoteAccess(this);
 
-            this.Loaded += OnLoaded;
-            Start_Server();
-
-            //Initialise Class objects
-            Calc = new Calculation();
-            InputComm = new InputCommunication();
-            //DatGen = (DataGenerator)this.DataContext;
-
-            //Initialise variables
-            capture = false;
-            voltage = 0.0;
-            current = 0.0;
-            resistance = 0.0;
-            resistivity = 0.0;
-            area = 0.000003;
-            length = 0.04;
-
-
-            //Initialise timer for graph update
-            main_timer = new DispatcherTimer();
-            main_timer.Tick += main_timer_Tick;
-            main_timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
-            main_timer.Start();
+            server.StartServer(_host);
+            initializeChart();
+            initializeCurrentSource(currentSecondaryAddress);
+            initializeNanoVoltmeter(currentSecondaryAddress);
+            initializeMultimeter(currentSecondaryAddress);
         }
-        /// <summary>
-        /// Called when [loaded].
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        /// 
 
-
-
-        private IHost _host;/*        var chatHub = new ChatHub(this);*/
-
-        private async void Start_Server()
+        // ---- Initialization Methods ------//
+        private void initializeChart()
         {
-            _host?.Dispose();
-            _host = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
+            OutputTable.ItemsSource = HardwareData;
+            Chart.Series[0].ItemsSource = HardwareData;
+            Chart.Series[1].ItemsSource = HardwareData;
+            Chart.Series[2].ItemsSource = HardwareData;
+            Chart.Series[3].ItemsSource = HardwareData;
+            Chart.Series[4].ItemsSource = HardwareData;
+            Chart_vs.Series[0].ItemsSource = HardwareData;
+        }
+        private void initializeCurrentSource(int currentSecondaryAddress)
+        {
+            try
             {
-                /*webBuilder.UseUrls("http://localhost:5100");*/
-                webBuilder.UseUrls("http://*:5100");
-                webBuilder.ConfigureServices(services =>
+                currentSource = new Device(0, 12, (byte)currentSecondaryAddress);
+
+                currentSource.Write("OUTP?");
+                int checkCurrent = int.Parse(currentSource.ReadString());
+
+                if (checkCurrent == 0)
                 {
-                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
-                    services.AddCors(options =>
-                    {
-                        options.AddPolicy("CorsPolicy",
-                            builder =>
-                            {
-                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
-                                       .AllowAnyMethod()
-                                       .AllowAnyHeader()
-                                       .WithExposedHeaders("Content-Disposition")
-                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
-                                       .SetIsOriginAllowed((x) => true)
-                                       .AllowCredentials();
-                            });
-                    });
-                    services.AddSignalR();
-                });
-                webBuilder.Configure(app =>
-                {
-                    app.UseWebSockets();
-
-                    app.Use(async (context, next) =>
-                    {
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null" });
-                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                        await next();
-                    });
-                    app.UseCors("CorsPolicy");
-                    app.UseRouting();
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
-                    });
-                });
-            })
-            .Build();
-
-
-            await _host.StartAsync();
-        }
-
-/*        private async void Start_Click(object sender, RoutedEventArgs e)
-        {
-            _host?.Dispose();
-            _host = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                *//*webBuilder.UseUrls("http://localhost:5100");*//*
-                webBuilder.UseUrls("http://*:5100");
-                webBuilder.ConfigureServices(services =>
-                {
-                    services.AddSingleton<ChatHub>(new ChatHub(this)); // Instantiate ChatHub and pass in a reference to MainWindow
-                    services.AddCors(options =>
-                    {
-                        options.AddPolicy("CorsPolicy",
-                            builder =>
-                            {
-                                builder.WithOrigins("https://resprint.netlify.app", "http://192.168.0.119:45455", "https://6415e03808316473061d47f8--resprint.netlify.app", "http://localhost:3000", "null")
-                                       .AllowAnyMethod()
-                                       .AllowAnyHeader()
-                                       .WithExposedHeaders("Content-Disposition")
-                                       .WithHeaders("x-requested-with", "X-SignalR-User-Agent")
-                                       .SetIsOriginAllowed((x) => true)
-                                       .AllowCredentials();
-                            });
-                        });
-                    services.AddSignalR();
-                });
-                webBuilder.Configure(app =>
-                {
-                    app.UseWebSockets();
-
-                    app.Use(async (context, next) =>
-                    {
-                        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "https://resprint.netlify.app", "http://localhost:3000", "https://6415e03808316473061d47f8--resprint.netlify.app", "null"});
-                        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-                        await next();
-                    });
-                    app.UseCors("CorsPolicy");
-                    app.UseRouting();
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapHub<ChatHub>("/Hubs/chatHub");
-                    });
-                });
-            })
-            .Build();
-
-
-            await _host.StartAsync();
-        }*/
-
-        private async void Stop_Click(object sender, RoutedEventArgs e)
-        {
-            /*            ProcessStartInfo startInfo = new ProcessStartInfo("cmd.exe", "/c mkdir test");
-                        startInfo.CreateNoWindow = true;
-                        startInfo.UseShellExecute = false;
-
-                        Process process = new Process();
-                        process.StartInfo = startInfo;
-                        process.Start();*/
-/*            MemoryStream memoryStream = new MemoryStream();
-            TextWriter textWriter = new StreamWriter(memoryStream);
-            Console.SetOut(textWriter);
-           
-            string output = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());*/
-
-           /* StartProcess("C:\\conveyorcli\\conveyorcli.exe", "-p 5000", ".\\test.txt");*/
-            if (_host != null)
-            {
-                await _host.StopAsync();
-                _host.Dispose();
-            }
-        }
-        private static StringBuilder output = new StringBuilder();
-        private void StartProcess(string command, string args, string outputFilePath)
-        {
-            /*            ProcessStartInfo processStartInfo = new ProcessStartInfo("C:\\conveyorcli\\conveyorcli.exe");
-                        processStartInfo.ArgumentList.Add("-p");
-                        Process process = new Process();
-                        process.Start(processStartInfo);*/
-/*
-            Process process = new Process();*/
-            /*Process p = Process.Start("C:\\conveyorcli\\conveyorcli.exe", "-p 5100i");*/
-            
-/*            Debug.WriteLine(p.BeginOutputReadLine());*/
-            /*            {
-                            FileName = command,
-                            Arguments = args,
-                            WorkingDirectory="C:\\conveyorcli\\conveyorcli.exe",
-                            UserName ="e.window@outlook.com",
-                            PasswordInClearText = "Dragon_boy789",
-                            UseShellExecute = true,
-                            CreateNoWindow = true,
-                            Verb = "RunAs" // Run as administrator
-                        };*/
-            /*            Process process = new Process();
-                        process.StartInfo = processStartInfo;
-                        process.Start();
-                        process.BeginOutputReadLine();
-                        process.WaitForExit();
-
-                        Debug.WriteLine(output);
-
-                        process.WaitForExit();
-                        process.Close();
-
-                        Debug.WriteLine("\n\nPress any key to exit.");*/
-        }
-
-
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            _host?.Dispose();
-            base.OnClosing(e);
-        }
-
-        /*        public void UpdateLabel(string message)
-                {
-                    Debug.WriteLine(message);
-                    TestLabel.Content = message;
-                }*/
-
-        //Hub Methods 
-        public void UpdateLabel(string message)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                TestLabel.Content = message;
-            });
-        }
-
-        public void TurnCurrentOn()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // call SCPI connect to 6220
-                if (device != null)
-                {
-                    device.Dispose();
+                    OnButton.IsEnabled = true;
+                    OffButton.IsEnabled = false;
+                    supplyStatus.Foreground = Brushes.Red;
                 }
-
-                int currentSecondaryAddress = 0;
-
-                device = new Device(0, 12, (byte)currentSecondaryAddress);
-
-                device.Write("OUTP ON");
-            });
-        }
-
-        public void TurnCurrentOff()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // call SCPI connect to 6220
-                if (device != null)
+                else
                 {
-                    device.Dispose();
-                }
-
-                int currentSecondaryAddress = 0;
-
-                device = new Device(0, 12, (byte)currentSecondaryAddress);
-
-                device.Write("OUTP OFF");
-            });
-        }
-
-
-
-
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            CurrentVisualStyle = "Windows11Light";
-            CurrentSizeMode = "Default";
-        }
-        /// <summary>
-        /// On Visual Style Changed.
-        /// </summary>
-        /// <remarks></remarks>
-        private void OnVisualStyleChanged()
-        {
-            VisualStyles visualStyle = VisualStyles.Default;
-            Enum.TryParse(CurrentVisualStyle, out visualStyle);
-            if (visualStyle != VisualStyles.Default)
-            {
-                SfSkinManager.ApplyStylesOnApplication = true;
-                SfSkinManager.SetVisualStyle(this, visualStyle);
-                SfSkinManager.ApplyStylesOnApplication = false;
-            }
-        }
-
-        /// <summary>
-        /// On Size Mode Changed event.
-        /// </summary>
-        /// <remarks></remarks>
-        private void OnSizeModeChanged()
-        {
-            SizeMode sizeMode = SizeMode.Default;
-            Enum.TryParse(CurrentSizeMode, out sizeMode);
-            if (sizeMode != SizeMode.Default)
-            {
-                SfSkinManager.ApplyStylesOnApplication = true;
-                SfSkinManager.SetSizeMode(this, sizeMode);
-                SfSkinManager.ApplyStylesOnApplication = false;
-            }
-        }
-
-        private void currRadio(object sender, RoutedEventArgs e)
-        {
-            // call SCPI connect to 6220
-            if (device != null)
-            {
-                device.Dispose();
-            }
-
-            int currentSecondaryAddress = 0;
-
-            device = new Device(0, 12, (byte)currentSecondaryAddress);
-
-            device.Write("*RST");
-            device.Write("CLE");
-        }
-
-        private void voltRadio(object sender, RoutedEventArgs e)
-        {
-            // call SCPI connect to 2182A
-            if (device != null)
-            {
-                device.Dispose();
-            }
-
-            int currentSecondaryAddress = 0;
-
-            device = new Device(0, 7, (byte)currentSecondaryAddress);
-
-            device.Write("*RST");
-            device.Write("INIT:CONT ON");
-        }
-
-        private void currText(object sender, TextChangedEventArgs e)
-        {
-            currLevel = currTextBox.Text;
-        }
-
-        private void compText(object sender, TextChangedEventArgs e)
-        {
-            compLevel = compTextBox.Text;
-        }
-
-        private void RangeDrop(object sender, SelectionChangedEventArgs e)
-        {
-            if (Range.SelectedIndex == 0)
-            {
-                range = 0;
-            }
-
-            if (Range.SelectedIndex == 1)
-            {
-                range = 1;
-            }
-
-            if (Range.SelectedIndex == 2)
-            {
-                range = 2;
-            }
-
-            if (Range.SelectedIndex == 3)
-            {
-                range = 3;
-            }
-        }
-
-        private void setCurr(object sender, RoutedEventArgs e)
-        {
-            if (range == 0)
-            {
-                /// SCPI COMMAND CURR:RANG:AUTO ON
-                try
-                {
-                    device.Write("CURR:RANG:AUTO ON");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    OnButton.IsEnabled = false;
+                    OffButton.IsEnabled = true;
+                    supplyStatus.Foreground = Brushes.Green;
                 }
             }
-            else if (range == 1)
+            catch (Exception ex)
             {
-                /// SCPI COMMAND CURR:RANG:1e-3
-                try
-                {
-                    device.Write("CURR:RANG:1e-3");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else if (range == 2)
-            {
-                /// SCPI COMMAND CURR:RANG:10e-3
-                try
-                {
-                    device.Write("CURR:RANG:10e-3");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else if (range == 3)
-            {
-                /// SCPI COMMAND CURR:RANG:100e-3
-                try
-                {
-                    device.Write("CURR:RANG:100e-3");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-
-            device.Write("CURR:COMP " + compLevel);
-            device.Write("CURR " + currLevel + "e-3");
-        }
-
-        private void currTurnON(object sender, RoutedEventArgs e)
-        {
-            device.Write("OUTP ON");
-        }
-
-        private void currTurnOFF(object sender, RoutedEventArgs e)
-        {
-            device.Write("OUTP OFF");
-        }
-
-        private void Integration_Rate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Integration_Rate.SelectedIndex == 0)
-            {
-                rate = "0.01";
-            }
-
-            if (Integration_Rate.SelectedIndex == 1)
-            {
-                rate = "0.1";
-            }
-
-            if (Integration_Rate.SelectedIndex == 2)
-            {
-                rate = "1";
-            }
-
-            if (Integration_Rate.SelectedIndex == 3)
-            {
-                rate = "5";
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                currentSource = null;
+                Debug.WriteLine(currentSource);
             }
         }
-
-        private void setVolt(object sender, RoutedEventArgs e)
+        private void initializeNanoVoltmeter(int currentSecondaryAddress)
         {
-            device.Write("SENS:VOLT:NPLC " + rate);
+            try
+            {
+                nanoVoltmeter = new Device(0, 7, (byte)currentSecondaryAddress);
+                nanoVoltmeter.Write("*RST");
+                nanoVoltmeter.Write("SENS:CHAN 1");
+                nanoVoltmeter.Write("SENS:FUNC 'VOLT'");
+
+                nanoVoltmeter.Write("SENS:VOLT:APER?");
+                double y = 1000 / (Double.Parse(nanoVoltmeter.ReadString()));
+                LiveRate.Text = y.ToString("G5");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Nano-voltmeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void initializeMultimeter(int currentSecondaryAddress)
+        {
+            try
+            {
+                multimeter = new Device(0, 1, (byte)currentSecondaryAddress);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Multimeter. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void initializeFileOutput()
+        {
+            try
+            {
+                if (!Directory.Exists(@$"{directory}\Data\Table\"))
+                {
+                    Directory.CreateDirectory(@$"{directory}\Data\Table\");
+                }
+
+                string SampleDate = DateTime.Now.ToString("yyyy-MM-dd") + "-" + DateTime.Now.ToShortTimeString();
+                File = new FileOutput(@$"{directory}\Data\Table\{userInput.UserName}_{userInput.UserSampleName}_{DateTime.Now.ToString("yyyy-MM-dd-hh-mm")}.csv");
+            }
+            catch(Exception err) {
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void initializeGraphOutput()
+        {
+            if (!Directory.Exists(@$"{directory}\Data\Graph\"))
+            {
+                Directory.CreateDirectory(@$"{directory}\Data\Graph\");
+            }
+        }
+        protected virtual void OnExit(ExitEventArgs e)
+        {
+            if (currentSource != null)
+            {
+                currentSource.Write("OUTP OFF");
+            }
+            if (nanoVoltmeter != null)
+            {
+                nanoVoltmeter.Write("*RST");
+            }
+            return;
+
         }
 
-        private async void startCap(object sender, RoutedEventArgs e)
+        // ---- Instrument Related Methods ------//
+        private void SetVolt(object sender, RoutedEventArgs e)
         {
-            //startCapBtn.Enabled = false;
-            //stopCapBtn.Enabled = true;
-            capture = true;
-            //Date = DateTime.Now;
+            double.TryParse(SampleRate.Text, out double rate);
+            bool SampleRateIsValid;
+            try {SampleRateIsValid = instrumentValidation.CheckSampleRate(rate); }
+            catch (Exception err){
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                SampleRateIsValid = false;
+            }
+
+            try
+            {
+                if (nanoVoltmeter != null && SampleRateIsValid)
+                {
+                    string aperture = Calc.CalcAperture(rate);
+                    nanoVoltmeter.Write("SENS:VOLT:APER " + aperture);
+                    nanoVoltmeter.Write("SENS:VOLT:APER?");
+                    double x = 1 / (double.Parse(nanoVoltmeter.ReadString()));
+                    LiveRate.Text = x.ToString("G5");
+                }
+                return;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Something went wrong when communicatiing with the Nano-voltmeter. The device can be either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+        private void SetJuncTemp(object sender, RoutedEventArgs e)
+        {
+            double.TryParse(jTempTextBox.Text, out double jTemp);
+            bool JuncTemperatureIsValid;
+            try { JuncTemperatureIsValid = instrumentValidation.checkJuncTemperature(jTemp); }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                JuncTemperatureIsValid = false;
+            }
+            if (JuncTemperatureIsValid) {
+                j_temp = jTemp;
+            }
+            return;
+        }
+        private void SetCurrent(object sender, RoutedEventArgs e)
+        {
+            double.TryParse(CurrentLevel.Text, out double currentLevel);
+            double.TryParse(Compliance.Text, out double compliance);
+
+            if (currentSource == null)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            int range = Range.SelectedIndex;
+            if (range == 0) { currentSource.Write("CURR:RANG:AUTO ON"); }
+            else if (range == 1) { currentSource.Write("CURR:RANG:1e-3"); }
+            else if (range == 2) { currentSource.Write("CURR:RANG:10e-3"); }
+            else if (range == 3) { currentSource.Write("CURR:RANG:100e-3"); }
+            else { MessageBox.Show("No valid range for current selected"); }
+
+            try
+            {
+                bool CurrentLevelIsValid;
+                try { CurrentLevelIsValid = instrumentValidation.CheckCurrentLevel(currentLevel); }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CurrentLevelIsValid = false;
+                }
+
+                bool CheckComplianceIsValid;
+                try { CheckComplianceIsValid = instrumentValidation.CheckCompliance(compliance); }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CheckComplianceIsValid = false;
+                }
+
+                if (CurrentLevelIsValid && CheckComplianceIsValid)
+                {
+                    instrumentInput.Compliance = compliance;
+                    instrumentInput.CurrentLevel = currentLevel / 1000;
+                    hardwareInput.Current = currentLevel / 1000; //fix this - Edwin
+
+                    currentSource.Write("CURR:COMP " + compliance);
+                    currentSource.Write("CURR " + currentLevel + "e-3");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Something went wrong when communicating with the current source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+        }
+        private void ResetCurrent(object sender, RoutedEventArgs e)
+        {
+            if (currentSource == null)
+            {
+                MessageBox.Show("5 Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                currentSource.Write("*RST");
+                currentSource.Write("CLE");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            CurrentLevel.Text = "";
+            Compliance.Text = "10.0";
+        }
+        public void ToggleCurrentPowerButton(object sender, RoutedEventArgs e)
+        {
+            OnButton.IsEnabled = !OnButton.IsEnabled;
+            OffButton.IsEnabled = !OffButton.IsEnabled;
+
+            try
+            {
+                if (OffButton.IsEnabled)
+                {
+                    currentSource.Write("OUTP ON");
+                    supplyStatus.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    currentSource.Write("OUTP OFF");
+                    supplyStatus.Foreground = Brushes.Red;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("6 Unable to connect to the Current Source. The device is either powered off or is not connected to the computer.\n\n" + ex.Message);
+                return;
+            }
+        }
+
+        // ------- SCPI Related Methods -------------//
+        private void SelectSCPICurrent(object sender, RoutedEventArgs e)
+        {
+            CurrentSPCIDevice = currentSource;
+        }
+        private void SelectSCPIVoltage(object sender, RoutedEventArgs e)
+        {
+            CurrentSPCIDevice = nanoVoltmeter;
+        }
+        private void SelectSCPITemp(object sender, RoutedEventArgs e)
+        {
+            CurrentSPCIDevice = multimeter;
+        }
+        private void SCPIWrite(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(SCPI_input.Text))
+            {
+                MessageBox.Show("Please enter a command, then click Write and Read.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (CurrentSPCIDevice == null)
+            {
+                MessageBox.Show("Unable to connect to the selected device. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                CurrentSPCIDevice.Write(SCPI_input.Text);             
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid command.\n\n" + ex.Message);
+                return;
+            }
+        }
+        private void SCPIRead(object sender, RoutedEventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(SCPI_input.Text))
+            {
+                MessageBox.Show("Please enter a command, then click Write and Read.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (CurrentSPCIDevice == null)
+            {
+                MessageBox.Show("Unable to connect to the selected device. The device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                SCPI_output.Text = SCPI_output.Text + "\n" + CurrentSPCIDevice.ReadString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid command.\n\n" + ex.Message);
+                return;
+            }
+        }
+
+        // ---- Experiment Related Methods ------//
+        private void StartCapture(object sender, RoutedEventArgs e)
+        {
+            if ((currentSource == null) || (nanoVoltmeter == null) || (multimeter == null))
+            {
+                MessageBox.Show("Unable to connect to instrument(s). A device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            UserInputValidation userValidation = new UserInputValidation();
+            userValidation.checkInputBox(OperatorName);
+            userValidation.checkInputBox(SampleName);
+            userValidation.checkInputBox(SampleLength);
+            userValidation.checkInputBox(SampleWidth);
+            userValidation.checkInputBox(SampleThickness);
+
+            try
+            {
+                bool userDataIsValid = userValidation.validateUserData(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                if (userDataIsValid)
+                {
+                    userInput = userValidation.checkUserInput(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                    initializeFileOutput();
+
+                    StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+
+                    try { File.WriteUserInput(userInput); } catch(Exception err) {
+                        MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    InitializeContinuousCapture();
+                    captureStatus = true;
+                    capture_volt = true;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Missing input Parameters", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void StopCapture(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _canceller.Cancel();
+                StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+
+                capture_volt = false;
+                captureStatus = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
+                return;
+            }
+
+            initializeGraphOutput();
+            Chart.Save($@"{directory}\Data\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
+        }
+        private async void InitializeContinuousCapture()
+        {
             _canceller = new CancellationTokenSource();
+            th_type = ThType.SelectedIndex;
 
             await Task.Run(() =>
             {
                 do
                 {
-                    //device.Write("FETC?");
-                    //out_put = device.ReadString();
-                    //voltVals.Add(out_put);
-                    Thread.Sleep(50);
-                    Capture();
+                    nanoVoltmeter.Write("read?");
+                    string voltage_output = nanoVoltmeter.ReadString();
+                    hardwareInput.Voltage = double.Parse(voltage_output);
+
+                    multimeter.Write("*IDN?");// Try only READ (try writing ONCE then reading continuously, both Volts and Temp)
+                    string temp_output = multimeter.ReadString();
+
+                    t_volt = double.Parse(temp_output) * 1000;// mV to uV
+
+
+                    hardwareInput.Resistance = Calc.CalcResistance(hardwareInput.Voltage, hardwareInput.Current);
+                    hardwareInput.Resistivity = Calc.CalcResistivity(hardwareInput.Resistance, userInput.UserSampleThickness * userInput.UserSampleWidth, userInput.UserSampleLength);
+                    hardwareInput.Temperature = Calc.CalcTemperature(t_volt, j_temp, th_type, hardwareInput.Temperature);
+                    hardwareInput.Time = DateTime.Now;
+
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (!double.IsInfinity(Math.Abs(hardwareInput.Resistance)) && !double.IsNaN(Math.Abs(hardwareInput.Resistance)) && !double.IsInfinity(Math.Abs(hardwareInput.Resistivity)) && !double.IsNaN(Math.Abs(hardwareInput.Resistivity)))
+                        {
+                            hardwareInput.Time = DateTime.Now;
+                            HardwareData.Add(new Data(hardwareInput.Time, Math.Abs(hardwareInput.Voltage), Math.Abs(hardwareInput.Current), Math.Abs(hardwareInput.Resistance), Math.Abs(hardwareInput.Resistivity), hardwareInput.Temperature));
+                            OutputTable.ScrollInView(new RowColumnIndex(HardwareData.Count, 0));
+                        }
+                        File.WriteSampleOutput(hardwareInput);
+                        if (HardwareData.Count > 750)
+                        {
+                            HardwareData.RemoveAt(0);
+                        }
+                    }));
                     if (_canceller.Token.IsCancellationRequested)
                         break;
                 } while (true);
             });
 
             _canceller.Dispose();
-            //startCapBtn.Enabled = true;
-            //stopCapBtn.Enabled = false;
         }
 
-        private void stopCap(object sender, RoutedEventArgs e)
+        // ------- ADDITIONAL GRAPH METHODS --------//
+        public void xR_Click(object sender, RoutedEventArgs e)
         {
-            _canceller.Cancel();
-            capture = false;
+            component.XBindingPath = "Resistance";
+            Chart_vs.PrimaryAxis.Header = "Resistance";
         }
-
-        private void Capture()
+        public void xRy_Click(object sender, RoutedEventArgs e)
         {
-            //Get voltage and current values
-            //voltage = InputComm.GetVoltage();
-            device.Write("FETC?");
-            //device.Write("SENS:CH");
-            out_put = device.ReadString();
-            voltage = (-1)*Convert.ToDouble(out_put);
-            Debug.WriteLine(voltage);
-
-            //current = InputComm.GetCurrent();
-            current = Convert.ToDouble(currLevel)/1000;
-
-            //Calculate resistance and resistivity values
-            resistance = Calc.CalcResistance(voltage, current);
-            resistivity = Calc.CalcResistivity(resistance, area, length);
-
+            component.XBindingPath = "Resistivity";
+            Chart_vs.PrimaryAxis.Header = "Resistivity";
         }
-
-
-        //private void timer_Tick(object? sender, object e)
-        //{
-        //    //Pass values to DataGenerator
-        //    if (capture)
-        //    {
-        //        DatGen.AddData(new Data(Date, current, voltage, resistivity));
-        //        Date = Date.Add(TimeSpan.FromMilliseconds(50));
-        //    }
-        //}
-
-        private void main_timer_Tick(object sender, object e)
+        public void xV_Click(object sender, RoutedEventArgs e)
         {
-            voltage_out.Text = voltage.ToString();
-            current_out.Text = currLevel;
-            ohm_out.Text = resistance.ToString();
-            rho_out.Text = resistivity.ToString();
-
-            //if (capture)
-            //{
-            //    DatGen.AddData();
-            //}
+            component.XBindingPath = "Voltage";
+            Chart_vs.PrimaryAxis.Header = "Voltage";
         }
+        public void xC_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Current";
+            Chart_vs.PrimaryAxis.Header = "Current";
+        }
+        public void xT_Click(object sender, RoutedEventArgs e)
+        {
+            component.XBindingPath = "Temperature";
+            Chart_vs.PrimaryAxis.Header = "Temperature";
+        }
+
+        public void yR_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Resistance";
+            Chart_vs.SecondaryAxis.Header = "Resistance";
+        }
+        public void yRy_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Resistivity";
+            Chart_vs.SecondaryAxis.Header = "Resistivity";
+        }
+        public void yV_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Voltage";
+            Chart_vs.SecondaryAxis.Header = "Voltage";
+        }
+        public void yC_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Current";
+            Chart_vs.SecondaryAxis.Header = "Current";
+        }
+        public void yT_Click(object sender, RoutedEventArgs e)
+        {
+            component.YBindingPath = "Temperature";
+            Chart_vs.SecondaryAxis.Header = "Temperature";
+        }
+
+        // ------- REMOTE METHODS --------//
+        public int RemoteGetCurrentStatus()
+        {
+            if (currentSource != null)
+            {
+                currentSource.Write("OUTP?");
+                return int.Parse(currentSource.ReadString());
+            }
+            return 0;
+        }
+        public bool RemoteGetExperimentStatus()
+        {
+            return capture_volt && capture_temp;
+        }
+        public void RemoteTurnCurrentOn()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (currentSource != null)
+                {
+                    OnButton.IsEnabled = false;
+                    OffButton.IsEnabled = true;
+                    currentSource.Write("OUTP ON");
+
+                    if (OffButton.IsEnabled)
+                    {
+                        supplyStatus.Foreground = Brushes.Green;
+                    }
+                    else
+                    {
+                        supplyStatus.Foreground = Brushes.Red;
+                    }
+                }
+
+            });
+        }
+        public void RemoteTurnCurrentOff()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (currentSource != null)
+                {
+                    OnButton.IsEnabled = true;
+                    OffButton.IsEnabled = false;
+                    currentSource.Write("OUTP OFF");
+
+                    if (OffButton.IsEnabled)
+                    {
+                        supplyStatus.Foreground = Brushes.Green;
+                    }
+                    else
+                    {
+                        supplyStatus.Foreground = Brushes.Red;
+                    }
+                }
+            });
+        }
+        public bool RemoteGetCaptureStatus()
+        {
+            return captureStatus;
+        }
+        public void RemoteStartCapture()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if ((currentSource != null) && (nanoVoltmeter != null) && (multimeter != null))        // Add check if (OUTP? = on)
+                {
+
+                    UserInputValidation userValidation = new UserInputValidation();
+
+                    userValidation.checkInputBox(OperatorName);
+                    userValidation.checkInputBox(SampleName);
+                    userValidation.checkInputBox(SampleLength);
+                    userValidation.checkInputBox(SampleWidth);
+                    userValidation.checkInputBox(SampleThickness);
+                    try
+                    {
+                        bool userDataIsValid = userValidation.validateUserData(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+
+                        if (userDataIsValid)
+                        {
+                            userInput = userValidation.checkUserInput(OperatorName.Text, SampleName.Text, double.Parse(SampleLength.Text) / 1000, double.Parse(SampleWidth.Text) / 1000, double.Parse(SampleThickness.Text) / 1000);
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Missing input Parameters", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    captureStatus = true;
+
+
+                    StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+
+                    File.WriteUserInput(userInput);
+
+                    InitializeContinuousCapture();
+
+                }
+                else
+                {
+                    MessageBox.Show("Unable to connect to instrument(s). A device is either powered off or is not connected to the computer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            });
+        }
+        public void RemoteStopCapture()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    _canceller.Cancel();
+                    capture_volt = false;
+
+                    StartCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    StopCapBtn.IsEnabled = !StartCapBtn.IsEnabled;
+                    captureStatus = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There is no experiment in progress. Please restart the application if needed.\n\n" + ex.Message);
+                    return;
+                }
+                Chart.Save($@"C:\Users\hatem\Documents\ReSprint\FinalSprint\Result\Graph\{userInput.UserName}_{userInput.UserSampleName}_{hardwareInput.Time.ToString("yyyy-MM-dd-hh-mm")}");
+            });
+        }
+        //---------------- REMOTE ENDS -----------//
     }
-
-}
+} 

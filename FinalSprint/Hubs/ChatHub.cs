@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using FinalSprint.src.Classes;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FinalSprint.Hubs
@@ -10,35 +7,59 @@ namespace FinalSprint.Hubs
     public class ChatHub : Hub
     {
         private readonly MainWindow _mainWindow;
+
+        //Hub used for remote client
         public ChatHub(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
         }
 
-        public async Task SendMessage(string message)
-        {
-            Console.WriteLine(message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
-           _mainWindow.UpdateLabel(message);
-        }
-
         public async Task TurnCurrentOn()
         {
-            await Clients.All.SendAsync("ReceiveMessage", "");
-            _mainWindow.TurnCurrentOn();
+            _mainWindow.RemoteTurnCurrentOn();
+            bool status = _mainWindow.RemoteGetCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
         }
 
         public async Task TurnCurrentOff()
         {
-            await Clients.All.SendAsync("ReceiveMessage", "");
-            _mainWindow.TurnCurrentOff();
+            _mainWindow.RemoteTurnCurrentOff();
+            bool status = _mainWindow.RemoteGetCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
         }
 
-        public async Task StopCapture(string message)
+        public async Task GetExperimentStatus()
         {
-            Console.WriteLine(message);
-            await Clients.All.SendAsync("ReceiveMessage", message);
-            _mainWindow.UpdateLabel(message);
+            bool status = _mainWindow.RemoteGetExperimentStatus();
+            await Clients.All.SendAsync("StatusUpdate", status);
+        }
+
+        public async Task StartCapture()
+        {
+            _mainWindow.RemoteStartCapture();
+            bool status = _mainWindow.RemoteGetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
+        }
+
+        public async Task StopCapture()
+        {
+            _mainWindow.RemoteStopCapture();
+            bool status = _mainWindow.RemoteGetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
+        }
+
+        public async Task GetCaptureStatus(string message)
+        {
+            bool status = _mainWindow.RemoteGetCaptureStatus();
+            await Clients.All.SendAsync("UpdateExperimentStatus", status);
+        }
+
+        public async Task GetCurrentStatus()
+        {
+
+            bool status = _mainWindow.RemoteGetCurrentStatus() == 1 ? true : false;
+            await Clients.All.SendAsync("UpdateCurrentStatus", status);
+
         }
 
 
